@@ -9,6 +9,7 @@ import 'package:post_app/screens/postal_holiday_screen.dart';
 import 'package:post_app/screens/search_post_office_screen.dart';
 import 'package:post_app/screens/fines_screen.dart';
 import 'package:post_app/screens/stamp_collection_screen.dart';
+import 'package:post_app/screens/login_screen.dart'; // For logout
 
 class CustomerDashboardScreen extends StatefulWidget {
   const CustomerDashboardScreen({super.key});
@@ -18,6 +19,7 @@ class CustomerDashboardScreen extends StatefulWidget {
 }
 
 class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>(); // Key for Scaffold
   String _greeting = '';
   final PageController _newsPageController = PageController();
   int _currentNewsPage = 0;
@@ -77,17 +79,76 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
     ];
 
     return Scaffold(
+      key: _scaffoldKey, // Assign the key to Scaffold
       appBar: AppBar(
         title: const Text('SL Post'),
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: false, // This is fine as it's part of MainAppShell
         actions: [
           IconButton(
             icon: const Icon(Icons.account_circle),
             onPressed: () {
-              // Handle profile icon tap
+              _scaffoldKey.currentState?.openEndDrawer(); // Open the end drawer
             },
           ),
         ],
+      ),
+      endDrawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            UserAccountsDrawerHeader(
+              accountName: const Text("User Name"), // Placeholder
+              accountEmail: const Text("user.email@example.com"), // Placeholder
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Theme.of(context).platform == TargetPlatform.iOS ? Colors.blue : Colors.white,
+                child: const Text(
+                  "U", // Placeholder
+                  style: TextStyle(fontSize: 40.0),
+                ),
+              ),
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.edit_outlined),
+              title: const Text('Edit Profile'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                // TODO: Navigate to Edit Profile Screen
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.payment_outlined),
+              title: const Text('Add Payment Card'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                // TODO: Navigate to Add Payment Card Screen
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings_outlined),
+              title: const Text('Settings'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                // TODO: Navigate to Settings Screen
+              },
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.logout_outlined),
+              title: const Text('Log Out'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (Route<dynamic> route) => false, // Remove all routes
+                );
+              },
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
