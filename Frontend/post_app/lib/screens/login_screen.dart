@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:post_app/screens/signup_screen.dart'; // Assuming your package name is post_app
-import 'package:post_app/screens/customer_dashboard_screen.dart'; // Assuming your package name is post_app
+import 'package:post_app/screens/main_app_shell.dart'; // Changed to MainAppShell
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -37,7 +37,7 @@ class LoginScreen extends StatelessWidget {
                 // For now, directly navigate. Later, add actual login logic.
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => const CustomerDashboardScreen()),
+                  MaterialPageRoute(builder: (context) => const MainAppShell()), // Changed to MainAppShell
                 );
               },
               child: const Text('Login'),

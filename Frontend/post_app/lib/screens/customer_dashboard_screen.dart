@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
 import 'dart:async'; // For PageController and Timer if needed for auto-scroll
 
+// Import service screens
+import 'package:post_app/screens/parcel_tracking_screen.dart';
+import 'package:post_app/screens/money_order_screen.dart';
+import 'package:post_app/screens/bill_payments_screen.dart';
+import 'package:post_app/screens/postal_holiday_screen.dart';
+import 'package:post_app/screens/search_post_office_screen.dart';
+import 'package:post_app/screens/fines_screen.dart';
+import 'package:post_app/screens/stamp_collection_screen.dart';
+
 class CustomerDashboardScreen extends StatefulWidget {
   const CustomerDashboardScreen({super.key});
 
@@ -191,12 +200,37 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
   }
 
   Widget _buildServiceGridItem(BuildContext context, String title, IconData icon) {
+    // Normalize title for comparison (remove newline characters)
+    String normalizedTitle = title.replaceAll('\n', ' ');
+
     return Card(
       elevation: 2.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       child: InkWell(
         onTap: () {
-          // Handle service item tap for 'title'
+          Widget? screenToNavigate;
+          if (normalizedTitle == 'Parcel Tracking') {
+            screenToNavigate = const ParcelTrackingScreen();
+          } else if (normalizedTitle == 'Money Order') {
+            screenToNavigate = const MoneyOrderScreen();
+          } else if (normalizedTitle == 'Bill Payments') {
+            screenToNavigate = const BillPaymentsScreen();
+          } else if (normalizedTitle == 'Postal Holiday') {
+            screenToNavigate = const PostalHolidayScreen();
+          } else if (normalizedTitle == 'Search Nearby Post Office') {
+            screenToNavigate = const SearchPostOfficeScreen();
+          } else if (normalizedTitle == 'Fines') {
+            screenToNavigate = const FinesScreen();
+          } else if (normalizedTitle == 'Stamp Collection') {
+            screenToNavigate = const StampCollectionScreen();
+          }
+
+          if (screenToNavigate != null) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => screenToNavigate!),
+            );
+          }
         },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
