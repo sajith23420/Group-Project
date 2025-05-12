@@ -114,7 +114,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 icon: Image.asset(
-                  'assets/google_logo.png',
+                  'assets/google_logo.png', // Ensure you have this image in your assets
+                  // You can also use NetworkImage if you prefer
                   height: 24,
                   width: 24,
                 ),

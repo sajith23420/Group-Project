@@ -59,7 +59,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/ # This line includes all files in the assets folder
+    - assets/google_logo.png # This line includes the Google logo file
 
   # An image asset can refer to one or more resolution-specific "variants", see
 
