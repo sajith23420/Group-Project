@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:post_app/screens/main_app_shell.dart'; // Changed
-import 'package:post_app/screens/signup_screen.dart'; // Added
+import 'package:post_app/screens/customer_dashboard_screen.dart';
+import 'package:post_app/screens/signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,6 +21,20 @@ class _LoginScreenState extends State<LoginScreen> {
         MaterialPageRoute(builder: (context) => const MainAppShell()), // Changed
       );
     }
+  }
+
+  void _navigateToSignup() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SignupScreen()),
+    );
+  }
+
+  void _handleGoogleSignIn() {
+    // TODO: Implement actual Google Sign-In logic
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Google Sign-In tapped')),
+    );
   }
 
   @override
@@ -71,15 +85,39 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: _login,
                 child: const Text('Login'),
               ),
-              const SizedBox(height: 12), // Added spacing
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SignupScreen()),
-                  );
-                },
-                child: const Text("Don't have an account? Register"),
+              const SizedBox(height: 20),
+              Center(
+                child: TextButton(
+                  onPressed: _navigateToSignup,
+                  child: const Text("Don't have an account? Sign up here"),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: const [
+                  Expanded(child: Divider()),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text('or'),
+                  ),
+                  Expanded(child: Divider()),
+                ],
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black87,
+                  side: const BorderSide(color: Colors.grey),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                icon: Image.asset(
+                  'assets/google_logo.png',
+                  height: 24,
+                  width: 24,
+                ),
+                onPressed: _handleGoogleSignIn,
+                label: const Text('Continue with Google'),
               ),
             ],
           ),
