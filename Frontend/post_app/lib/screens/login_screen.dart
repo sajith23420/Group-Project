@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:post_app/screens/customer_dashboard_screen.dart';
+import 'package:post_app/screens/main_app_shell.dart'; // Changed
+import 'package:post_app/screens/signup_screen.dart'; // Added
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,7 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_formKey.currentState!.validate()) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const CustomerDashboardScreen()),
+        MaterialPageRoute(builder: (context) => const MainAppShell()), // Changed
       );
     }
   }
@@ -69,6 +70,16 @@ class _LoginScreenState extends State<LoginScreen> {
               ElevatedButton(
                 onPressed: _login,
                 child: const Text('Login'),
+              ),
+              const SizedBox(height: 12), // Added spacing
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SignupScreen()),
+                  );
+                },
+                child: const Text("Don't have an account? Register"),
               ),
             ],
           ),
