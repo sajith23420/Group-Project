@@ -105,22 +105,23 @@ class _LoginScreenState extends State<LoginScreen> {
                   Expanded(child: Divider()),
                 ],
               ),
-              // const SizedBox(height: 20),
-              // ElevatedButton.icon(
-              //   style: ElevatedButton.styleFrom(
-              //     backgroundColor: Colors.white,
-              //     foregroundColor: Colors.black87,
-              //     side: const BorderSide(color: Colors.grey),
-              //     padding: const EdgeInsets.symmetric(vertical: 12),
-              //   ),
-              //   icon: Image.asset(
-              //     'assets/google_logo.png',
-              //     height: 24,
-              //     width: 24,
-              //   ),
-              //   onPressed: _handleGoogleSignIn,
-              //   label: const Text('Continue with Google'),
-              // ),
+              //Google sign up option
+              const SizedBox(height: 20),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black87,
+                  side: const BorderSide(color: Colors.grey),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                icon: Image.asset(
+                  'assets/google_logo.png',
+                  height: 24,
+                  width: 24,
+                ),
+                onPressed: _handleGoogleSignIn,
+                label: const Text('Continue with Google'),
+              ),
             ],
           ),
         ),
