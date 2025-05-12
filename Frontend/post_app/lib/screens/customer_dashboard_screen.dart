@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:async'; // For PageController and Timer if needed for auto-scroll
+// For PageController and Timer if needed for auto-scroll
 
 // Import service screens
 import 'package:post_app/screens/parcel_tracking_screen.dart';

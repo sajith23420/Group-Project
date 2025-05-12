@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:post_app/screens/customer_dashboard_screen.dart';
 import 'package:post_app/screens/signup_screen.dart';
 import 'package:post_app/screens/main_app_shell.dart'; // Added import
 
