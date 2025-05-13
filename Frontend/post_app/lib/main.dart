@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:post_app/screens/splash_screen.dart'; // Assuming your package name is post_app
+import 'package:post_app/screens/splash_screen.dart'; 
 
 void main() {
   runApp(const MyApp());

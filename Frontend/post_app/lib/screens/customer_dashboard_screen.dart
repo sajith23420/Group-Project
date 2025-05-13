@@ -127,7 +127,7 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                 Navigator.pop(context); // Close the drawer
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  MaterialPageRoute(builder: (context) =>  LoginScreen()),
                   (Route<dynamic> route) => false, // Remove all routes
                 );
               },
