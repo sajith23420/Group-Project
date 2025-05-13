@@ -2,19 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:post_app/screens/signup_screen.dart';
 import 'package:post_app/screens/main_app_shell.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class LoginScreen extends StatelessWidget {
+  LoginScreen({super.key});
 
-  @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _login() {
+  void _login(BuildContext context) {
     if (_formKey.currentState!.validate()) {
       Navigator.pushReplacement(
         context,
@@ -23,15 +18,14 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _navigateToSignup() {
+  void _navigateToSignup(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const SignupScreen()),
     );
   }
 
-  void _handleGoogleSignIn() {
-    // TODO: Replace with actual Google Sign-In logic
+  void _handleGoogleSignIn(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Google Sign-In tapped')),
     );
@@ -48,16 +42,23 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 Container(
                   width: double.infinity,
-                  height: 338,
+                  height: 230,
                   color: Colors.pinkAccent,
                 ),
                 Positioned(
                   top: 60,
                   left: 32,
+                  width: 101,
+                  height: 66,
+                  child: Image.asset("assets/post_icon.png"),
+                ),
+                Positioned(
+                  top: 0,
+                  left: 210,
+                  width: 250,
+                  height: 180,
                   child: Image.asset(
-                    'assets/post_icon.png',
-                    width: 101,
-                    height: 66,
+                    'assets/special_icon.png',  
                   ),
                 ),
               ],
@@ -80,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       "Login",
                       style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 15),
                     const Text(
                       "Login using your existing postal",
                       style: TextStyle(fontSize: 16),
@@ -135,14 +136,25 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 24),
                     Center(
                       child: ElevatedButton(
-                        onPressed: _login,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey.shade300,
-                          foregroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
+                        onPressed: () => _login(context),
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                            (Set<WidgetState> states) {
+                              if (states.contains(WidgetState.hovered)) {
+                                return Colors.yellow;
+                              }
+                              return Colors.grey.shade300;
+                            },
                           ),
-                          padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 14),
+                          foregroundColor: WidgetStateProperty.all(Colors.black),
+                          shape: WidgetStateProperty.all(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                          padding: WidgetStateProperty.all(
+                            const EdgeInsets.symmetric(horizontal: 80, vertical: 14),
+                          ),
                         ),
                         child: const Text("Login"),
                       ),
@@ -159,7 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           TextButton(
-                            onPressed: _navigateToSignup,
+                            onPressed: () => _navigateToSignup(context),
                             child: const Text(
                               "Not Registered Yet?",
                               style: TextStyle(color: Colors.pink),
@@ -189,7 +201,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               height: 24,
                               width: 24,
                             ),
-                            onPressed: _handleGoogleSignIn,
+                            onPressed: () => _handleGoogleSignIn(context),
                             label: const Text('Continue with Google'),
                           ),
                         ],
