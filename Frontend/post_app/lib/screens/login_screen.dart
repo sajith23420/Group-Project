@@ -1,34 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:post_app/screens/signup_screen.dart';
 import 'package:post_app/screens/main_app_shell.dart';
+import 'package:post_app/screens/admin_dashboard_screen.dart'; // Added import
 
-class LoginScreen extends StatelessWidget {
-  LoginScreen({super.key});
+class LoginScreen extends StatefulWidget { // Changed to StatefulWidget
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> { // Added State class
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _login(BuildContext context) {
+  void _login() {
     if (_formKey.currentState!.validate()) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const MainAppShell()),
-      );
+      // Admin credentials
+      const String adminEmail = 'sajithbandara23420@gmail.com';
+      const String adminPassword = '23420';
+
+      String enteredEmail = _emailController.text.trim();
+      String enteredPassword = _passwordController.text.trim();
+
+      if (enteredEmail == adminEmail && enteredPassword == adminPassword) {
+        // Navigate to Admin Dashboard
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const AdminDashboardScreen()),
+        );
+      } else {
+        // Navigate to Customer Dashboard (MainAppShell) for regular users
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MainAppShell()),
+        );
+      }
     }
   }
 
-  void _navigateToSignup(BuildContext context) {
+  void _navigateToSignup() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const SignupScreen()),
     );
   }
 
-  void _handleGoogleSignIn(BuildContext context) {
+  void _handleGoogleSignIn() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Google Sign-In tapped')),
     );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -58,7 +88,7 @@ class LoginScreen extends StatelessWidget {
                   width: 250,
                   height: 180,
                   child: Image.asset(
-                    'assets/special_icon.png',  
+                    'assets/special_icon.png',
                   ),
                 ),
               ],
@@ -136,7 +166,7 @@ class LoginScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                     Center(
                       child: ElevatedButton(
-                        onPressed: () => _login(context),
+                        onPressed: _login, // Removed context parameter
                         style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.resolveWith<Color>(
                             (Set<WidgetState> states) {
@@ -171,7 +201,7 @@ class LoginScreen extends StatelessWidget {
                             ),
                           ),
                           TextButton(
-                            onPressed: () => _navigateToSignup(context),
+                            onPressed: _navigateToSignup, // Removed context parameter
                             child: const Text(
                               "Not Registered Yet?",
                               style: TextStyle(color: Colors.pink),
@@ -201,7 +231,7 @@ class LoginScreen extends StatelessWidget {
                               height: 24,
                               width: 24,
                             ),
-                            onPressed: () => _handleGoogleSignIn(context),
+                            onPressed: _handleGoogleSignIn, // Removed context parameter
                             label: const Text('Continue with Google'),
                           ),
                         ],
