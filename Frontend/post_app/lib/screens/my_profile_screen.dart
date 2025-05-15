@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:post_app/screens/edit_profile_screen.dart'; // Added import
+import 'package:post_app/screens/change_password_screen.dart'; // Added import
+import 'package:post_app/screens/contact_details_screen.dart'; // Added import
 
 class MyProfileScreen extends StatelessWidget {
   const MyProfileScreen({super.key});
@@ -41,7 +44,10 @@ class MyProfileScreen extends StatelessWidget {
               icon: Icons.edit_outlined,
               title: 'Edit Profile',
               onTap: () {
-                // TODO: Navigate to Edit Profile page
+                Navigator.push( // Added navigation
+                  context,
+                  MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+                );
               },
             ),
             _buildProfileOption(
@@ -49,7 +55,10 @@ class MyProfileScreen extends StatelessWidget {
               icon: Icons.lock_outline,
               title: 'Change Password',
               onTap: () {
-                // TODO: Navigate to Change Password page
+                Navigator.push( // Added navigation
+                  context,
+                  MaterialPageRoute(builder: (context) => const ChangePasswordScreen()),
+                );
               },
             ),
             _buildProfileOption(
@@ -74,6 +83,17 @@ class MyProfileScreen extends StatelessWidget {
               title: 'Help & Support',
               onTap: () {
                 // TODO: Navigate to Help & Support page
+              },
+            ),
+            _buildProfileOption( // Added Contact Details option
+              context,
+              icon: Icons.contact_phone_outlined,
+              title: 'Contact Details',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ContactDetailsScreen()),
+                );
               },
             ),
             const SizedBox(height: 20),
