@@ -1,12 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:post_app/screens/payment_screen.dart'; // Ensure this file exists and contains the PaymentScreen class
 
-class MoneyOrderScreen extends StatelessWidget {
+class MoneyOrderScreen extends StatefulWidget {
   const MoneyOrderScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final formKey = GlobalKey<FormState>();
+  State<MoneyOrderScreen> createState() => _MoneyOrderScreenState();
+}
 
+class _MoneyOrderScreenState extends State<MoneyOrderScreen> {
+  final formKey = GlobalKey<FormState>();
+  final TextEditingController _senderNameController = TextEditingController();
+  final TextEditingController _senderAddressController = TextEditingController();
+  final TextEditingController _recipientNameController = TextEditingController();
+  final TextEditingController _recipientAddressController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+
+  @override
+  void dispose() {
+    _senderNameController.dispose();
+    _senderAddressController.dispose();
+    _recipientNameController.dispose();
+    _recipientAddressController.dispose();
+    _amountController.dispose();
+    super.dispose();
+  }
+
+  void _proceedToPayment() {
+    if (formKey.currentState!.validate()) {
+      final amount = double.tryParse(_amountController.text) ?? 0.0;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PaymentScreen(
+            senderName: _senderNameController.text,
+            senderAddress: _senderAddressController.text,
+            recipientName: _recipientNameController.text,
+            recipientAddress: _recipientAddressController.text,
+            amount: amount,
+          ),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -37,11 +76,12 @@ class MoneyOrderScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black, // Changed to black
+                          color: Colors.black,
                         ),
                       ),
                       const SizedBox(height: 12.0),
                       TextFormField(
+                        controller: _senderNameController,
                         decoration: InputDecoration(
                           labelText: "Sender's Full Name",
                           labelStyle: const TextStyle(color: Colors.black54),
@@ -54,9 +94,16 @@ class MoneyOrderScreen extends StatelessWidget {
                             borderSide: const BorderSide(color: Colors.pinkAccent),
                           ),
                         ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter sender name';
+                          }
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 12.0),
                       TextFormField(
+                        controller: _senderAddressController,
                         decoration: InputDecoration(
                           labelText: "Sender's Address",
                           labelStyle: const TextStyle(color: Colors.black54),
@@ -70,6 +117,12 @@ class MoneyOrderScreen extends StatelessWidget {
                           ),
                         ),
                         maxLines: 2,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter sender address';
+                          }
+                          return null;
+                        },
                       ),
                     ],
                   ),
@@ -91,11 +144,12 @@ class MoneyOrderScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black, // Changed to black
+                          color: Colors.black,
                         ),
                       ),
                       const SizedBox(height: 12.0),
                       TextFormField(
+                        controller: _recipientNameController,
                         decoration: InputDecoration(
                           labelText: "Recipient's Full Name",
                           labelStyle: const TextStyle(color: Colors.black54),
@@ -108,9 +162,16 @@ class MoneyOrderScreen extends StatelessWidget {
                             borderSide: const BorderSide(color: Colors.pinkAccent),
                           ),
                         ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter recipient name';
+                          }
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 12.0),
                       TextFormField(
+                        controller: _recipientAddressController,
                         decoration: InputDecoration(
                           labelText: "Recipient's Address",
                           labelStyle: const TextStyle(color: Colors.black54),
@@ -124,6 +185,12 @@ class MoneyOrderScreen extends StatelessWidget {
                           ),
                         ),
                         maxLines: 2,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter recipient address';
+                          }
+                          return null;
+                        },
                       ),
                     ],
                   ),
@@ -145,11 +212,12 @@ class MoneyOrderScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black, // Changed to black
+                          color: Colors.black,
                         ),
                       ),
                       const SizedBox(height: 12.0),
                       TextFormField(
+                        controller: _amountController,
                         decoration: InputDecoration(
                           labelText: 'Amount (LKR)',
                           labelStyle: const TextStyle(color: Colors.black54),
@@ -165,6 +233,15 @@ class MoneyOrderScreen extends StatelessWidget {
                           ),
                         ),
                         keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter amount';
+                          }
+                          if (double.tryParse(value) == null) {
+                            return 'Please enter a valid number';
+                          }
+                          return null;
+                        },
                       ),
                     ],
                   ),
@@ -192,11 +269,7 @@ class MoneyOrderScreen extends StatelessWidget {
                   ),
                   elevation: WidgetStateProperty.all(4),
                 ),
-                onPressed: () {
-                  if (formKey.currentState!.validate()) {
-                    // Process data
-                  }
-                },
+                onPressed: _proceedToPayment,
                 child: const Text(
                   'Proceed to Payment',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
