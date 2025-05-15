@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:post_app/screens/edit_profile_screen.dart'; // Added import
 import 'package:post_app/screens/change_password_screen.dart'; // Added import
 import 'package:post_app/screens/contact_details_screen.dart'; // Added import
+import 'package:post_app/screens/help_support_screen.dart'; // Added import
+import 'package:post_app/screens/notification_settings_screen.dart'; // Added import
 
 class MyProfileScreen extends StatelessWidget {
   const MyProfileScreen({super.key});
@@ -66,7 +68,10 @@ class MyProfileScreen extends StatelessWidget {
               icon: Icons.notifications_outlined,
               title: 'Notification Settings',
               onTap: () {
-                // TODO: Navigate to Notification Settings page
+                Navigator.push( // Added navigation
+                  context,
+                  MaterialPageRoute(builder: (context) => const NotificationSettingsScreen()),
+                );
               },
             ),
             _buildProfileOption(
@@ -82,7 +87,10 @@ class MyProfileScreen extends StatelessWidget {
               icon: Icons.help_outline,
               title: 'Help & Support',
               onTap: () {
-                // TODO: Navigate to Help & Support page
+                 Navigator.push( // Added navigation
+                  context,
+                  MaterialPageRoute(builder: (context) => const HelpSupportScreen()),
+                );
               },
             ),
             _buildProfileOption( // Added Contact Details option
