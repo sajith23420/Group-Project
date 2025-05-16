@@ -26,6 +26,7 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
   final int _newsImageCount = 3; // Number of images in the carousel
 
   @override
+  
   void initState() {
     super.initState();
     _setGreeting();
@@ -64,8 +65,11 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
     ];
 
     return Scaffold(
+  
+      
       key: _scaffoldKey,
       appBar: AppBar(
+        
         title: const Text('SL Post'),
         automaticallyImplyLeading: false,
         actions: [
