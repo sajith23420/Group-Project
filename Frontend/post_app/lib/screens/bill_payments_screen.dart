@@ -22,7 +22,7 @@ class _BillPaymentsScreenState extends State<BillPaymentsScreen> {
   @override
   Widget build(BuildContext context) {
     // GlobalKey for the Form
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
 
     return Scaffold(
       appBar: AppBar(
@@ -31,7 +31,7 @@ class _BillPaymentsScreenState extends State<BillPaymentsScreen> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
-          key: _formKey,
+          key: formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
@@ -99,7 +99,7 @@ class _BillPaymentsScreenState extends State<BillPaymentsScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                 ),
                 onPressed: () {
-                  if (_formKey.currentState!.validate()) {
+                  if (formKey.currentState!.validate()) {
                     // Process payment
                   }
                 },
