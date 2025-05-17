@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:post_app/screens/signup_screen.dart';
 import 'package:post_app/screens/main_app_shell.dart';
 import 'package:post_app/screens/admin_dashboard_screen.dart'; // Added import
+import 'package:post_app/screens/forgot_password_screen.dart'; // Added import
 
 class LoginScreen extends StatefulWidget { // Changed to StatefulWidget
   const LoginScreen({super.key});
@@ -95,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> { // Added State class
             ),
             Container(
               transform: Matrix4.translationValues(0.0, -40.0, 0.0),
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(24),            
               decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
@@ -194,14 +195,19 @@ class _LoginScreenState extends State<LoginScreen> { // Added State class
                       child: Column(
                         children: [
                           TextButton(
-                            onPressed: () {},
+                            onPressed: () { // Added navigation
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
+                              );
+                            },
                             child: const Text(
                               "Forgot Password",
                               style: TextStyle(color: Colors.pink),
                             ),
                           ),
                           TextButton(
-                            onPressed: _navigateToSignup, // Removed context parameter
+                            onPressed: _navigateToSignup,
                             child: const Text(
                               "Not Registered Yet?",
                               style: TextStyle(color: Colors.pink),
