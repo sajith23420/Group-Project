@@ -137,24 +137,24 @@ class _FinesScreenState extends State<FinesScreen> {
             const SizedBox(height: 24),
             ElevatedButton(
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                  (Set<MaterialState> states) {
-                    if (states.contains(MaterialState.hovered)) {
+                backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                  (Set<WidgetState> states) {
+                    if (states.contains(WidgetState.hovered)) {
                       return Colors.yellow;
                     }
                     return Colors.grey.shade300;
                   },
                 ),
-                foregroundColor: MaterialStateProperty.all(Colors.black),
-                shape: MaterialStateProperty.all(
+                foregroundColor: WidgetStateProperty.all(Colors.black),
+                shape: WidgetStateProperty.all(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                padding: MaterialStateProperty.all(
+                padding: WidgetStateProperty.all(
                   const EdgeInsets.symmetric(vertical: 16.0),
                 ),
-                elevation: MaterialStateProperty.all(4),
+                elevation: WidgetStateProperty.all(4),
               ),
               onPressed: () {
                 // Handle payment logic here
