@@ -70,7 +70,14 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
       key: _scaffoldKey,
       appBar: AppBar(
         
-        title: const Text('SL Post'),
+        @override//container 
+         Positioned(
+                  top: 60,
+                  left: 32,
+                  width: 101,
+                  height: 66,
+                  child: Image.asset("assets/post_icon.png"),
+                
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
