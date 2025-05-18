@@ -51,7 +51,7 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> services = [
+    final List<Map<String, dynamic>> services = [ // ignore: unused_local_variable
       {'title': 'Parcel Tracking', 'icon': Icons.local_shipping},
       {'title': 'Money Order', 'icon': Icons.attach_money},
       {'title': 'Bill Payments', 'icon': Icons.payment},
@@ -64,15 +64,6 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        
-        @override//container 
-         Positioned(
-                  top: 60,
-                  left: 32,
-                  width: 101,
-                  height: 66,
-                  child: Image.asset("assets/post_icon.png"),
-                
         automaticallyImplyLeading: false,
         title: Row(
           children: [
