@@ -7,8 +7,8 @@ import 'package:post_app/screens/bill_payments_screen.dart';
 import 'package:post_app/screens/postal_holiday_screen.dart';
 import 'package:post_app/screens/search_post_office_screen.dart';
 import 'package:post_app/screens/fines_screen.dart';
-import 'package:post_app/screens/stamp_collection_screen.dart';
 import 'package:post_app/screens/login_screen.dart'; // Import LoginScreen
+import 'package:post_app/screens/feedbacks_page.dart'; // Import FeedbacksPage
 // For logout
 
 class CustomerDashboardScreen extends StatefulWidget {
@@ -59,7 +59,6 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
       {'title': 'Postal Holiday', 'icon': Icons.calendar_today},
       {'title': 'Search Nearby\nPost Office', 'icon': Icons.location_on},
       {'title': 'Fines', 'icon': Icons.gavel},
-      {'title': 'Stamp Collection', 'icon': Icons.collections_bookmark},
     ];
 
     return Scaffold(
@@ -222,6 +221,19 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                 );
               }),
             ),
+            const SizedBox(height: 24.0),
+            Center(
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.feedback),
+                label: const Text('Give Feedback'),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => FeedbacksPage()),
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),
@@ -250,9 +262,6 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
         break;
       case 'Fines':
         screen = const FinesScreen();
-        break;
-      case 'Stamp Collection':
-        screen = const StampCollectionScreen();
         break;
     }
 

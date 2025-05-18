@@ -4,6 +4,7 @@ import 'package:post_app/screens/customer_dashboard_screen.dart';
 import 'package:post_app/screens/about_screen.dart';
 import 'package:post_app/screens/my_profile_screen.dart';
 import 'package:post_app/screens/notifications_screen.dart'; // Added import
+// import 'package:post_app/screens/feedbacks_page.dart'; // Removed import
 
 class MainAppShell extends StatefulWidget {
   const MainAppShell({super.key});
@@ -17,9 +18,10 @@ class _MainAppShellState extends State<MainAppShell> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     CustomerDashboardScreen(),
-    AboutScreen(), // Moved About
-    NotificationsScreen(), // Added Notifications
-    MyProfileScreen(), // Moved Profile
+    AboutScreen(),
+    NotificationsScreen(),
+    MyProfileScreen(),
+    // FeedbacksPage(), // Removed FeedbacksPage
   ];
 
   void _onItemTapped(int index) {
@@ -53,6 +55,11 @@ class _MainAppShellState extends State<MainAppShell> {
             icon: Icon(Icons.person_outline), // Moved Profile icon
             label: 'Profile', // Moved Profile label
           ),
+          // Remove Feedbacks BottomNavigationBarItem
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.feedback), // Added Feedbacks icon
+          //   label: 'Feedbacks', // Added Feedbacks label
+          // ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor:
