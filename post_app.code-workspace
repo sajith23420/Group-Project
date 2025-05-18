@@ -1,0 +1,10 @@
+{
+	"folders": [
+		{
+			"path": "Frontend/post_app"
+		},
+		{
+			"path": "../Backend"
+		}
+	]
+}
