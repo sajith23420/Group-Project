@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:post_app/screens/edit_profile_screen.dart'; // Added import
-import 'package:post_app/screens/change_password_screen.dart'; // Added import
-import 'package:post_app/screens/contact_details_screen.dart'; // Added import
-import 'package:post_app/screens/help_support_screen.dart'; // Added import
-import 'package:post_app/screens/notification_settings_screen.dart'; // Added import
+import 'package:post_app/screens/edit_profile_screen.dart';
+import 'package:post_app/screens/change_password_screen.dart';
+import 'package:post_app/screens/help_support_screen.dart'; // Keep this import
+import 'package:post_app/screens/notification_settings_screen.dart';
 import 'package:post_app/screens/login_screen.dart'; // Import LoginScreen
 
 class MyProfileScreen extends StatelessWidget {
@@ -88,20 +87,9 @@ class MyProfileScreen extends StatelessWidget {
               icon: Icons.help_outline,
               title: 'Help & Support',
               onTap: () {
-                 Navigator.push( // Added navigation
+                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const HelpSupportScreen()),
-                );
-              },
-            ),
-            _buildProfileOption( // Added Contact Details option
-              context,
-              icon: Icons.contact_phone_outlined,
-              title: 'Contact Details',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ContactDetailsScreen()),
                 );
               },
             ),

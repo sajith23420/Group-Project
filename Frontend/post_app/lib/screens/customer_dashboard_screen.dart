@@ -15,7 +15,8 @@ class CustomerDashboardScreen extends StatefulWidget {
   const CustomerDashboardScreen({super.key});
 
   @override
-  State<CustomerDashboardScreen> createState() => _CustomerDashboardScreenState();
+  State<CustomerDashboardScreen> createState() =>
+      _CustomerDashboardScreenState();
 }
 
 class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
@@ -40,7 +41,7 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
     } else if (hour < 18) {
       _greeting = 'Good Evening';
     } else {
-      _greeting = 'Good Night';
+      _greeting = 'Good Evening';
     }
   }
 
@@ -52,24 +53,25 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> services = [ // ignore: unused_local_variable
+    final List<Map<String, dynamic>> services = [
       {'title': 'Parcel Tracking', 'icon': Icons.local_shipping},
       {'title': 'Money Order', 'icon': Icons.attach_money},
       {'title': 'Bill Payments', 'icon': Icons.payment},
       {'title': 'Postal Holiday', 'icon': Icons.calendar_today},
       {'title': 'Search Nearby\nPost Office', 'icon': Icons.location_on},
       {'title': 'Fines', 'icon': Icons.gavel},
+      // Removed: {'title': 'Stamp Collection', 'icon': Icons.collections_bookmark},
     ];
 
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        backgroundColor: Colors.grey, // Set appbar color to gray
         title: Row(
           children: [
             Image.asset("assets/post_icon.png", height: 40),
             const SizedBox(width: 10),
-            const Text("Dashboard"),
           ],
         ),
         actions: [
@@ -89,7 +91,10 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
               accountName: const Text("User Name"),
               accountEmail: const Text("user.email@example.com"),
               currentAccountPicture: CircleAvatar(
-                backgroundColor: Theme.of(context).platform == TargetPlatform.iOS ? Colors.blue : Colors.white,
+                backgroundColor:
+                    Theme.of(context).platform == TargetPlatform.iOS
+                        ? Colors.blue
+                        : Colors.white,
                 child: const Text("U", style: TextStyle(fontSize: 40.0)),
               ),
               decoration: BoxDecoration(color: Theme.of(context).primaryColor),
@@ -136,21 +141,139 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            const SizedBox(height: 16),
+            const Text(
+              "Dashboard",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
             Container(
               height: 150,
               decoration: BoxDecoration(
                 color: Colors.blueGrey[100],
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              child: Center(
-                child: Text(
-                  '$_greeting, User Name!',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.blueGrey[800]),
-                ),
+              child: Stack(
+                children: [
+                  // Background image
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.asset(
+                      "assets/post_off.png",
+                      width: double.infinity,
+                      height: 150,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        width: double.infinity,
+                        height: 150,
+                        color: Colors.grey[300],
+                        child: const Icon(Icons.broken_image,
+                            size: 48, color: Colors.grey),
+                      ),
+                    ),
+                  ),
+                  // Overlay for gradient effect (optional, for text readability)
+                  Container(
+                    width: double.infinity,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomLeft,
+                        end: Alignment.topRight,
+                        colors: [
+                          Colors.black.withOpacity(0.35),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Greeting and name (bottom left)
+                  Positioned(
+                    left: 16,
+                    bottom: 24,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _greeting,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            shadows: [
+                              Shadow(
+                                blurRadius: 4,
+                                color: Colors.black45,
+                                offset: Offset(1, 1),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        const Text(
+                          "RSS Bandara",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            shadows: [
+                              Shadow(
+                                blurRadius: 4,
+                                color: Colors.black45,
+                                offset: Offset(1, 1),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Weather icon and temperature (top right)
+                  Positioned(
+                    top: 12,
+                    right: 18,
+                    child: Row(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.8),
+                            shape: BoxShape.circle,
+                          ),
+                          padding: const EdgeInsets.all(4),
+                          child: const Icon(Icons.cloud,
+                              color: Colors.grey, size: 22),
+                        ),
+                        const SizedBox(width: 6),
+                        const Text(
+                          "32°C",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            shadows: [
+                              Shadow(
+                                blurRadius: 4,
+                                color: Colors.black45,
+                                offset: Offset(1, 1),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 24.0),
+            const SizedBox(height: 16),
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -188,16 +311,21 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                 itemBuilder: (context, index) {
                   return Card(
                     margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        color: Colors.primaries[index % Colors.primaries.length].withOpacity(0.7),
+                        color: Colors.primaries[index % Colors.primaries.length]
+                            .withOpacity(0.7),
                       ),
                       child: Center(
                         child: Text(
                           'News Image ${index + 1}',
-                          style: const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              fontSize: 20,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -211,7 +339,8 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                 return Container(
                   width: 8.0,
                   height: 8.0,
-                  margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+                  margin: const EdgeInsets.symmetric(
+                      vertical: 10.0, horizontal: 2.0),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: _currentNewsPage == index
@@ -221,11 +350,23 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                 );
               }),
             ),
-            const SizedBox(height: 24.0),
+            // Feedback button moved to the bottom
+            const SizedBox(height: 24),
             Center(
               child: ElevatedButton.icon(
-                icon: const Icon(Icons.feedback),
-                label: const Text('Give Feedback'),
+                icon: const Icon(Icons.feedback, color: Colors.pinkAccent),
+                label: const Text('Give Feedback',
+                    style: TextStyle(color: Colors.pinkAccent)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  side: const BorderSide(color: Colors.pinkAccent),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  elevation: 0,
+                ),
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -263,6 +404,7 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
       case 'Fines':
         screen = const FinesScreen();
         break;
+      // Removed: case 'Stamp Collection': ...
     }
 
     return Card(

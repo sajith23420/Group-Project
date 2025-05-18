@@ -65,6 +65,7 @@ flutter:
   assets:
     - assets/splash_background.png
     - assets/post_icon.png
+    - assets/post_off.png
     - assets/special_icon.png
     - assets/google_logo.png 
     
