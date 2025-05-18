@@ -54,7 +54,7 @@ class _FinesScreenState extends State<FinesScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Motor Traffic Fine'),
+        title: const Text('Pay Traffic Fine'),
         backgroundColor: Colors.pinkAccent,
         foregroundColor: Colors.white,
         elevation: 0,
