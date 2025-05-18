@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// For PageController and Timer if needed for auto-scroll
 
 // Import service screens
 import 'package:post_app/screens/parcel_tracking_screen.dart';
@@ -23,25 +22,23 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
   String _greeting = '';
   final PageController _newsPageController = PageController();
   int _currentNewsPage = 0;
-  final int _newsImageCount = 3; // Number of images in the carousel
+  final int _newsImageCount = 3;
 
   @override
-  
   void initState() {
     super.initState();
     _setGreeting();
-    // Optional: Auto-scroll for news carousel can be enabled here
   }
 
   void _setGreeting() {
     final hour = DateTime.now().hour;
     if (hour < 12) {
       _greeting = 'Good Morning';
-    } else if (hour == 12) { // 12:00 PM to 12:59 PM
+    } else if (hour == 12) {
       _greeting = 'Good Afternoon';
-    } else if (hour < 18) { // 1:00 PM (13:00) to 5:59 PM (17:59)
+    } else if (hour < 18) {
       _greeting = 'Good Evening';
-    } else { // 6:00 PM (18:00) onwards
+    } else {
       _greeting = 'Good Night';
     }
   }
@@ -65,12 +62,25 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
     ];
 
     return Scaffold(
-  
-      
       key: _scaffoldKey,
       appBar: AppBar(
         
+        @override//container 
+         Positioned(
+                  top: 60,
+                  left: 32,
+                  width: 101,
+                  height: 66,
+                  child: Image.asset("assets/post_icon.png"),
+                
         automaticallyImplyLeading: false,
+        title: Row(
+          children: [
+            Image.asset("assets/post_icon.png", height: 40),
+            const SizedBox(width: 10),
+            const Text("Dashboard"),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.account_circle),
@@ -85,41 +95,33 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
           padding: EdgeInsets.zero,
           children: <Widget>[
             UserAccountsDrawerHeader(
-              accountName: const Text("User Name"), // Placeholder
-              accountEmail: const Text("user.email@example.com"), // Placeholder
+              accountName: const Text("User Name"),
+              accountEmail: const Text("user.email@example.com"),
               currentAccountPicture: CircleAvatar(
                 backgroundColor: Theme.of(context).platform == TargetPlatform.iOS ? Colors.blue : Colors.white,
-                child: const Text(
-                  "U", // Placeholder
-                  style: TextStyle(fontSize: 40.0),
-                ),
+                child: const Text("U", style: TextStyle(fontSize: 40.0)),
               ),
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
-              ),
+              decoration: BoxDecoration(color: Theme.of(context).primaryColor),
             ),
             ListTile(
               leading: const Icon(Icons.edit_outlined),
               title: const Text('Edit Profile'),
               onTap: () {
-                Navigator.pop(context); // Close the drawer
-                // TODO: Navigate to Edit Profile Screen
+                Navigator.pop(context);
               },
             ),
             ListTile(
               leading: const Icon(Icons.payment_outlined),
               title: const Text('Add Payment Card'),
               onTap: () {
-                Navigator.pop(context); // Close the drawer
-                // TODO: Navigate to Add Payment Card Screen
+                Navigator.pop(context);
               },
             ),
             ListTile(
               leading: const Icon(Icons.settings_outlined),
               title: const Text('Settings'),
               onTap: () {
-                Navigator.pop(context); // Close the drawer
-                // TODO: Navigate to Settings Screen
+                Navigator.pop(context);
               },
             ),
             const Divider(),
@@ -127,11 +129,11 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
               leading: const Icon(Icons.logout_outlined),
               title: const Text('Log Out'),
               onTap: () {
-                Navigator.pop(context); // Close the drawer
+                Navigator.pop(context);
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) =>  LoginScreen()),
-                  (Route<dynamic> route) => false, // Remove all routes
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (Route<dynamic> route) => false,
                 );
               },
             ),
@@ -143,16 +145,11 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            // Header Image and Greeting
             Container(
               height: 150,
               decoration: BoxDecoration(
                 color: Colors.blueGrey[100],
                 borderRadius: BorderRadius.circular(12),
-                // image: DecorationImage(
-                //   image: AssetImage('assets/your_header_image.png'),
-                //   fit: BoxFit.cover,
-                // ),
               ),
               child: Center(
                 child: Text(
@@ -163,20 +160,18 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
               ),
             ),
             const SizedBox(height: 24.0),
-            
-            // Services Grid
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: services.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
-                crossAxisSpacing: 10.0, // Restored spacing
-                mainAxisSpacing: 10.0,  // Restored spacing
+                crossAxisSpacing: 10.0,
+                mainAxisSpacing: 10.0,
                 childAspectRatio: 0.9,
               ),
               itemBuilder: (context, index) {
-                return _buildServiceCard( // Renamed from _buildServiceGridItem in previous correct version
+                return _buildServiceCard(
                   context,
                   services[index]['title'] as String,
                   services[index]['icon'] as IconData,
@@ -184,8 +179,6 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
               },
             ),
             const SizedBox(height: 24.0),
-
-            // Latest News Carousel
             const Text(
               'Latest News',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -221,7 +214,6 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                 },
               ),
             ),
-            // Dot indicators for news carousel
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(_newsImageCount, (index) {
@@ -244,8 +236,6 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
     );
   }
 
-  // This was named _buildServiceGridItem in the version that had the carousel
-  // The provided file calls it _buildServiceCard, which is fine.
   Widget _buildServiceCard(BuildContext context, String title, IconData icon) {
     Widget? screen;
     String normalizedTitle = title.replaceAll('\n', ' ');
@@ -276,7 +266,7 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      elevation: 3, // Kept elevation from user's version
+      elevation: 3,
       child: InkWell(
         onTap: () {
           if (screen != null) {
@@ -291,14 +281,14 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(icon, size: 36, color: Theme.of(context).primaryColor), // size from previous good version
+            Icon(icon, size: 36, color: Theme.of(context).primaryColor),
             const SizedBox(height: 8),
-            Padding( // Padding from previous good version
+            Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4.0),
               child: Text(
                 title,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 11), // font size from previous good version
+                style: const TextStyle(fontSize: 11),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
