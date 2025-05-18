@@ -4,6 +4,7 @@ import 'package:post_app/screens/change_password_screen.dart'; // Added import
 import 'package:post_app/screens/contact_details_screen.dart'; // Added import
 import 'package:post_app/screens/help_support_screen.dart'; // Added import
 import 'package:post_app/screens/notification_settings_screen.dart'; // Added import
+import 'package:post_app/screens/login_screen.dart'; // Import LoginScreen
 
 class MyProfileScreen extends StatelessWidget {
   const MyProfileScreen({super.key});
@@ -111,8 +112,14 @@ class MyProfileScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
               ),
               onPressed: () {
-                // TODO: Implement Logout logic if this page is standalone
-                // If part of MainAppShell, logout is usually in the drawer.
+                // TODO: Implement actual logout logic (e.g., clear tokens, user data)
+
+                // Navigate to LoginScreen and remove all previous routes
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (Route<dynamic> route) => false,
+                );
               },
               child: const Text('Log Out', style: TextStyle(color: Colors.white)),
             ),
