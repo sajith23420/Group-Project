@@ -8,6 +8,7 @@ import 'package:post_app/screens/postal_holiday_screen.dart';
 import 'package:post_app/screens/search_post_office_screen.dart';
 import 'package:post_app/screens/fines_screen.dart';
 import 'package:post_app/screens/stamp_collection_screen.dart';
+import 'package:post_app/screens/login_screen.dart'; // Import LoginScreen
 // For logout
 
 class CustomerDashboardScreen extends StatefulWidget {
@@ -21,7 +22,7 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String _greeting = '';
   final PageController _newsPageController = PageController();
-  final int _currentNewsPage = 0;
+  int _currentNewsPage = 0;
   final int _newsImageCount = 3;
 
   @override
