@@ -46,9 +46,11 @@ class MyProfileScreen extends StatelessWidget {
               icon: Icons.edit_outlined,
               title: 'Edit Profile',
               onTap: () {
-                Navigator.push( // Added navigation
+                Navigator.push(
+                  // Added navigation
                   context,
-                  MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const EditProfileScreen()),
                 );
               },
             ),
@@ -57,9 +59,11 @@ class MyProfileScreen extends StatelessWidget {
               icon: Icons.lock_outline,
               title: 'Change Password',
               onTap: () {
-                Navigator.push( // Added navigation
+                Navigator.push(
+                  // Added navigation
                   context,
-                  MaterialPageRoute(builder: (context) => const ChangePasswordScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const ChangePasswordScreen()),
                 );
               },
             ),
@@ -68,9 +72,11 @@ class MyProfileScreen extends StatelessWidget {
               icon: Icons.notifications_outlined,
               title: 'Notification Settings',
               onTap: () {
-                Navigator.push( // Added navigation
+                Navigator.push(
+                  // Added navigation
                   context,
-                  MaterialPageRoute(builder: (context) => const NotificationSettingsScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const NotificationSettingsScreen()),
                 );
               },
             ),
@@ -87,9 +93,10 @@ class MyProfileScreen extends StatelessWidget {
               icon: Icons.help_outline,
               title: 'Help & Support',
               onTap: () {
-                 Navigator.push(
+                Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const HelpSupportScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const HelpSupportScreen()),
                 );
               },
             ),
@@ -97,7 +104,8 @@ class MyProfileScreen extends StatelessWidget {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.redAccent,
-                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
               ),
               onPressed: () {
                 // TODO: Implement actual logout logic (e.g., clear tokens, user data)
@@ -109,7 +117,8 @@ class MyProfileScreen extends StatelessWidget {
                   (Route<dynamic> route) => false,
                 );
               },
-              child: const Text('Log Out', style: TextStyle(color: Colors.white)),
+              child:
+                  const Text('Log Out', style: TextStyle(color: Colors.white)),
             ),
             const SizedBox(height: 20),
           ],
@@ -118,7 +127,10 @@ class MyProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileOption(BuildContext context, {required IconData icon, required String title, required VoidCallback onTap}) {
+  Widget _buildProfileOption(BuildContext context,
+      {required IconData icon,
+      required String title,
+      required VoidCallback onTap}) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: ListTile(

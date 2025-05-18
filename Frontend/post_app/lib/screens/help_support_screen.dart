@@ -19,9 +19,12 @@ class HelpSupportScreen extends StatelessWidget {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16.0),
-            _buildFAQItem('How do I track my parcel?', 'You can track your parcel by entering the tracking number on the Parcel Tracking screen.'),
-            _buildFAQItem('How can I pay bills?', 'Navigate to the Bill Payments screen and select the bill type.'),
-            _buildFAQItem('Where can I find postal holidays?', 'Check the Postal Holiday section on the customer dashboard.'),
+            _buildFAQItem('How do I track my parcel?',
+                'You can track your parcel by entering the tracking number on the Parcel Tracking screen.'),
+            _buildFAQItem('How can I pay bills?',
+                'Navigate to the Bill Payments screen and select the bill type.'),
+            _buildFAQItem('Where can I find postal holidays?',
+                'Check the Postal Holiday section on the customer dashboard.'),
             const SizedBox(height: 24.0),
             const Text(
               'Contact Details',
@@ -52,9 +55,11 @@ class HelpSupportScreen extends StatelessWidget {
             ),
             const Divider(),
             ListTile(
-              leading: Icon(Icons.location_on, color: Theme.of(context).primaryColor),
+              leading: Icon(Icons.location_on,
+                  color: Theme.of(context).primaryColor),
               title: const Text('Address'),
-              subtitle: const Text('Postal Headquarters,\nColombo 00100,\nSri Lanka'),
+              subtitle:
+                  const Text('Postal Headquarters,\nColombo 00100,\nSri Lanka'),
               onTap: () {
                 // TODO: Implement map action
               },
@@ -101,7 +106,8 @@ class HelpSupportScreen extends StatelessWidget {
 
   Widget _buildFAQItem(String question, String answer) {
     return ExpansionTile(
-      title: Text(question, style: const TextStyle(fontWeight: FontWeight.bold)),
+      title:
+          Text(question, style: const TextStyle(fontWeight: FontWeight.bold)),
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0),
