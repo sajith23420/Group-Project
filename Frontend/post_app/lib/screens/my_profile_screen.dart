@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:post_app/screens/edit_profile_screen.dart'; // Added import
-import 'package:post_app/screens/change_password_screen.dart'; // Added import
-import 'package:post_app/screens/contact_details_screen.dart'; // Added import
-import 'package:post_app/screens/help_support_screen.dart'; // Added import
-import 'package:post_app/screens/notification_settings_screen.dart'; // Added import
+import 'package:post_app/screens/edit_profile_screen.dart';
+import 'package:post_app/screens/change_password_screen.dart';
+import 'package:post_app/screens/help_support_screen.dart'; // Keep this import
+import 'package:post_app/screens/notification_settings_screen.dart';
+import 'package:post_app/screens/login_screen.dart'; // Import LoginScreen
 
 class MyProfileScreen extends StatelessWidget {
   const MyProfileScreen({super.key});
@@ -46,9 +46,11 @@ class MyProfileScreen extends StatelessWidget {
               icon: Icons.edit_outlined,
               title: 'Edit Profile',
               onTap: () {
-                Navigator.push( // Added navigation
+                Navigator.push(
+                  // Added navigation
                   context,
-                  MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const EditProfileScreen()),
                 );
               },
             ),
@@ -57,9 +59,11 @@ class MyProfileScreen extends StatelessWidget {
               icon: Icons.lock_outline,
               title: 'Change Password',
               onTap: () {
-                Navigator.push( // Added navigation
+                Navigator.push(
+                  // Added navigation
                   context,
-                  MaterialPageRoute(builder: (context) => const ChangePasswordScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const ChangePasswordScreen()),
                 );
               },
             ),
@@ -68,9 +72,11 @@ class MyProfileScreen extends StatelessWidget {
               icon: Icons.notifications_outlined,
               title: 'Notification Settings',
               onTap: () {
-                Navigator.push( // Added navigation
+                Navigator.push(
+                  // Added navigation
                   context,
-                  MaterialPageRoute(builder: (context) => const NotificationSettingsScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const NotificationSettingsScreen()),
                 );
               },
             ),
@@ -87,20 +93,10 @@ class MyProfileScreen extends StatelessWidget {
               icon: Icons.help_outline,
               title: 'Help & Support',
               onTap: () {
-                 Navigator.push( // Added navigation
-                  context,
-                  MaterialPageRoute(builder: (context) => const HelpSupportScreen()),
-                );
-              },
-            ),
-            _buildProfileOption( // Added Contact Details option
-              context,
-              icon: Icons.contact_phone_outlined,
-              title: 'Contact Details',
-              onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ContactDetailsScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const HelpSupportScreen()),
                 );
               },
             ),
@@ -108,13 +104,21 @@ class MyProfileScreen extends StatelessWidget {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.redAccent,
-                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
               ),
               onPressed: () {
-                // TODO: Implement Logout logic if this page is standalone
-                // If part of MainAppShell, logout is usually in the drawer.
+                // TODO: Implement actual logout logic (e.g., clear tokens, user data)
+
+                // Navigate to LoginScreen and remove all previous routes
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (Route<dynamic> route) => false,
+                );
               },
-              child: const Text('Log Out', style: TextStyle(color: Colors.white)),
+              child:
+                  const Text('Log Out', style: TextStyle(color: Colors.white)),
             ),
             const SizedBox(height: 20),
           ],
@@ -123,7 +127,10 @@ class MyProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileOption(BuildContext context, {required IconData icon, required String title, required VoidCallback onTap}) {
+  Widget _buildProfileOption(BuildContext context,
+      {required IconData icon,
+      required String title,
+      required VoidCallback onTap}) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: ListTile(

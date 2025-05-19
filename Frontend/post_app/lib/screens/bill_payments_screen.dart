@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class BillPaymentsScreen extends StatefulWidget { // Changed to StatefulWidget for dropdown
+class BillPaymentsScreen extends StatefulWidget {
   const BillPaymentsScreen({super.key});
 
   @override
@@ -8,7 +8,7 @@ class BillPaymentsScreen extends StatefulWidget { // Changed to StatefulWidget f
 }
 
 class _BillPaymentsScreenState extends State<BillPaymentsScreen> {
-  String? _selectedBillType; // State variable for dropdown
+  String? _selectedBillType;
 
   final List<String> _billTypes = [
     'Electricity Bill',
@@ -21,48 +21,60 @@ class _BillPaymentsScreenState extends State<BillPaymentsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // GlobalKey for the Form
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Bill Payments'),
+        backgroundColor: Colors.pinkAccent,
+        foregroundColor: Colors.white,
+        elevation: 0,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
-          key: _formKey,
+          key: formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              const Text(
-                'Select Bill Type',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12.0),
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Bill Type',
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      labelText: 'Bill Type',
+                      labelStyle: const TextStyle(color: Colors.black54),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Colors.pinkAccent),
+                      ),
+                    ),
+                    value: _selectedBillType,
+                    items: _billTypes.map((String type) {
+                      return DropdownMenuItem<String>(
+                        value: type,
+                        child: Text(type),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _selectedBillType = newValue;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please select a bill type';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
-                value: _selectedBillType,
-                items: _billTypes.map((String type) {
-                  return DropdownMenuItem<String>(
-                    value: type,
-                    child: Text(type),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedBillType = newValue;
-                  });
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please select a bill type';
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: 24.0),
               const Text(
@@ -70,40 +82,88 @@ class _BillPaymentsScreenState extends State<BillPaymentsScreen> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12.0),
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Account Number / Bill ID',
-                  border: OutlineInputBorder(),
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Account Number / Bill ID',
+                      labelStyle: const TextStyle(color: Colors.black54),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Colors.pinkAccent),
+                      ),
+                    ),
+                    keyboardType: TextInputType.text,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter account number or bill ID';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
-                keyboardType: TextInputType.text,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please enter account number or bill ID';
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: 12.0),
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Amount (LKR)',
-                  border: OutlineInputBorder(),
-                  prefixText: 'LKR ',
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Amount (LKR)',
+                      labelStyle: const TextStyle(color: Colors.black54),
+                      prefixText: 'LKR ',
+                      prefixStyle: const TextStyle(color: Colors.black),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Colors.pinkAccent),
+                      ),
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
                 ),
-                keyboardType: TextInputType.number,
-                // validator: (value) { ... } // Add validation later if needed
               ),
               const SizedBox(height: 30.0),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                style: ButtonStyle(
+                  backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                    (Set<WidgetState> states) {
+                      if (states.contains(WidgetState.hovered)) {
+                        return Colors.yellow;
+                      }
+                      return Colors.grey.shade300;
+                    },
+                  ),
+                  foregroundColor: WidgetStateProperty.all(Colors.black),
+                  shape: WidgetStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  padding: WidgetStateProperty.all(
+                    const EdgeInsets.symmetric(vertical: 16.0),
+                  ),
+                  elevation: WidgetStateProperty.all(4),
                 ),
                 onPressed: () {
-                  if (_formKey.currentState!.validate()) {
+                  if (formKey.currentState!.validate()) {
                     // Process payment
                   }
                 },
-                child: const Text('Pay Bill', style: TextStyle(fontSize: 16)),
+                child: const Text(
+                  'Pay Bill',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               ),
             ],
           ),

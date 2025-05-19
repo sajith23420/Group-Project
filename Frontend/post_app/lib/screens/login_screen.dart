@@ -1,64 +1,147 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart'; // Import for Google Sign-In
 import 'package:post_app/screens/signup_screen.dart';
 import 'package:post_app/screens/main_app_shell.dart';
-import 'package:post_app/screens/admin_dashboard_screen.dart'; // Added import
+import 'package:post_app/screens/forgot_password_screen.dart';
 
-class LoginScreen extends StatefulWidget { // Changed to StatefulWidget
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> { // Added State class
-
+class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _login() {
-    if (_formKey.currentState!.validate()) {
-      // Admin credentials
-      const String adminEmail = 'sajithbandara23420@gmail.com';
-      const String adminPassword = '23420';
-
-      String enteredEmail = _emailController.text.trim();
-      String enteredPassword = _passwordController.text.trim();
-
-      if (enteredEmail == adminEmail && enteredPassword == adminPassword) {
-        // Navigate to Admin Dashboard
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const AdminDashboardScreen()),
-        );
-      } else {
-        // Navigate to Customer Dashboard (MainAppShell) for regular users
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MainAppShell()),
-        );
-      }
-    }
-  }
-
-  void _navigateToSignup() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const SignupScreen()),
-    );
-  }
-
-  void _handleGoogleSignIn() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Google Sign-In tapped')),
-    );
-  }
+  bool _isLoading = false; // State to manage loading indicator
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _login() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      try {
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+
+        // Navigate to MainAppShell on successful login
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const MainAppShell()),
+          );
+        }
+      } on FirebaseAuthException catch (e) {
+        String errorMessage;
+        if (e.code == 'user-not-found') {
+          errorMessage = 'No user found for that email.';
+        } else if (e.code == 'wrong-password') {
+          errorMessage = 'Wrong password provided for that user.';
+        } else {
+          errorMessage = 'Login failed: ${e.message}';
+        }
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(errorMessage)),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('An unexpected error occurred: $e')),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
+    }
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+     setState(() {
+        _isLoading = true;
+      });
+    try {
+      // Trigger the Google Sign In flow
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
+
+      if (googleAuth == null) {
+         // User cancelled the sign-in
+         if(mounted) {
+            setState(() {
+              _isLoading = false;
+            });
+         }
+         return;
+      }
+
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      // Sign in to Firebase with the credential
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+       // Navigate to MainAppShell on successful Google Sign-In
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MainAppShell()),
+        );
+      }
+
+    } on FirebaseAuthException catch (e) {
+       String errorMessage = 'Google Sign-In failed: ${e.message}';
+       if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(errorMessage)),
+          );
+        }
+    } catch (e) {
+       if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('An unexpected error occurred during Google Sign-In: $e')),
+          );
+        }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+
+  void _navigateToSignup() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SignupScreen()),
+    );
   }
 
   @override
@@ -138,9 +221,13 @@ class _LoginScreenState extends State<LoginScreen> { // Added State class
                               hintText: "Email",
                               border: InputBorder.none,
                             ),
+                            keyboardType: TextInputType.emailAddress,
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
                                 return 'Email cannot be empty';
+                              }
+                               if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+                                return 'Please enter a valid email address';
                               }
                               return null;
                             },
@@ -157,6 +244,9 @@ class _LoginScreenState extends State<LoginScreen> { // Added State class
                               if (value == null || value.trim().isEmpty) {
                                 return 'Password cannot be empty';
                               }
+                               if (value.length < 6) {
+                                return 'Password must be at least 6 characters long';
+                              }
                               return null;
                             },
                           ),
@@ -166,7 +256,7 @@ class _LoginScreenState extends State<LoginScreen> { // Added State class
                     const SizedBox(height: 24),
                     Center(
                       child: ElevatedButton(
-                        onPressed: _login, // Removed context parameter
+                        onPressed: _isLoading ? null : _login,
                         style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.resolveWith<Color>(
                             (Set<WidgetState> states) {
@@ -186,7 +276,9 @@ class _LoginScreenState extends State<LoginScreen> { // Added State class
                             const EdgeInsets.symmetric(horizontal: 80, vertical: 14),
                           ),
                         ),
-                        child: const Text("Login"),
+                        child: _isLoading
+                            ? const CircularProgressIndicator(color: Colors.black)
+                            : const Text("Login"),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -194,14 +286,19 @@ class _LoginScreenState extends State<LoginScreen> { // Added State class
                       child: Column(
                         children: [
                           TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
+                              );
+                            },
                             child: const Text(
                               "Forgot Password",
                               style: TextStyle(color: Colors.pink),
                             ),
                           ),
                           TextButton(
-                            onPressed: _navigateToSignup, // Removed context parameter
+                            onPressed: _navigateToSignup,
                             child: const Text(
                               "Not Registered Yet?",
                               style: TextStyle(color: Colors.pink),
@@ -231,12 +328,13 @@ class _LoginScreenState extends State<LoginScreen> { // Added State class
                               height: 24,
                               width: 24,
                             ),
-                            onPressed: _handleGoogleSignIn, // Removed context parameter
+                            onPressed: _isLoading ? null : _handleGoogleSignIn,
                             label: const Text('Continue with Google'),
                           ),
                         ],
                       ),
                     ),
+                    const SizedBox(height: 24),
                   ],
                 ),
               ),
