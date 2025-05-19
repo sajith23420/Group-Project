@@ -170,7 +170,12 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
             const SizedBox(height: 16),
             const Text(
               "Dashboard",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'SansSerif',
+                color: Color.fromARGB(255, 0, 0, 0), // Set to #FFD500
+              ),
             ),
             const SizedBox(height: 16),
             Container(
@@ -370,8 +375,8 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: _currentNewsPage == index
-                        ? Theme.of(context).primaryColor
-                        : Colors.grey,
+                        ? Colors.pinkAccent // Changed to pinkAccent
+                        : Colors.white, // Inactive dots are white
                   ),
                 );
               }),
@@ -380,11 +385,13 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
             const SizedBox(height: 24),
             Center(
               child: ElevatedButton.icon(
-                icon: const Icon(Icons.feedback, color: Colors.pinkAccent),
+                icon: const Icon(Icons.feedback,
+                    color: Colors.white), // Icon color white
                 label: const Text('Give Feedback',
-                    style: TextStyle(color: Colors.pinkAccent)),
+                    style: TextStyle(color: Colors.white)), // Text color white
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
+                  backgroundColor:
+                      Colors.pinkAccent, // Button background pinkAccent
                   side: const BorderSide(color: Colors.pinkAccent),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
@@ -411,26 +418,35 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
     Widget? screen;
     String normalizedTitle = title.replaceAll('\n', ' ');
 
+    Color iconColor;
     switch (normalizedTitle) {
       case 'Parcel Tracking':
         screen = const ParcelTrackingScreen();
+        iconColor = Colors.blue; // Home
         break;
       case 'Money Order':
         screen = const MoneyOrderScreen();
+        iconColor = Colors.green; // About
         break;
       case 'Bill Payments':
         screen = const BillPaymentsScreen();
+        iconColor = Colors.orange; // Notifications
         break;
       case 'Postal Holiday':
         screen = const PostalHolidayScreen();
+        iconColor = Colors.purple; // Profile
         break;
       case 'Search Nearby Post Office':
         screen = const SearchPostOfficeScreen();
+        iconColor = Colors.teal; // Custom
         break;
       case 'Fines':
         screen = const FinesScreen();
+        iconColor = Colors.red; // Custom
         break;
       // Removed: case 'Stamp Collection': ...
+      default:
+        iconColor = Theme.of(context).primaryColor;
     }
 
     return Card(
@@ -450,7 +466,7 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(icon, size: 36, color: Theme.of(context).primaryColor),
+            Icon(icon, size: 36, color: iconColor),
             const SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4.0),
