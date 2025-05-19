@@ -16,7 +16,10 @@ class AdminDashboardScreen extends StatelessWidget {
     final List<Map<String, dynamic>> adminActions = [
       {'title': 'Manage Users', 'icon': Icons.people_outline},
       {'title': 'View Reports', 'icon': Icons.analytics_outlined},
-      {'title': 'Manage Services', 'icon': Icons.settings_applications_outlined},
+      {
+        'title': 'Manage Services',
+        'icon': Icons.settings_applications_outlined
+      },
       {'title': 'Manage Content', 'icon': Icons.article_outlined},
       {'title': 'System Settings', 'icon': Icons.settings_outlined},
       {'title': 'View Logs', 'icon': Icons.list_alt_outlined},
@@ -25,7 +28,8 @@ class AdminDashboardScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Admin Dashboard'),
-        automaticallyImplyLeading: false, // Admins might not need a back button here
+        automaticallyImplyLeading:
+            false, // Admins might not need a back button here
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -61,7 +65,8 @@ class AdminDashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAdminActionCard(BuildContext context, String title, IconData icon) {
+  Widget _buildAdminActionCard(
+      BuildContext context, String title, IconData icon) {
     Widget? screenToNavigate;
 
     switch (title) {

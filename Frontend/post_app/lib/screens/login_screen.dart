@@ -4,6 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart'; // Import for Google Sign-I
 import 'package:post_app/screens/signup_screen.dart';
 import 'package:post_app/screens/main_app_shell.dart';
 import 'package:post_app/screens/forgot_password_screen.dart';
+import 'package:post_app/screens/admin_dashboard_screen.dart'; // Add this import
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -31,6 +32,22 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         _isLoading = true;
       });
+
+      // Admin login check
+      if (_emailController.text.trim() == 'sajithandara23420@gmail.com' &&
+          _passwordController.text == '234200') {
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const AdminDashboardScreen()),
+          );
+        }
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
 
       try {
         await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -76,9 +93,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _handleGoogleSignIn() async {
-     setState(() {
-        _isLoading = true;
-      });
+    setState(() {
+      _isLoading = true;
+    });
     try {
       // Trigger the Google Sign In flow
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -88,13 +105,13 @@ class _LoginScreenState extends State<LoginScreen> {
           await googleUser?.authentication;
 
       if (googleAuth == null) {
-         // User cancelled the sign-in
-         if(mounted) {
-            setState(() {
-              _isLoading = false;
-            });
-         }
-         return;
+        // User cancelled the sign-in
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+        return;
       }
 
       // Create a new credential
@@ -106,27 +123,28 @@ class _LoginScreenState extends State<LoginScreen> {
       // Sign in to Firebase with the credential
       await FirebaseAuth.instance.signInWithCredential(credential);
 
-       // Navigate to MainAppShell on successful Google Sign-In
+      // Navigate to MainAppShell on successful Google Sign-In
       if (mounted) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const MainAppShell()),
         );
       }
-
     } on FirebaseAuthException catch (e) {
-       String errorMessage = 'Google Sign-In failed: ${e.message}';
-       if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(errorMessage)),
-          );
-        }
+      String errorMessage = 'Google Sign-In failed: ${e.message}';
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage)),
+        );
+      }
     } catch (e) {
-       if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('An unexpected error occurred during Google Sign-In: $e')),
-          );
-        }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  'An unexpected error occurred during Google Sign-In: $e')),
+        );
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -135,7 +153,6 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     }
   }
-
 
   void _navigateToSignup() {
     Navigator.push(
@@ -192,7 +209,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     const Text(
                       "Login",
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 15),
                     const Text(
@@ -201,7 +219,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 24),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
@@ -226,7 +245,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               if (value == null || value.trim().isEmpty) {
                                 return 'Email cannot be empty';
                               }
-                               if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+                              if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
                                 return 'Please enter a valid email address';
                               }
                               return null;
@@ -244,7 +263,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               if (value == null || value.trim().isEmpty) {
                                 return 'Password cannot be empty';
                               }
-                               if (value.length < 6) {
+                              if (value.length < 6) {
                                 return 'Password must be at least 6 characters long';
                               }
                               return null;
@@ -258,7 +277,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : _login,
                         style: ButtonStyle(
-                          backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                          backgroundColor:
+                              WidgetStateProperty.resolveWith<Color>(
                             (Set<WidgetState> states) {
                               if (states.contains(WidgetState.hovered)) {
                                 return Colors.yellow;
@@ -266,18 +286,21 @@ class _LoginScreenState extends State<LoginScreen> {
                               return Colors.grey.shade300;
                             },
                           ),
-                          foregroundColor: WidgetStateProperty.all(Colors.black),
+                          foregroundColor:
+                              WidgetStateProperty.all(Colors.black),
                           shape: WidgetStateProperty.all(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                             ),
                           ),
                           padding: WidgetStateProperty.all(
-                            const EdgeInsets.symmetric(horizontal: 80, vertical: 14),
+                            const EdgeInsets.symmetric(
+                                horizontal: 80, vertical: 14),
                           ),
                         ),
                         child: _isLoading
-                            ? const CircularProgressIndicator(color: Colors.black)
+                            ? const CircularProgressIndicator(
+                                color: Colors.black)
                             : const Text("Login"),
                       ),
                     ),
@@ -289,7 +312,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ForgotPasswordScreen()),
                               );
                             },
                             child: const Text(
