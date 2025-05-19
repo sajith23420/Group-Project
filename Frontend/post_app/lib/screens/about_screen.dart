@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:post_app/screens/main_app_shell.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -7,7 +8,18 @@ class AboutScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('About Us'),
+        leading: IconButton(
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (Context) {
+                return MainAppShell();
+              }));
+            },
+            icon: Icon(Icons.arrow_back, color: Colors.white)),
+        backgroundColor: Colors.pinkAccent,
+        title: const Text(
+          'About Us',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

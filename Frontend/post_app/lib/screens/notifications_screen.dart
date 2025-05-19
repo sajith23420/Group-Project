@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+//import 'package:path/path.dart';
+//import 'package:post_app/screens/customer_dashboard_screen.dart';
+import 'package:post_app/screens/main_app_shell.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -9,7 +12,8 @@ class NotificationsScreen extends StatelessWidget {
     final List<Map<String, dynamic>> notifications = [
       {
         'title': 'Parcel Delivered',
-        'message': 'Your parcel with tracking number ABC123 has been delivered.',
+        'message':
+            'Your parcel with tracking number ABC123 has been delivered.',
         'time': '2 hours ago',
         'icon': Icons.check_circle_outline,
       },
@@ -25,9 +29,10 @@ class NotificationsScreen extends StatelessWidget {
         'time': '2 days ago',
         'icon': Icons.info_outline,
       },
-       {
+      {
         'title': 'Parcel Out for Delivery',
-        'message': 'Your parcel with tracking number XYZ789 is out for delivery today.',
+        'message':
+            'Your parcel with tracking number XYZ789 is out for delivery today.',
         'time': 'Just now',
         'icon': Icons.local_shipping_outlined,
       },
@@ -35,7 +40,18 @@ class NotificationsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notifications'),
+        leading: IconButton(
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (Context) {
+                return MainAppShell();
+              }));
+            },
+            icon: Icon(Icons.arrow_back, color: Colors.white)),
+        backgroundColor: Colors.pinkAccent,
+        title: const Text(
+          'Notifications',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -48,7 +64,8 @@ class NotificationsScreen extends StatelessWidget {
               elevation: 2.0,
               child: ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+                  backgroundColor:
+                      Theme.of(context).primaryColor.withOpacity(0.1),
                   child: Icon(
                     notification['icon'] as IconData,
                     color: Theme.of(context).primaryColor,
@@ -65,7 +82,8 @@ class NotificationsScreen extends StatelessWidget {
                     const SizedBox(height: 4.0),
                     Text(
                       notification['time'] as String,
-                      style: const TextStyle(fontSize: 12.0, color: Colors.grey),
+                      style:
+                          const TextStyle(fontSize: 12.0, color: Colors.grey),
                     ),
                   ],
                 ),

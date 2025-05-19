@@ -87,7 +87,8 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
           ),
           child: AppBar(
             automaticallyImplyLeading: false,
-            backgroundColor: Colors.pinkAccent, // Changed to match login screen pink color
+            backgroundColor:
+                Colors.pinkAccent, // Changed to match login screen pink color
             title: Row(
               children: [
                 Image.asset("assets/post_icon.png", height: 40),
@@ -96,7 +97,10 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
             ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.account_circle),
+                icon: const Icon(
+                  Icons.account_circle,
+                  color: Colors.white,
+                ),
                 onPressed: () {
                   _scaffoldKey.currentState?.openEndDrawer();
                 },

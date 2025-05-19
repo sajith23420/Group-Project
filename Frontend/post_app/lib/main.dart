@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'SL Post App', // Updated title
       theme: ThemeData(
         primarySwatch: Colors.blue,
