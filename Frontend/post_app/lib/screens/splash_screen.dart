@@ -15,10 +15,13 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     Timer(
       const Duration(seconds: 3),
-      () => Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) =>  LoginScreen()),
-      ),
+      () {
+        if (!mounted) return; // Prevent navigation if widget is disposed
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+        );
+      },
     );
   }
 
