@@ -22,6 +22,7 @@ class CustomerDashboardScreen extends StatefulWidget {
 class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String _greeting = '';
+  String? _userName;
   final PageController _newsPageController = PageController();
   int _currentNewsPage = 0;
   final int _newsImageCount = 3;
@@ -30,6 +31,7 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
   void initState() {
     super.initState();
     _setGreeting();
+    _fetchUserName();
   }
 
   void _setGreeting() {
@@ -43,6 +45,17 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
     } else {
       _greeting = 'Good Evening';
     }
+  }
+
+  void _fetchUserName() async {
+    // Example: Replace with your actual user fetching logic
+    // For Firebase Auth:
+    // import 'package:firebase_auth/firebase_auth.dart';
+    // final user = FirebaseAuth.instance.currentUser;
+    // setState(() { _userName = user?.displayName ?? 'User'; });
+    setState(() {
+      _userName = 'User'; // Default fallback, replace with actual fetch
+    });
   }
 
   @override
@@ -65,23 +78,32 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
 
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.grey, // Set appbar color to gray
-        title: Row(
-          children: [
-            Image.asset("assets/post_icon.png", height: 40),
-            const SizedBox(width: 10),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            onPressed: () {
-              _scaffoldKey.currentState?.openEndDrawer();
-            },
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(15),
+            bottomRight: Radius.circular(15),
           ),
-        ],
+          child: AppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: Colors.pinkAccent, // Changed to match login screen pink color
+            title: Row(
+              children: [
+                Image.asset("assets/post_icon.png", height: 40),
+                const SizedBox(width: 10),
+              ],
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.account_circle),
+                onPressed: () {
+                  _scaffoldKey.currentState?.openEndDrawer();
+                },
+              ),
+            ],
+          ),
+        ),
       ),
       endDrawer: Drawer(
         child: ListView(
@@ -218,9 +240,9 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                           ),
                         ),
                         const SizedBox(height: 2),
-                        const Text(
-                          "RSS Bandara",
-                          style: TextStyle(
+                        Text(
+                          _userName ?? "User",
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
