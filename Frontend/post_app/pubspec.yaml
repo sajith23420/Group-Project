@@ -38,6 +38,8 @@ dependencies:
   firebase_auth: ^5.1.2 # Add firebase_auth dependency
   path: ^1.8.0 # Add path dependency
   google_sign_in: ^6.2.1 # Added for Google Sign-In
+  font_awesome_flutter: ^10.7.0
+  url_launcher: ^6.2.5
 
 dev_dependencies:
   flutter_test:
