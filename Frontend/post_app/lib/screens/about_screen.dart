@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 //import 'package:path/path.dart';
 import 'package:post_app/screens/main_app_shell.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -90,11 +91,16 @@ class AboutScreen extends StatelessWidget {
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(width: 1.5, color: Colors.pinkAccent),
                   ),
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return MainAppShell();
-                    }));
+                  onPressed: () async {
+                    //Forward to playstore homepage,after implementing app,can redirect to postSApp
+                    final Uri playStoreUri =
+                        Uri.parse('https://play.google.com/store');
+                    if (await canLaunchUrl(playStoreUri)) {
+                      await launchUrl(playStoreUri,
+                          mode: LaunchMode.externalApplication);
+                    } else {
+                      throw 'Could not Open play Store';
+                    }
                   },
                 ),
               ),
