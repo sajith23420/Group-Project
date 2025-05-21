@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:post_app/screens/login_screen.dart';
+import 'package:post_app/firebase_options.dart';
+import 'package:flutter/foundation.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -37,6 +40,8 @@ class _SignupScreenState extends State<SignupScreen> {
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
+        // Debug print for troubleshooting
+        print('Signup successful for: ${_emailController.text.trim()}');
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -73,6 +78,72 @@ class _SignupScreenState extends State<SignupScreen> {
             _isLoading = false;
           });
         }
+      }
+    }
+  }
+
+  Future<void> _handleGoogleSignUp() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      GoogleSignIn googleSignIn;
+      // Platform check for iOS/Android only if not web
+      if (kIsWeb) {
+        googleSignIn = GoogleSignIn();
+      } else {
+        // Use default GoogleSignIn for Android, set clientId for iOS
+        googleSignIn = GoogleSignIn(
+          clientId: (Theme.of(context).platform == TargetPlatform.iOS)
+              ? DefaultFirebaseOptions.ios.iosClientId
+              : null,
+        );
+      }
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        // User cancelled the sign-in
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+        return;
+      }
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      await FirebaseAuth.instance.signInWithCredential(credential);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Signup with Google successful!')),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Google Sign-Up failed: [${e.message}]')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  'An unexpected error occurred during Google Sign-Up: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
   }
@@ -236,6 +307,24 @@ class _SignupScreenState extends State<SignupScreen> {
                             ? const CircularProgressIndicator(
                                 color: Colors.black)
                             : const Text("Sign Up"),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Center(
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.black87,
+                          side: const BorderSide(color: Colors.grey),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        icon: Image.asset(
+                          'assets/google_logo.png',
+                          height: 24,
+                          width: 24,
+                        ),
+                        onPressed: _isLoading ? null : _handleGoogleSignUp,
+                        label: const Text('Continue with Google'),
                       ),
                     ),
                     const SizedBox(height: 24),

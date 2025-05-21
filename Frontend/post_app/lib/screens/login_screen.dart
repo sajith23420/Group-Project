@@ -97,14 +97,9 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = true;
     });
     try {
-      // Trigger the Google Sign In flow
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-      // Obtain the auth details from the request
-      final GoogleSignInAuthentication? googleAuth =
-          await googleUser?.authentication;
-
-      if (googleAuth == null) {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
         // User cancelled the sign-in
         if (mounted) {
           setState(() {
@@ -113,17 +108,13 @@ class _LoginScreenState extends State<LoginScreen> {
         }
         return;
       }
-
-      // Create a new credential
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-
-      // Sign in to Firebase with the credential
       await FirebaseAuth.instance.signInWithCredential(credential);
-
-      // Navigate to MainAppShell on successful Google Sign-In
       if (mounted) {
         Navigator.pushReplacement(
           context,

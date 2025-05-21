@@ -18,26 +18,27 @@ class ApiException implements Exception {
 }
 
 class NetworkException extends ApiException {
-  NetworkException({super.message = "Network error occurred. Please check your connection."});
+  NetworkException({String message = "Network error occurred. Please check your connection."})
+      : super(message: message);
 }
 
 class AuthenticationException extends ApiException {
-  AuthenticationException({super.message = "Authentication failed. Please log in again."})
-      : super(statusCode: 401);
+  AuthenticationException({String message = "Authentication failed. Please log in again."})
+      : super(message: message, statusCode: 401);
 }
 
 class AuthorizationException extends ApiException {
-  AuthorizationException({super.message = "You are not authorized to perform this action."})
-      : super(statusCode: 403);
+  AuthorizationException({String message = "You are not authorized to perform this action."})
+      : super(message: message, statusCode: 403);
 }
 
 class ValidationException extends ApiException {
   final List<ValidationErrorDetail> details;
 
   ValidationException({
-    super.message = "Input validation failed.",
+    String message = "Input validation failed.",
     required this.details,
-  }) : super(statusCode: 400, errorData: details.map((d) => d.toJson()).toList());
+  }) : super(message: message, statusCode: 400, errorData: details.map((d) => d.toJson()).toList());
 
   @override
   String toString() {
@@ -74,11 +75,11 @@ class ValidationErrorDetail {
 }
 
 class NotFoundException extends ApiException {
-  NotFoundException({super.message = "The requested resource was not found."})
-      : super(statusCode: 404);
+  NotFoundException({String message = "The requested resource was not found."})
+      : super(message: message, statusCode: 404);
 }
 
 class ServerException extends ApiException {
-  ServerException({super.message = "An unexpected server error occurred."})
-      : super(statusCode: 500);
+  ServerException({String message = "An unexpected server error occurred."})
+      : super(message: message, statusCode: 500);
 }
