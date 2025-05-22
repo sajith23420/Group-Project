@@ -339,8 +339,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               if (value == null || value.trim().isEmpty) {
                                 return 'Please enter your email';
                               }
-                              if (!RegExp(r'\\S+@\\S+\\.\\S+')
-                                  .hasMatch(value)) {
+                              if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
                                 return 'Please enter a valid email address';
                               }
                               return null;
