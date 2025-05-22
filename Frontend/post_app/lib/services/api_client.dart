@@ -146,14 +146,31 @@ class ApiClient {
   Future<T> get<T>(String path,
       {Map<String, dynamic>? queryParameters,
       T Function(dynamic json)? fromJson}) async {
-    return _handleRequest<T>(() async {
-      final response = await _dio.get(path, queryParameters: queryParameters);
-      if (fromJson != null && response.data != null) {
-        return fromJson(response.data)
-            as dynamic; // Temporary dynamic for type system
+    // Define the operation that returns Future<Response<dynamic>>
+    Future<Response<dynamic>> dioOperation() async {
+      return _dio.get(path, queryParameters: queryParameters);
+    }
+
+    // _handleRequest executes dioOperation and returns response.data.
+    // We specify 'dynamic' as the expected type of response.data from _handleRequest.
+    final dynamic responseData = await _handleRequest<dynamic>(dioOperation);
+
+    if (fromJson != null) {
+      if (responseData != null) {
+        return fromJson(responseData); // fromJson returns T
+      } else {
+        // If API returns null data but fromJson expects non-null (common for models).
+        throw ApiException(
+          message:
+              "API returned null data, but fromJson expected non-null data for type $T at path $path (GET)",
+          statusCode: null,
+        );
       }
-      return response.data; // Return raw data if no fromJson provided
-    });
+    } else {
+      // No fromJson. Cast responseData to T.
+      // If responseData is null and T is non-nullable, 'null as T' will throw.
+      return responseData as T;
+    }
   }
 
   Future<List<T>> getList<T>(String path,
@@ -181,25 +198,51 @@ class ApiClient {
   // Generic POST
   Future<T> post<T>(String path,
       {dynamic data, T Function(dynamic json)? fromJson}) async {
-    return _handleRequest<T>(() async {
-      final response = await _dio.post(path, data: data);
-      if (fromJson != null && response.data != null) {
-        return fromJson(response.data) as dynamic;
+    // Define the operation that returns Future<Response<dynamic>>
+    Future<Response<dynamic>> dioOperation() async {
+      return _dio.post(path, data: data);
+    }
+
+    final dynamic responseData = await _handleRequest<dynamic>(dioOperation);
+
+    if (fromJson != null) {
+      if (responseData != null) {
+        return fromJson(responseData);
+      } else {
+        throw ApiException(
+          message:
+              "API returned null data, but fromJson expected non-null data for type $T at path $path (POST)",
+          statusCode: null,
+        );
       }
-      return response.data;
-    });
+    } else {
+      return responseData as T;
+    }
   }
 
   // Generic PUT
   Future<T> put<T>(String path,
       {dynamic data, T Function(dynamic json)? fromJson}) async {
-    return _handleRequest<T>(() async {
-      final response = await _dio.put(path, data: data);
-      if (fromJson != null && response.data != null) {
-        return fromJson(response.data) as dynamic;
+    // Define the operation that returns Future<Response<dynamic>>
+    Future<Response<dynamic>> dioOperation() async {
+      return _dio.put(path, data: data);
+    }
+
+    final dynamic responseData = await _handleRequest<dynamic>(dioOperation);
+
+    if (fromJson != null) {
+      if (responseData != null) {
+        return fromJson(responseData);
+      } else {
+        throw ApiException(
+          message:
+              "API returned null data, but fromJson expected non-null data for type $T at path $path (PUT)",
+          statusCode: null,
+        );
       }
-      return response.data;
-    });
+    } else {
+      return responseData as T;
+    }
   }
 
   // Generic DELETE

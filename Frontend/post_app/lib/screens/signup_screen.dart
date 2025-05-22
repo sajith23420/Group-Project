@@ -3,7 +3,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:post_app/screens/login_screen.dart';
 import 'package:post_app/firebase_options.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+
+// Added imports
+import 'package:post_app/screens/main_app_shell.dart';
+import 'package:post_app/screens/admin_dashboard_screen.dart';
+import 'package:post_app/services/api_client.dart';
+import 'package:post_app/services/user_auth_api_service.dart';
+import 'package:post_app/models/user_model.dart';
+import 'package:post_app/services/token_provider.dart';
+
+// Added import for Provider
+import 'package:provider/provider.dart';
+import 'package:post_app/providers/user_provider.dart'; // Your UserProvider
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -21,12 +33,75 @@ class _SignupScreenState extends State<SignupScreen> {
 
   bool _isLoading = false;
 
+  // Added service variables
+  late final ApiClient _apiClient;
+  late final UserAuthApiService _userAuthApiService;
+  late final TokenProvider _tokenProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize services
+    _tokenProvider = TokenProvider(FirebaseAuth.instance);
+    _apiClient = ApiClient(_tokenProvider);
+    _userAuthApiService = UserAuthApiService(_apiClient);
+  }
+
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  // Added profile fetching and navigation logic (adapted from LoginScreen)
+  Future<void> _fetchProfileAndNavigate(User user) async {
+    try {
+      final UserModel userProfile = await _userAuthApiService.getUserProfile();
+
+      if (mounted) {
+        // Set the user in UserProvider
+        Provider.of<UserProvider>(context, listen: false).setUser(userProfile);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  'Signup successful & profile fetched! Welcome ${userProfile.displayName ?? userProfile.email}.')),
+        );
+        if (userProfile.role == 'admin') {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const AdminDashboardScreen()),
+            (Route<dynamic> route) => false, // Remove all previous routes
+          );
+        } else {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const MainAppShell()),
+            (Route<dynamic> route) => false, // Remove all previous routes
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  'Signup successful, but failed to fetch user profile: $e. Please try logging in.')),
+        );
+        // Navigate to login screen as a fallback if profile fetch fails
+        Navigator.pushAndRemoveUntil(
+          // Changed to pushAndRemoveUntil
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          (Route<dynamic> route) => false,
+        );
+      }
+      // Optionally, sign out the user if profile fetch fails critically
+      // await FirebaseAuth.instance.signOut(); // Consider if this is desired UX
+    }
   }
 
   Future<void> _signup() async {
@@ -36,21 +111,34 @@ class _SignupScreenState extends State<SignupScreen> {
       });
 
       try {
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        final UserCredential userCredential =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
         // Debug print for troubleshooting
         print('Signup successful for: ${_emailController.text.trim()}');
 
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Signup successful! Please login.')),
-          );
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const LoginScreen()),
-          );
+        if (userCredential.user != null) {
+          // UserProvider will be updated in _fetchProfileAndNavigate
+          await _fetchProfileAndNavigate(userCredential.user!);
+        } else {
+          // This case should ideally not happen if createUserWithEmailAndPassword succeeds
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text(
+                      'Signup completed but no user object found. Please login.')),
+            );
+            // Clear UserProvider if necessary
+            Provider.of<UserProvider>(context, listen: false).clearUser();
+            Navigator.pushAndRemoveUntil(
+              // Changed to pushAndRemoveUntil
+              context,
+              MaterialPageRoute(builder: (context) => const LoginScreen()),
+              (Route<dynamic> route) => false,
+            );
+          }
         }
       } on FirebaseAuthException catch (e) {
         String errorMessage;
@@ -65,12 +153,14 @@ class _SignupScreenState extends State<SignupScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(errorMessage)),
           );
+          Provider.of<UserProvider>(context, listen: false).clearUser();
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('An unexpected error occurred: $e')),
           );
+          Provider.of<UserProvider>(context, listen: false).clearUser();
         }
       } finally {
         if (mounted) {
@@ -88,20 +178,20 @@ class _SignupScreenState extends State<SignupScreen> {
     });
     try {
       GoogleSignIn googleSignIn;
-      // Platform check for iOS/Android only if not web
       if (kIsWeb) {
-        googleSignIn = GoogleSignIn();
+        googleSignIn = GoogleSignIn(
+            clientId: DefaultFirebaseOptions.web
+                .iosClientId); // Ensure web clientId is used if applicable, or general one
       } else {
-        // Use default GoogleSignIn for Android, set clientId for iOS
         googleSignIn = GoogleSignIn(
           clientId: (Theme.of(context).platform == TargetPlatform.iOS)
-              ? DefaultFirebaseOptions.ios.iosClientId
+              ? DefaultFirebaseOptions
+                  .currentPlatform.iosClientId // Corrected to currentPlatform
               : null,
         );
       }
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       if (googleUser == null) {
-        // User cancelled the sign-in
         if (mounted) {
           setState(() {
             _isLoading = false;
@@ -115,21 +205,37 @@ class _SignupScreenState extends State<SignupScreen> {
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      await FirebaseAuth.instance.signInWithCredential(credential);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Signup with Google successful!')),
-        );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
-        );
+      final UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+
+      if (userCredential.user != null) {
+        // UserProvider will be updated in _fetchProfileAndNavigate
+        await _fetchProfileAndNavigate(userCredential.user!);
+      } else {
+        // This case should ideally not happen if signInWithCredential succeeds
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text(
+                    'Google Signup completed but no user object found. Please login.')),
+          );
+          Provider.of<UserProvider>(context, listen: false).clearUser();
+          Navigator.pushAndRemoveUntil(
+            // Changed to pushAndRemoveUntil
+            context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+            (Route<dynamic> route) => false,
+          );
+        }
       }
     } on FirebaseAuthException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Google Sign-Up failed: [${e.message}]')),
+          SnackBar(
+              content: Text(
+                  'Google Sign-Up failed: ${e.message}')), // Removed ANSI escape code
         );
+        Provider.of<UserProvider>(context, listen: false).clearUser();
       }
     } catch (e) {
       if (mounted) {
@@ -138,6 +244,7 @@ class _SignupScreenState extends State<SignupScreen> {
               content: Text(
                   'An unexpected error occurred during Google Sign-Up: $e')),
         );
+        Provider.of<UserProvider>(context, listen: false).clearUser();
       }
     } finally {
       if (mounted) {
@@ -232,7 +339,8 @@ class _SignupScreenState extends State<SignupScreen> {
                               if (value == null || value.trim().isEmpty) {
                                 return 'Please enter your email';
                               }
-                              if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+                              if (!RegExp(r'\\S+@\\S+\\.\\S+')
+                                  .hasMatch(value)) {
                                 return 'Please enter a valid email address';
                               }
                               return null;
@@ -331,7 +439,10 @@ class _SignupScreenState extends State<SignupScreen> {
                     Center(
                       child: TextButton(
                         onPressed: () {
-                          Navigator.pushReplacement(
+                          // Navigate to LoginScreen, but allow going back to it if needed (e.g. if user explicitly wants to login)
+                          // If the intent is to replace and not allow back, use pushReplacement.
+                          // For now, using push so user can go back if they clicked "Already have an account?" by mistake from another flow.
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => const LoginScreen()),

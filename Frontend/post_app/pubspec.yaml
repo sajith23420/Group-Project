@@ -40,6 +40,9 @@ dependencies:
   google_sign_in: ^6.2.1 # Added for Google Sign-In
   font_awesome_flutter: ^10.7.0
   url_launcher: ^6.2.5
+  firebase_core: ^3.13.1 # Check for the latest version
+  provider: ^6.0.0 # Added provider for state management
+  cached_network_image: ^3.3.1 # Added for robust image caching
 
 dev_dependencies:
   flutter_test:
