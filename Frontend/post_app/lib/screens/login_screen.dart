@@ -11,6 +11,7 @@ import 'package:post_app/services/api_client.dart';
 import 'package:post_app/services/user_auth_api_service.dart';
 import 'package:post_app/models/user_model.dart';
 import 'package:post_app/services/token_provider.dart'; // Import your TokenProvider
+import 'package:post_app/models/enums.dart';
 
 // Added import for Provider
 import 'package:provider/provider.dart';
@@ -63,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Provider.of<UserProvider>(context, listen: false).setUser(userProfile);
 
         // Navigate based on role
-        if (userProfile.role == 'admin') {
+        if (userProfile.role == UserRole.admin) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(

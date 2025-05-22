@@ -12,6 +12,7 @@ import 'package:post_app/services/api_client.dart';
 import 'package:post_app/services/user_auth_api_service.dart';
 import 'package:post_app/models/user_model.dart';
 import 'package:post_app/services/token_provider.dart';
+import 'package:post_app/models/enums.dart';
 
 // Added import for Provider
 import 'package:provider/provider.dart';
@@ -69,7 +70,7 @@ class _SignupScreenState extends State<SignupScreen> {
               content: Text(
                   'Signup successful & profile fetched! Welcome ${userProfile.displayName ?? userProfile.email}.')),
         );
-        if (userProfile.role == 'admin') {
+        if (userProfile.role == UserRole.admin) {
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
