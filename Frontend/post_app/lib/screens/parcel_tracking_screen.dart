@@ -6,7 +6,7 @@ class ParcelTrackingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // GlobalKey for the Form (optional for just UI, but good practice)
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
 
     return Scaffold(
       appBar: AppBar(
@@ -15,7 +15,7 @@ class ParcelTrackingScreen extends StatelessWidget {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
-          key: _formKey,
+          key: formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[

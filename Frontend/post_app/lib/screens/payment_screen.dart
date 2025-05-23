@@ -367,27 +367,27 @@ class _PaymentScreenState extends State<PaymentScreen> {
             // Pay Now Button
             ElevatedButton(
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                  (Set<MaterialState> states) {
-                    if (states.contains(MaterialState.disabled)) {
+                backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                  (Set<WidgetState> states) {
+                    if (states.contains(WidgetState.disabled)) {
                       return Colors.grey;
                     }
-                    if (states.contains(MaterialState.hovered)) {
+                    if (states.contains(WidgetState.hovered)) {
                       return Colors.yellow;
                     }
                     return Colors.pinkAccent;
                   },
                 ),
-                foregroundColor: MaterialStateProperty.all(Colors.white),
-                shape: MaterialStateProperty.all(
+                foregroundColor: WidgetStateProperty.all(Colors.white),
+                shape: WidgetStateProperty.all(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                padding: MaterialStateProperty.all(
+                padding: WidgetStateProperty.all(
                   const EdgeInsets.symmetric(vertical: 16.0),
                 ),
-                elevation: MaterialStateProperty.all(4),
+                elevation: WidgetStateProperty.all(4),
               ),
               onPressed: _isProcessing 
                 ? null 
