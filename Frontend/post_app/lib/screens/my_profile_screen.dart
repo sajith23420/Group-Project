@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:post_app/screens/edit_profile_screen.dart'; // Added import
-import 'package:post_app/screens/change_password_screen.dart'; // Added import
-import 'package:post_app/screens/contact_details_screen.dart'; // Added import
+import 'package:post_app/screens/edit_profile_screen.dart';
+import 'package:post_app/screens/change_password_screen.dart';
+import 'package:post_app/screens/help_support_screen.dart';
+import 'package:post_app/screens/notification_settings_screen.dart';
+import 'package:post_app/screens/login_screen.dart';
+import 'package:provider/provider.dart'; // Import Provider
+import 'package:post_app/providers/user_provider.dart'; // Import UserProvider
+import 'package:post_app/models/user_model.dart'; // Import UserModel
+import 'package:cached_network_image/cached_network_image.dart'; // Import CachedNetworkImage
 
 class MyProfileScreen extends StatelessWidget {
   const MyProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Access UserProvider
+    final userProvider = Provider.of<UserProvider>(context);
+    final UserModel? currentUser = userProvider.user;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Profile'),
-        // If this screen is part of the MainAppShell, the AppBar might be handled there.
-        // For a standalone page accessed from drawer, this AppBar is fine.
-        // If it's part of MainAppShell, MainAppShell's Scaffold would have the AppBar.
-        // The current MainAppShell does not give individual AppBars to its pages,
-        // so this AppBar will be shown.
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -23,19 +28,35 @@ class MyProfileScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             const SizedBox(height: 20),
-            const CircleAvatar(
+            CircleAvatar(
               radius: 50,
-              backgroundImage: null, // Placeholder for an image
-              child: Icon(Icons.person, size: 50), // Fallback icon
+              child: currentUser?.profilePictureUrl != null &&
+                      currentUser!.profilePictureUrl!.isNotEmpty
+                  ? ClipOval(
+                      // Clip to make the image circular
+                      child: CachedNetworkImage(
+                        imageUrl: currentUser.profilePictureUrl!,
+                        placeholder: (context, url) =>
+                            const CircularProgressIndicator(),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.person, size: 50),
+                        fit: BoxFit.cover, // Ensure the image covers the circle
+                        width: 100, // Diameter of the circle
+                        height: 100, // Diameter of the circle
+                      ),
+                    )
+                  : const Icon(Icons.person, size: 50),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'User Name', // Placeholder
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            Text(
+              currentUser?.displayName ??
+                  'User Name', // Display name from provider
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
-              'user.email@example.com', // Placeholder
+              currentUser?.email ??
+                  'user.email@example.com', // Display email from provider
               style: TextStyle(fontSize: 16, color: Colors.grey[600]),
             ),
             const SizedBox(height: 30),
@@ -44,9 +65,10 @@ class MyProfileScreen extends StatelessWidget {
               icon: Icons.edit_outlined,
               title: 'Edit Profile',
               onTap: () {
-                Navigator.push( // Added navigation
+                Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const EditProfileScreen()),
                 );
               },
             ),
@@ -55,9 +77,10 @@ class MyProfileScreen extends StatelessWidget {
               icon: Icons.lock_outline,
               title: 'Change Password',
               onTap: () {
-                Navigator.push( // Added navigation
+                Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ChangePasswordScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const ChangePasswordScreen()),
                 );
               },
             ),
@@ -66,7 +89,11 @@ class MyProfileScreen extends StatelessWidget {
               icon: Icons.notifications_outlined,
               title: 'Notification Settings',
               onTap: () {
-                // TODO: Navigate to Notification Settings page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const NotificationSettingsScreen()),
+                );
               },
             ),
             _buildProfileOption(
@@ -82,17 +109,10 @@ class MyProfileScreen extends StatelessWidget {
               icon: Icons.help_outline,
               title: 'Help & Support',
               onTap: () {
-                // TODO: Navigate to Help & Support page
-              },
-            ),
-            _buildProfileOption( // Added Contact Details option
-              context,
-              icon: Icons.contact_phone_outlined,
-              title: 'Contact Details',
-              onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ContactDetailsScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const HelpSupportScreen()),
                 );
               },
             ),
@@ -100,13 +120,26 @@ class MyProfileScreen extends StatelessWidget {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.redAccent,
-                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
               ),
-              onPressed: () {
-                // TODO: Implement Logout logic if this page is standalone
-                // If part of MainAppShell, logout is usually in the drawer.
+              onPressed: () async {
+                // Make onPressed async
+                // Clear UserProvider
+                Provider.of<UserProvider>(context, listen: false).clearUser();
+
+                // TODO: Implement actual Firebase logout logic if not handled by clearing provider and navigating
+                // await FirebaseAuth.instance.signOut(); // Example if using Firebase Auth directly for signout
+
+                // Navigate to LoginScreen and remove all previous routes
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (Route<dynamic> route) => false,
+                );
               },
-              child: const Text('Log Out', style: TextStyle(color: Colors.white)),
+              child:
+                  const Text('Log Out', style: TextStyle(color: Colors.white)),
             ),
             const SizedBox(height: 20),
           ],
@@ -115,7 +148,10 @@ class MyProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileOption(BuildContext context, {required IconData icon, required String title, required VoidCallback onTap}) {
+  Widget _buildProfileOption(BuildContext context,
+      {required IconData icon,
+      required String title,
+      required VoidCallback onTap}) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: ListTile(
