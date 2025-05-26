@@ -11,6 +11,7 @@ import 'package:provider/provider.dart'; // Import Provider
 import 'package:post_app/providers/user_provider.dart'; // Import UserProvider
 import 'package:post_app/models/user_model.dart'; // Import UserModel
 import 'package:cached_network_image/cached_network_image.dart'; // Import CachedNetworkImage
+import 'package:cloud_firestore/cloud_firestore.dart'; // Import Cloud Firestore
 // For logout
 
 class CustomerDashboardScreen extends StatefulWidget {
@@ -367,35 +368,45 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
             const SizedBox(height: 12.0),
             SizedBox(
               height: 150,
-              child: PageView.builder(
-                controller: _newsPageController,
-                itemCount: _newsImageCount,
-                onPageChanged: (int page) {
-                  setState(() {
-                    _currentNewsPage = page;
-                  });
-                },
-                itemBuilder: (context, index) {
-                  return Card(
-                    margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.primaries[index % Colors.primaries.length]
-                            .withOpacity(0.7),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'News Image ${index + 1}',
-                          style: const TextStyle(
-                              fontSize: 20,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
+              child: FutureBuilder<List<String>>(
+                future: _fetchNewsImages(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  final images = snapshot.data ?? [];
+                  if (images.isEmpty) {
+                    return const Center(child: Text('No news images.'));
+                  }
+                  return PageView.builder(
+                    controller: _newsPageController,
+                    itemCount: images.length,
+                    onPageChanged: (int page) {
+                      setState(() {
+                        _currentNewsPage = page;
+                      });
+                    },
+                    itemBuilder: (context, index) {
+                      return Card(
+                        margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.network(
+                            images[index],
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                              color: Colors.grey[300],
+                              child: const Icon(Icons.broken_image,
+                                  size: 48, color: Colors.grey),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   );
                 },
               ),
@@ -518,5 +529,14 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
         ),
       ),
     );
+  }
+
+  // Add this method to fetch news images from Firestore
+  Future<List<String>> _fetchNewsImages() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('news_carousel')
+        .orderBy('timestamp', descending: true)
+        .get();
+    return snapshot.docs.map((doc) => doc['imageUrl'] as String).toList();
   }
 }
