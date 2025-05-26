@@ -3,6 +3,7 @@ const express = require('express');
 const firebaseAdmin = require('./src/config/firebaseAdmin');
 const path = require('path'); // Added path
 const fs = require('fs'); // Added fs
+const cors = require('cors'); // Added for CORS support
 
 const userAuthRoutes = require('./src/routes/userAuthRoutes');
 const postOfficeRoutes = require('./src/routes/postOfficeRoutes');
@@ -19,6 +20,8 @@ const { handleErrors } = require('./src/middlewares/errorHandlingMiddleware');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.use(cors()); // Use cors middleware to allow all origins
 
 // Ensure uploads directory exists
 const uploadsDir = path.join(__dirname, 'uploads');
@@ -40,7 +43,6 @@ app.use(express.urlencoded({ extended: true }));
 
 // Serve uploaded files statically
 app.use('/uploads', express.static(uploadsDir));
-
 
 app.get('/', (req, res) => {
   res.status(200).send('Sri Lanka Post Mobile Application Backend');
