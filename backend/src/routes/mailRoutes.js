@@ -47,5 +47,22 @@ router.get(
   isAdmin,
   mailController.adminGetAllMails
 );
+ 
+// Get mails/parcels by NIC (userId)
+router.get(
+  '/by-nic/:nic',
+  verifyFirebaseToken, // Assuming this endpoint requires authentication
+  fetchUserProfileAndAttach, // Assuming user profile is needed
+  mailController.getMailsByNic
+);
+
+// Admin: Delete mail/parcel by mailId
+router.delete(
+  '/:mailId', // Assuming the mailId is passed as a URL parameter
+  verifyFirebaseToken,
+  fetchUserProfileAndAttach,
+  isAdmin, // Only admin should be able to delete
+  mailController.deleteMail // Assuming a deleteMail function will be added to the controller
+);
 
 module.exports = router;
