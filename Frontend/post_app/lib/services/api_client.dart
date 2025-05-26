@@ -1,6 +1,7 @@
 // lib/services/api_client.dart
-
+ 
 import 'package:dio/dio.dart';
+import 'dart:core'; // Import dart:core for Void
 import 'package:post_app/services/api_exceptions.dart';
 import 'package:post_app/services/token_provider.dart';
 
@@ -125,14 +126,13 @@ class ApiClient {
       Future<Response<dynamic>> Function() request) async {
     try {
       final response = await request();
+      // Remove invalid void check. Just return response.data as T.
       return response.data as T;
     } on DioException catch (e) {
       if (e.error is ApiException) {
         throw e.error as ApiException;
       }
-      // This should ideally be caught by the interceptor already
-      // but as a fallback:
-      print("Unhandled DioException in _handleRequest: ${e.message}");
+      print("Unhandled DioException in _handleRequest: [33m");
       throw ApiException(
           message: e.message ?? "An unexpected error occurred",
           statusCode: e.response?.statusCode);
@@ -250,6 +250,7 @@ class ApiClient {
       {dynamic data, T Function(dynamic json)? fromJson}) async {
     return _handleRequest<T>(() async {
       final response = await _dio.delete(path, data: data);
+      // Remove invalid void check. Just return response.data as T.
       if (fromJson != null && response.data != null) {
         return fromJson(response.data) as dynamic;
       }

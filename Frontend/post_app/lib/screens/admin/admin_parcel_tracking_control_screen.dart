@@ -5,6 +5,7 @@ import 'package:post_app/models/enums.dart';
 import 'package:post_app/services/api_client.dart';
 import 'package:post_app/services/token_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AdminParcelTrackingControlScreen extends StatefulWidget {
   const AdminParcelTrackingControlScreen({super.key});
@@ -174,28 +175,41 @@ class _AdminParcelTrackingControlScreenState
                                   Text('Weight: ${parcel.weight} kg'),
                                   const SizedBox(height: 8),
                                   Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      const Text('Update Status:'),
-                                      const SizedBox(width: 8),
-                                      DropdownButton<ParcelStatus>(
-                                        value: parcel.status,
-                                        items:
-                                            ParcelStatus.values.map((status) {
-                                          return DropdownMenuItem(
-                                            value: status,
-                                            child: Text(status
-                                                .toString()
-                                                .split('.')
-                                                .last),
-                                          );
-                                        }).toList(),
-                                        onChanged: (newStatus) {
-                                          if (newStatus != null &&
-                                              newStatus != parcel.status) {
-                                            _updateParcelStatus(
-                                                parcel, newStatus);
-                                          }
-                                        },
+                                      Row(
+                                        children: [
+                                          const Text('Update Status:'),
+                                          const SizedBox(width: 8),
+                                          DropdownButton<ParcelStatus>(
+                                            value: parcel.status,
+                                            items: ParcelStatus.values
+                                                .map((status) {
+                                              return DropdownMenuItem(
+                                                value: status,
+                                                child: Text(status
+                                                    .toString()
+                                                    .split('.')
+                                                    .last),
+                                              );
+                                            }).toList(),
+                                            onChanged: (newStatus) {
+                                              if (newStatus != null &&
+                                                  newStatus != parcel.status) {
+                                                _updateParcelStatus(
+                                                    parcel, newStatus);
+                                              }
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.delete,
+                                            color: Colors.red),
+                                        tooltip: 'Delete Parcel',
+                                        onPressed: () =>
+                                            _confirmDeleteParcel(parcel),
                                       ),
                                     ],
                                   ),
@@ -223,7 +237,8 @@ class _AdminParcelTrackingControlScreenState
     final _receiverNameController = TextEditingController();
     final _receiverAddressController = TextEditingController();
     final _weightController = TextEditingController();
-    final _receiverEmailController = TextEditingController(); // Add email controller
+    final _receiverEmailController =
+        TextEditingController(); // Add email controller
 
     showDialog(
       context: context,
@@ -247,14 +262,16 @@ class _AdminParcelTrackingControlScreenState
                 ),
                 TextField(
                   controller: _receiverAddressController,
-                  decoration: const InputDecoration(hintText: 'Receiver Address'),
+                  decoration:
+                      const InputDecoration(hintText: 'Receiver Address'),
                 ),
                 TextField(
                   controller: _weightController,
                   decoration: const InputDecoration(hintText: 'Weight (kg)'),
                   keyboardType: TextInputType.number,
                 ),
-                TextField( // Add email text field
+                TextField(
+                  // Add email text field
                   controller: _receiverEmailController,
                   decoration: const InputDecoration(hintText: 'Receiver Email'),
                   keyboardType: TextInputType.emailAddress,
@@ -312,8 +329,26 @@ class _AdminParcelTrackingControlScreenState
       final response = await _mailApiService.createMail(request);
       await _fetchAllParcels(); // Refresh the list
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Parcel added with Tracking #: ${response.mail.mailId}')),
+        SnackBar(
+            content:
+                Text('Parcel added with Tracking #: ${response.mail.mailId}')),
       );
+
+      // Save parcel details to Firebase Firestore
+      await FirebaseFirestore.instance
+          .collection('parcels')
+          .doc(response.mail.mailId)
+          .set({
+        'mailId': response.mail.mailId,
+        'userId': userId,
+        'senderName': senderName,
+        'receiverName': receiverName,
+        'receiverAddress': receiverAddress,
+        'weight': weight,
+        'receiverEmail': receiverEmail,
+        'status': response.mail.status.toString(),
+        'createdAt': FieldValue.serverTimestamp(),
+      });
 
       try {
         // Send tracking email
@@ -332,10 +367,67 @@ class _AdminParcelTrackingControlScreenState
           SnackBar(content: Text('Failed to send tracking email.')),
         );
       }
-
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to add parcel: ${e.toString()}')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _confirmDeleteParcel(MailModel parcel) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // User must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Delete'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                    'Are you sure you want to delete parcel ${parcel.mailId}?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Delete'),
+              onPressed: () {
+                _deleteParcel(parcel.mailId);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _deleteParcel(String mailId) async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      // Implement actual API call to delete parcel
+      await _mailApiService.deleteParcel(mailId);
+      await _fetchAllParcels(); // Refresh the list after deletion
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Parcel ${mailId} deleted successfully.')),
+      );
+    } catch (e) {
+      // Display the specific error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete parcel: ${e.toString()}')),
       );
     } finally {
       setState(() {
