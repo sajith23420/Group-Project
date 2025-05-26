@@ -1,7 +1,7 @@
 
 
  import 'package:flutter/material.dart';
-import 'colombo_post_office_details.dart';  // Import the new details screen
+import 'colombo_post_office_details.dart'; // Make sure this path is correct
 
 class SearchPostOfficeScreen extends StatefulWidget {
   const SearchPostOfficeScreen({super.key});
@@ -11,7 +11,6 @@ class SearchPostOfficeScreen extends StatefulWidget {
 }
 
 class _SearchPostOfficeScreenState extends State<SearchPostOfficeScreen> {
-  // Placeholder data (REPLACE WITH YOUR REAL DATA!)
   final List<String> allPostOffices = [
     'Colombo Central Post Office',
     'Kandy General Post Office',
@@ -24,7 +23,7 @@ class _SearchPostOfficeScreenState extends State<SearchPostOfficeScreen> {
     'Ratnapura Post Office',
     'Negombo Post Office',
     'Kalutara Post Office',
-    'Hambantota Post Office'
+    'Hambantota Post Office',
   ];
 
   List<String> displayedPostOffices = [];
@@ -32,7 +31,7 @@ class _SearchPostOfficeScreenState extends State<SearchPostOfficeScreen> {
   @override
   void initState() {
     super.initState();
-    displayedPostOffices = List.from(allPostOffices); // Initialize displayed list with all data
+    displayedPostOffices = List.from(allPostOffices);
   }
 
   void _filterPostOffices(String query) {
@@ -48,70 +47,74 @@ class _SearchPostOfficeScreenState extends State<SearchPostOfficeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Search Nearby Post Office'),
-        backgroundColor: Colors.blue[700], // Darker blue for the AppBar
-        foregroundColor: Colors.white, // White text on the AppBar
+        title: const Text(
+          'Search Nearby Post Office',
+          style: TextStyle(color: Colors.black),
+        ),
+        backgroundColor: Colors.green[100],
+        foregroundColor: Colors.black,
+        elevation: 0,
       ),
-      backgroundColor: Colors.blue[50], // Very light blue background
+      backgroundColor: Colors.green[50],
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
-              style: const TextStyle(color: Colors.blueGrey),
+              style: const TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 labelText: 'Search Post Office',
-                labelStyle: TextStyle(color: Colors.blue[400]),
-                prefixIcon: Icon(Icons.search, color: Colors.blue[400]),
-                border: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(25.0)), // Rounded corners
-                  borderSide: BorderSide(color: Colors.blue),
+                labelStyle: const TextStyle(color: Colors.black),
+                prefixIcon: const Icon(Icons.search, color: Colors.black),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(25.0),
+                  borderSide: const BorderSide(color: Colors.black),
                 ),
-                focusedBorder: OutlineInputBorder( // When the TextField is focused
-                  borderRadius: BorderRadius.all(Radius.circular(25.0)),
-                  borderSide: BorderSide(color: Colors.blue[600]!, width: 2.0),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(25.0),
+                  borderSide: const BorderSide(color: Colors.black, width: 2.0),
                 ),
               ),
-              onChanged: _filterPostOffices, // Calls _filterPostOffices when text changes
+              onChanged: _filterPostOffices,
             ),
           ),
-
           Expanded(
             child: ListView.builder(
               itemCount: displayedPostOffices.length,
               itemBuilder: (context, index) {
                 return Card(
-                  color: Colors.white,  // White cards for contrast
+                  color: Colors.white,
                   margin: const EdgeInsets.all(8.0),
-                  elevation: 3,  // Slight shadow for visual appeal
+                  elevation: 3,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0), // Rounded corners for the card
+                    borderRadius: BorderRadius.circular(15.0),
                   ),
-                  child: ListTile( // Using listtile
-                    leading: Icon(Icons.local_post_office, color: Colors.blue[500]), // Blue icon
+                  child: ListTile(
+                    leading: const Icon(Icons.local_post_office, color: Colors.black),
                     title: Text(
                       displayedPostOffices[index],
-                      style: const TextStyle(fontSize: 16.0, color: Colors.blueGrey), // Dark blue-grey text
+                      style: const TextStyle(fontSize: 16.0, color: Colors.black),
                     ),
-                    trailing: Icon(Icons.arrow_forward_ios, color: Colors.blue[400]), // Lighter blue arrow
+                    trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black),
                     onTap: () {
-                      // Navigate to the Colombo Post Office Details screen ONLY if it's Colombo Post Office
                       if (displayedPostOffices[index] == 'Colombo Central Post Office') {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => const ColomboPostOfficeDetails(),
-                          ),
+                          MaterialPageRoute(builder: (context) => const ColomboPostOfficeDetails()),
                         );
-                      } else { // Show message for non colombo branches.
-                         ScaffoldMessenger.of(context).showSnackBar(
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Details not Available: ${displayedPostOffices[index]} details', style: const TextStyle(color: Colors.white),),
-                            backgroundColor: Colors.blue[600],
+                            content: Text(
+                              'Tapped: ${displayedPostOffices[index]} details',
+                              style: const TextStyle(color: Colors.black),
+                            ),
+                            backgroundColor: Colors.grey[300],
+                            behavior: SnackBarBehavior.floating,
                           ),
                         );
                       }
-                    }
+                    },
                   ),
                 );
               },

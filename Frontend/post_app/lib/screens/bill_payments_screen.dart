@@ -7,7 +7,8 @@ class BillPaymentsScreen extends StatefulWidget {
   State<BillPaymentsScreen> createState() => _BillPaymentsScreenState();
 }
 
-class _BillPaymentsScreenState extends State<BillPaymentsScreen> {
+class _BillPaymentsScreenState extends State<BillPaymentsScreen>
+    with SingleTickerProviderStateMixin {
   String? _selectedBillType;
   String? _selectedPaymentMethod;
   bool _saveForFuture = false;
@@ -39,8 +40,22 @@ class _BillPaymentsScreenState extends State<BillPaymentsScreen> {
   final TextEditingController _customerNameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController =
+        AnimationController(vsync: this, duration: const Duration(milliseconds: 200));
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
+        CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
+  }
+
   @override
   void dispose() {
+    _animationController.dispose();
     _accountNumberController.dispose();
     _amountController.dispose();
     _customerNameController.dispose();
@@ -50,25 +65,22 @@ class _BillPaymentsScreenState extends State<BillPaymentsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final formKey = GlobalKey<FormState>();
-
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text('Bill Payments'),
-        backgroundColor: Colors.blue.shade600,
-        foregroundColor: Colors.white,
+        title: const Text('Bill Payments', style: TextStyle(color: Colors.black)),
+        backgroundColor: const Color.fromARGB(255, 245, 160, 13),
+        foregroundColor: Colors.black,
         elevation: 0,
         centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
-          key: formKey,
+          key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              // Bill Type Selection
               _buildSectionCard(
                 title: 'Bill Information',
                 child: Column(
@@ -79,7 +91,7 @@ class _BillPaymentsScreenState extends State<BillPaymentsScreen> {
                       items: _billTypes.map((String type) {
                         return DropdownMenuItem<String>(
                           value: type,
-                          child: Text(type),
+                          child: Text(type, style: const TextStyle(color: Colors.black)),
                         );
                       }).toList(),
                       onChanged: (String? newValue) {
@@ -87,31 +99,21 @@ class _BillPaymentsScreenState extends State<BillPaymentsScreen> {
                           _selectedBillType = newValue;
                         });
                       },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please select a bill type';
-                        }
-                        return null;
-                      },
+                      validator: (value) =>
+                          value == null || value.isEmpty ? 'Please select a bill type' : null,
                     ),
                     const SizedBox(height: 16.0),
                     TextFormField(
                       controller: _customerNameController,
                       decoration: _getInputDecoration('Customer Name', Icons.person),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please enter customer name';
-                        }
-                        return null;
-                      },
+                      validator: (value) => value == null || value.trim().isEmpty
+                          ? 'Please enter customer name'
+                          : null,
                     ),
                   ],
                 ),
               ),
-              
               const SizedBox(height: 16.0),
-
-              // Bill Details
               _buildSectionCard(
                 title: 'Bill Details',
                 child: Column(
@@ -119,13 +121,9 @@ class _BillPaymentsScreenState extends State<BillPaymentsScreen> {
                     TextFormField(
                       controller: _accountNumberController,
                       decoration: _getInputDecoration('Account Number / Bill ID', Icons.confirmation_number),
-                      keyboardType: TextInputType.text,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please enter account number or bill ID';
-                        }
-                        return null;
-                      },
+                      validator: (value) => value == null || value.trim().isEmpty
+                          ? 'Please enter account number or bill ID'
+                          : null,
                     ),
                     const SizedBox(height: 16.0),
                     TextFormField(
@@ -134,14 +132,11 @@ class _BillPaymentsScreenState extends State<BillPaymentsScreen> {
                           .copyWith(prefixText: 'LKR '),
                       keyboardType: TextInputType.number,
                       validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please enter amount';
-                        }
+                        if (value == null || value.trim().isEmpty) return 'Please enter amount';
                         double? amount = double.tryParse(value);
-                        if (amount == null || amount <= 0) {
-                          return 'Please enter a valid amount';
-                        }
-                        return null;
+                        return (amount == null || amount <= 0)
+                            ? 'Please enter a valid amount'
+                            : null;
                       },
                     ),
                     const SizedBox(height: 16.0),
@@ -153,10 +148,7 @@ class _BillPaymentsScreenState extends State<BillPaymentsScreen> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 16.0),
-
-              // Payment Method
               _buildSectionCard(
                 title: 'Payment Method',
                 child: DropdownButtonFormField<String>(
@@ -165,7 +157,7 @@ class _BillPaymentsScreenState extends State<BillPaymentsScreen> {
                   items: _paymentMethods.map((String method) {
                     return DropdownMenuItem<String>(
                       value: method,
-                      child: Text(method),
+                      child: Text(method, style: const TextStyle(color: Colors.black)),
                     );
                   }).toList(),
                   onChanged: (String? newValue) {
@@ -173,53 +165,43 @@ class _BillPaymentsScreenState extends State<BillPaymentsScreen> {
                       _selectedPaymentMethod = newValue;
                     });
                   },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please select a payment method';
-                    }
-                    return null;
-                  },
+                  validator: (value) =>
+                      value == null || value.isEmpty ? 'Please select a payment method' : null,
                 ),
               ),
-
               const SizedBox(height: 16.0),
-
-              // Additional Options
               _buildSectionCard(
                 title: 'Additional Options',
                 child: Column(
                   children: [
                     CheckboxListTile(
-                      title: const Text('Save this biller for future payments'),
-                      subtitle: const Text('Quick access for next time'),
+                      title: const Text('Save this biller for future payments', style: TextStyle(color: Colors.black)),
+                      subtitle: const Text('Quick access for next time', style: TextStyle(color: Colors.black)),
                       value: _saveForFuture,
                       onChanged: (bool? value) {
                         setState(() {
                           _saveForFuture = value ?? false;
                         });
                       },
-                      activeColor: Colors.blue.shade600,
+                      activeColor: Colors.orange,
                       controlAffinity: ListTileControlAffinity.leading,
                     ),
                     CheckboxListTile(
-                      title: const Text('Send payment confirmation'),
-                      subtitle: const Text('Receive SMS/Email notification'),
+                      title: const Text('Send payment confirmation', style: TextStyle(color: Colors.black)),
+                      subtitle: const Text('Receive SMS/Email notification', style: TextStyle(color: Colors.black)),
                       value: _sendNotification,
                       onChanged: (bool? value) {
                         setState(() {
                           _sendNotification = value ?? true;
                         });
                       },
-                      activeColor: Colors.blue.shade600,
+                      activeColor: Colors.orange,
                       controlAffinity: ListTileControlAffinity.leading,
                     ),
                   ],
                 ),
               ),
-
               const SizedBox(height: 24.0),
-
-              // Payment Summary Card
               if (_amountController.text.isNotEmpty && _selectedBillType != null)
                 _buildSectionCard(
                   title: 'Payment Summary',
@@ -233,42 +215,54 @@ class _BillPaymentsScreenState extends State<BillPaymentsScreen> {
                       const Divider(),
                       _buildSummaryRow('Service Fee', 'LKR 5.00', isSmall: true),
                       _buildSummaryRow(
-                        'Total Amount', 
+                        'Total Amount',
                         'LKR ${(double.tryParse(_amountController.text) ?? 0) + 5.0}',
                         isBold: true,
                       ),
                     ],
                   ),
                 ),
-
               const SizedBox(height: 24.0),
 
-              // Pay Button
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue.shade600,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  elevation: 4,
-                ),
-                onPressed: () {
-                  if (formKey.currentState!.validate()) {
+              GestureDetector(
+                onTapDown: (_) => _animationController.forward(),
+                onTapUp: (_) {
+                  _animationController.reverse();
+                  if (_formKey.currentState!.validate()) {
                     _showPaymentConfirmation();
                   }
                 },
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.payment, size: 20),
-                    SizedBox(width: 8),
-                    Text(
-                      'Pay Bill',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                child: ScaleTransition(
+                  scale: _scaleAnimation,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.orange,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.orange.withOpacity(0.5),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        )
+                      ],
                     ),
-                  ],
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.payment, size: 20, color: Colors.black),
+                        SizedBox(width: 8),
+                        Text(
+                          'Pay Bill',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
 
@@ -292,10 +286,10 @@ class _BillPaymentsScreenState extends State<BillPaymentsScreen> {
           children: [
             Text(
               title,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.blue.shade700,
+                color: Colors.black,
               ),
             ),
             const SizedBox(height: 12.0),
@@ -309,30 +303,30 @@ class _BillPaymentsScreenState extends State<BillPaymentsScreen> {
   InputDecoration _getInputDecoration(String label, IconData icon) {
     return InputDecoration(
       labelText: label,
-      labelStyle: TextStyle(color: Colors.blue.shade600),
-      prefixIcon: Icon(icon, color: Colors.blue.shade600),
+      labelStyle: const TextStyle(color: Colors.black),
+      prefixIcon: Icon(icon, color: Colors.black),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.blue.shade300),
+        borderSide: const BorderSide(color: Colors.black),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.blue.shade300),
+        borderSide: const BorderSide(color: Colors.black),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.blue.shade600, width: 2),
+        borderSide: const BorderSide(color: Colors.black, width: 2),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Colors.red, width: 1),
+        borderSide: const BorderSide(color: Colors.red),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: Colors.red, width: 2),
       ),
       filled: true,
-      fillColor: Colors.blue.shade50,
+      fillColor: Colors.white,
     );
   }
 
@@ -346,7 +340,7 @@ class _BillPaymentsScreenState extends State<BillPaymentsScreen> {
             label,
             style: TextStyle(
               fontSize: isSmall ? 14 : 16,
-              color: Colors.grey.shade700,
+              color: Colors.black,
               fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
             ),
           ),
@@ -355,7 +349,7 @@ class _BillPaymentsScreenState extends State<BillPaymentsScreen> {
             style: TextStyle(
               fontSize: isSmall ? 14 : 16,
               fontWeight: isBold ? FontWeight.bold : FontWeight.w500,
-              color: isBold ? Colors.blue.shade700 : Colors.black87,
+              color: Colors.black,
             ),
           ),
         ],
@@ -373,26 +367,30 @@ class _BillPaymentsScreenState extends State<BillPaymentsScreen> {
             children: [
               Icon(Icons.check_circle, color: Colors.green.shade600, size: 28),
               const SizedBox(width: 8),
-              const Text('Confirm Payment'),
+              const Text('Confirm Payment', style: TextStyle(color: Colors.black)),
             ],
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Are you sure you want to pay this bill?'),
+              const Text('Are you sure you want to pay this bill?', style: TextStyle(color: Colors.black)),
               const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
+                  color: Colors.orange.shade50,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Column(
                   children: [
                     _buildSummaryRow('Bill Type', _selectedBillType ?? ''),
                     _buildSummaryRow('Amount', 'LKR ${_amountController.text}'),
-                    _buildSummaryRow('Total', 'LKR ${(double.tryParse(_amountController.text) ?? 0) + 5.0}', isBold: true),
+                    _buildSummaryRow(
+                      'Total',
+                      'LKR ${(double.tryParse(_amountController.text) ?? 0) + 5.0}',
+                      isBold: true,
+                    ),
                   ],
                 ),
               ),
@@ -401,12 +399,12 @@ class _BillPaymentsScreenState extends State<BillPaymentsScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: const Text('Cancel', style: TextStyle(color: Colors.black)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue.shade600,
-                foregroundColor: Colors.white,
+                backgroundColor: Colors.orange,
+                foregroundColor: Colors.black,
               ),
               onPressed: () {
                 Navigator.of(context).pop();
@@ -421,25 +419,18 @@ class _BillPaymentsScreenState extends State<BillPaymentsScreen> {
   }
 
   void _processPayment() {
-    // Show success message
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: const Row(
           children: [
-            Icon(Icons.check_circle, color: Colors.white),
+            Icon(Icons.check_circle, color: Colors.black),
             SizedBox(width: 8),
-            Text('Payment processed successfully!'),
+            Text('Payment processed successfully!', style: TextStyle(color: Colors.black)),
           ],
         ),
-        backgroundColor: Colors.green.shade600,
+        backgroundColor: Colors.orange.shade100,
         duration: const Duration(seconds: 3),
       ),
     );
-    
-    // Here you would typically:
-    // - Process the actual payment
-    // - Send to backend API
-    // - Handle success/error responses
-    // - Navigate to receipt/confirmation screen
   }
 }

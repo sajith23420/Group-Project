@@ -55,10 +55,10 @@ class ColomboPostOfficeDetails extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Colombo Post Offices'),
-        backgroundColor: Colors.blue[700],
-        foregroundColor: Colors.white,
+         backgroundColor: Colors.green[100],
+        foregroundColor: const Color.fromARGB(255, 9, 5, 5),
       ),
-      backgroundColor: Colors.blue[50],
+      backgroundColor: Colors.green[50],
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView.builder(
@@ -79,32 +79,32 @@ class ColomboPostOfficeDetails extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.blueGrey[800],
+                        color: const Color.fromARGB(255, 14, 15, 14),
                       ),
                     ),
                     const SizedBox(height: 12),
                     Text(
                       'Address: ${office['address']}',
-                      style: const TextStyle(fontSize: 16, color: Colors.blueGrey),
+                      style: TextStyle(fontSize: 16, color: const Color.fromARGB(255, 38, 41, 38)),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Phone: ${office['phone']}',
-                      style: const TextStyle(fontSize: 16, color: Colors.blueGrey),
+                      style: TextStyle(fontSize: 16, color: const Color.fromARGB(255, 25, 27, 25)),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Hours: ${office['hours']}',
-                      style: const TextStyle(fontSize: 16, color: Colors.blueGrey),
+                      style: TextStyle(fontSize: 16, color: const Color.fromARGB(255, 20, 23, 20)),
                     ),
                     const SizedBox(height: 16),
                     const Text(
                       'Services:',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueGrey),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green),
                     ),
                     Text(
                       '- ${office['services'].join('\n- ')}',
-                      style: const TextStyle(fontSize: 16, color: Colors.blueGrey),
+                      style: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 16, 21, 16)),
                     ),
                   ],
                 ),
