@@ -12,6 +12,8 @@ import 'package:post_app/screens/admin/manage_services_screen.dart';
 import 'package:post_app/screens/admin/manage_content_screen.dart';
 import 'package:post_app/screens/admin/system_settings_screen.dart';
 import 'package:post_app/screens/admin/view_logs_screen.dart';
+import 'package:post_app/screens/admin/admin_news_carousel_screen.dart';
+import 'package:post_app/screens/admin/admin_parcel_tracking_control_screen.dart'; // Import the new screen
 
 class AdminDashboardScreen extends StatefulWidget {
   // Changed to StatefulWidget
@@ -41,6 +43,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       {'title': 'Manage Content', 'icon': Icons.article_outlined},
       {'title': 'System Settings', 'icon': Icons.settings_outlined},
       {'title': 'View Logs', 'icon': Icons.list_alt_outlined},
+      {'title': 'Manage News Carousel', 'icon': Icons.newspaper},
+      {
+        'title': 'Parcel Tracking Control',
+        'icon': Icons.local_shipping_outlined
+      }, // Add this line for the new admin action
     ];
 
     return Scaffold(
@@ -165,6 +172,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         break;
       case 'View Logs':
         screenToNavigate = const ViewLogsScreen();
+        break;
+      case 'Manage News Carousel':
+        screenToNavigate = const AdminNewsCarouselScreen();
+        break;
+      case 'Parcel Tracking Control':
+        screenToNavigate = const AdminParcelTrackingControlScreen();
         break;
     }
 

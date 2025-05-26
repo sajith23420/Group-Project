@@ -43,6 +43,9 @@ dependencies:
   firebase_core: ^3.13.1 # Check for the latest version
   provider: ^6.0.0 # Added provider for state management
   cached_network_image: ^3.3.1 # Added for robust image caching
+  cloud_firestore: ^5.6.8
+  firebase_storage: ^12.4.6
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:

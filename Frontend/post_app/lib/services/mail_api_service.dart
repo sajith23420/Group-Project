@@ -34,4 +34,11 @@ class MailApiService {
       fromJsonT: (json) => MailModel.fromJson(json as Map<String, dynamic>),
     );
   }
+
+  Future<void> sendTrackingEmail(SendTrackingEmailRequest request) async {
+    await _apiClient.post<void>(
+      '/mails/send-tracking-email',
+      data: request.toJson(),
+    );
+  }
 }
