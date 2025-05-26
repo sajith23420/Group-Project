@@ -249,12 +249,12 @@ class _AdminParcelTrackingControlScreenState
             child: ListBody(
               children: <Widget>[
                 TextField(
-                  controller: _userIdController,
-                  decoration: const InputDecoration(hintText: 'User ID'),
-                ),
-                TextField(
                   controller: _senderNameController,
                   decoration: const InputDecoration(hintText: 'Sender Name'),
+                ),
+                TextField(
+                  controller: _userIdController,
+                  decoration: const InputDecoration(hintText: 'Receiver NIC'),
                 ),
                 TextField(
                   controller: _receiverNameController,
