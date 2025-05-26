@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
-
-// Import service screens
 import 'package:post_app/screens/parcel_tracking_screen.dart';
 import 'package:post_app/screens/money_order_screen.dart';
 import 'package:post_app/screens/bill_payments_screen.dart';
 import 'package:post_app/screens/postal_holiday_screen.dart';
 import 'package:post_app/screens/search_post_office_screen.dart';
 import 'package:post_app/screens/fines_screen.dart';
-import 'package:post_app/screens/login_screen.dart'; // Import LoginScreen
-import 'package:post_app/screens/feedbacks_page.dart'; // Import FeedbacksPage
+import 'package:post_app/screens/login_screen.dart';
+import 'package:post_app/screens/feedbacks_page.dart';
+import 'package:provider/provider.dart'; // Import Provider
+import 'package:post_app/providers/user_provider.dart'; // Import UserProvider
+import 'package:post_app/models/user_model.dart'; // Import UserModel
+import 'package:cached_network_image/cached_network_image.dart'; // Import CachedNetworkImage
+import 'package:cloud_firestore/cloud_firestore.dart'; // Import Cloud Firestore
 // For logout
 
 class CustomerDashboardScreen extends StatefulWidget {
@@ -22,7 +25,7 @@ class CustomerDashboardScreen extends StatefulWidget {
 class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String _greeting = '';
-  String? _userName;
+  // String? _userName; // Will be replaced by UserProvider
   final PageController _newsPageController = PageController();
   int _currentNewsPage = 0;
   final int _newsImageCount = 3;
@@ -31,7 +34,7 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
   void initState() {
     super.initState();
     _setGreeting();
-    _fetchUserName();
+    // _fetchUserName(); // No longer needed, UserProvider will supply user data
   }
 
   void _setGreeting() {
@@ -47,16 +50,11 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
     }
   }
 
-  void _fetchUserName() async {
-    // Example: Replace with your actual user fetching logic
-    // For Firebase Auth:
-    // import 'package:firebase_auth/firebase_auth.dart';
-    // final user = FirebaseAuth.instance.currentUser;
-    // setState(() { _userName = user?.displayName ?? 'User'; });
-    setState(() {
-      _userName = 'User'; // Default fallback, replace with actual fetch
-    });
-  }
+  // void _fetchUserName() async { // No longer needed
+  //   setState(() {
+  //     _userName = 'User';
+  //   });
+  // }
 
   @override
   void dispose() {
@@ -66,6 +64,10 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Access UserProvider
+    final userProvider = Provider.of<UserProvider>(context);
+    final UserModel? currentUser = userProvider.user;
+
     final List<Map<String, dynamic>> services = [
       {'title': 'Parcel Tracking', 'icon': Icons.local_shipping},
       {'title': 'Money Order', 'icon': Icons.attach_money},
@@ -73,7 +75,6 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
       {'title': 'Postal Holiday', 'icon': Icons.calendar_today},
       {'title': 'Search Nearby\nPost Office', 'icon': Icons.location_on},
       {'title': 'Fines', 'icon': Icons.gavel},
-      // Removed: {'title': 'Stamp Collection', 'icon': Icons.collections_bookmark},
     ];
 
     return Scaffold(
@@ -87,8 +88,7 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
           ),
           child: AppBar(
             automaticallyImplyLeading: false,
-            backgroundColor:
-                Colors.pinkAccent, // Changed to match login screen pink color
+            backgroundColor: Colors.pinkAccent,
             title: Row(
               children: [
                 Image.asset("assets/post_icon.png", height: 40),
@@ -114,14 +114,38 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
           padding: EdgeInsets.zero,
           children: <Widget>[
             UserAccountsDrawerHeader(
-              accountName: const Text("User Name"),
-              accountEmail: const Text("user.email@example.com"),
+              accountName: Text(currentUser?.displayName ??
+                  "User Name"), // Use displayName from provider
+              accountEmail: Text(currentUser?.email ??
+                  "user.email@example.com"), // Use email from provider
               currentAccountPicture: CircleAvatar(
                 backgroundColor:
                     Theme.of(context).platform == TargetPlatform.iOS
                         ? Colors.blue
                         : Colors.white,
-                child: const Text("U", style: TextStyle(fontSize: 40.0)),
+                child: currentUser?.profilePictureUrl != null &&
+                        currentUser!.profilePictureUrl!.isNotEmpty
+                    ? ClipOval(
+                        child: CachedNetworkImage(
+                          imageUrl: currentUser.profilePictureUrl!,
+                          placeholder: (context, url) =>
+                              const CircularProgressIndicator(),
+                          errorWidget: (context, url, error) => Text(
+                              currentUser.displayName?.isNotEmpty == true
+                                  ? currentUser.displayName![0].toUpperCase()
+                                  : "U",
+                              style: const TextStyle(fontSize: 40.0)),
+                          fit: BoxFit.cover,
+                          width:
+                              70, // Adjust size as needed for UserAccountsDrawerHeader
+                          height: 70,
+                        ),
+                      )
+                    : Text(
+                        currentUser?.displayName?.isNotEmpty == true
+                            ? currentUser!.displayName![0].toUpperCase()
+                            : "U",
+                        style: const TextStyle(fontSize: 40.0)),
               ),
               decoration: BoxDecoration(color: Theme.of(context).primaryColor),
             ),
@@ -129,7 +153,10 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
               leading: const Icon(Icons.edit_outlined),
               title: const Text('Edit Profile'),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.pop(context); // Close drawer
+                // Navigate to EditProfileScreen - Assuming MyProfileScreen handles this or direct navigation
+                Navigator.pushNamed(context,
+                    '/my_profile'); // Or directly to edit if MyProfileScreen is not the hub
               },
             ),
             ListTile(
@@ -137,6 +164,7 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
               title: const Text('Add Payment Card'),
               onTap: () {
                 Navigator.pop(context);
+                // TODO: Navigate to Add Payment Card screen
               },
             ),
             ListTile(
@@ -144,14 +172,22 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
               title: const Text('Settings'),
               onTap: () {
                 Navigator.pop(context);
+                // TODO: Navigate to a general settings screen if different from NotificationSettingsScreen
               },
             ),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.logout_outlined),
               title: const Text('Log Out'),
-              onTap: () {
-                Navigator.pop(context);
+              onTap: () async {
+                // Make onPressed async
+                Navigator.pop(context); // Close drawer
+                // Clear UserProvider
+                Provider.of<UserProvider>(context, listen: false).clearUser();
+
+                // TODO: Implement actual Firebase logout logic if not handled by clearing provider and navigating
+                // await FirebaseAuth.instance.signOut(); // Example if using Firebase Auth directly for signout
+
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => const LoginScreen()),
@@ -250,7 +286,8 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          _userName ?? "User",
+                          currentUser?.displayName ??
+                              "User", // Use displayName from provider
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -331,35 +368,45 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
             const SizedBox(height: 12.0),
             SizedBox(
               height: 150,
-              child: PageView.builder(
-                controller: _newsPageController,
-                itemCount: _newsImageCount,
-                onPageChanged: (int page) {
-                  setState(() {
-                    _currentNewsPage = page;
-                  });
-                },
-                itemBuilder: (context, index) {
-                  return Card(
-                    margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.primaries[index % Colors.primaries.length]
-                            .withOpacity(0.7),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'News Image ${index + 1}',
-                          style: const TextStyle(
-                              fontSize: 20,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
+              child: FutureBuilder<List<String>>(
+                future: _fetchNewsImages(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  final images = snapshot.data ?? [];
+                  if (images.isEmpty) {
+                    return const Center(child: Text('No news images.'));
+                  }
+                  return PageView.builder(
+                    controller: _newsPageController,
+                    itemCount: images.length,
+                    onPageChanged: (int page) {
+                      setState(() {
+                        _currentNewsPage = page;
+                      });
+                    },
+                    itemBuilder: (context, index) {
+                      return Card(
+                        margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.network(
+                            images[index],
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                              color: Colors.grey[300],
+                              child: const Icon(Icons.broken_image,
+                                  size: 48, color: Colors.grey),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   );
                 },
               ),
@@ -482,5 +529,14 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
         ),
       ),
     );
+  }
+
+  // Add this method to fetch news images from Firestore
+  Future<List<String>> _fetchNewsImages() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('news_carousel')
+        .orderBy('timestamp', descending: true)
+        .get();
+    return snapshot.docs.map((doc) => doc['imageUrl'] as String).toList();
   }
 }

@@ -76,7 +76,34 @@ enum PostOfficeService {
 
   String toJson() => value;
   static PostOfficeService fromJson(String jsonValue) {
-    return values.firstWhere((e) => e.value == jsonValue,
-        orElse: () => throw ArgumentError('Unknown PostOfficeService value: $jsonValue'));
+    return values.firstWhere(
+      (e) => e.value == jsonValue,
+      orElse:
+          () =>
+              throw ArgumentError(
+                'Unknown PostOfficeService value: $jsonValue',
+              ),
+    );
   }
+}
+
+enum FineStatus {
+  payment_pending,
+  pay_by_customer,
+  payment_confirmed,
+  payment_declined;
+
+  String toJson() => name;
+  static FineStatus fromJson(String json) => values.byName(json);
+}
+
+enum ParcelStatus {
+  pending,
+  sent,
+  in_delivery,
+  received_at_destination,
+  received_by_receiver;
+
+  String toJson() => name;
+  static ParcelStatus fromJson(String json) => values.byName(json);
 }

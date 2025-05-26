@@ -4,7 +4,18 @@ import 'package:google_sign_in/google_sign_in.dart'; // Import for Google Sign-I
 import 'package:post_app/screens/signup_screen.dart';
 import 'package:post_app/screens/main_app_shell.dart';
 import 'package:post_app/screens/forgot_password_screen.dart';
-import 'package:post_app/screens/admin_dashboard_screen.dart'; // Add this import
+import 'package:post_app/screens/admin_dashboard_screen.dart';
+
+// Import your services and models
+import 'package:post_app/services/api_client.dart';
+import 'package:post_app/services/user_auth_api_service.dart';
+import 'package:post_app/models/user_model.dart';
+import 'package:post_app/services/token_provider.dart'; // Import your TokenProvider
+import 'package:post_app/models/enums.dart';
+
+// Added import for Provider
+import 'package:provider/provider.dart';
+import 'package:post_app/providers/user_provider.dart'; // Your UserProvider
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,11 +31,70 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _isLoading = false; // State to manage loading indicator
 
+  // Initialize your ApiClient and UserAuthApiService
+  // You might get ApiClient via a provider or instantiate it here if appropriate
+  // For simplicity, instantiating here. Ensure ApiClient is configured for auth.
+  late final ApiClient _apiClient;
+  late final UserAuthApiService _userAuthApiService;
+  late final TokenProvider
+      _tokenProvider; // Or your specific TokenProvider class
+
+  @override
+  void initState() {
+    super.initState();
+    _tokenProvider =
+        TokenProvider(FirebaseAuth.instance); // Instantiate TokenProvider
+    _apiClient = ApiClient(_tokenProvider); // Pass TokenProvider to ApiClient
+    _userAuthApiService = UserAuthApiService(_apiClient);
+  }
+
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _fetchProfileAndNavigate(User user) async {
+    try {
+      final UserModel userProfile = await _userAuthApiService.getUserProfile();
+
+      if (mounted) {
+        // Set the user in UserProvider
+        Provider.of<UserProvider>(context, listen: false).setUser(userProfile);
+
+        // Navigate based on role
+        if (userProfile.role == UserRole.admin) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const AdminDashboardScreen()),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const MainAppShell()),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        String errorMessage = 'Failed to fetch user profile. Please check your network connection and try again.';
+        if (e.toString().contains('Network error')) {
+          errorMessage = 'Network error: Unable to connect to the server. Please check your internet connection.';
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage)),
+        );
+
+        // Optionally, sign out the user if profile fetch fails critically
+        await FirebaseAuth.instance.signOut();
+      }
+
+      // Log the error for debugging purposes
+      debugPrint('Error fetching user profile: $e');
+    }
   }
 
   Future<void> _login() async {
@@ -33,34 +103,27 @@ class _LoginScreenState extends State<LoginScreen> {
         _isLoading = true;
       });
 
-      // Admin login check
-      if (_emailController.text.trim() == 'sajithandara23420@gmail.com' &&
-          _passwordController.text == '234200') {
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => const AdminDashboardScreen()),
-          );
-        }
-        setState(() {
-          _isLoading = false;
-        });
-        return;
-      }
-
       try {
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
+        final UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
 
-        // Navigate to MainAppShell on successful login
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const MainAppShell()),
-          );
+        if (userCredential.user != null) {
+          // UserProvider will be updated in _fetchProfileAndNavigate
+          await _fetchProfileAndNavigate(userCredential.user!);
+        } else {
+          // Handle case where user is null after successful sign-in (should be rare)
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text(
+                      'Login successful but no user data found. Please try again.')),
+            );
+            // Clear UserProvider if necessary
+            Provider.of<UserProvider>(context, listen: false).clearUser();
+          }
         }
       } on FirebaseAuthException catch (e) {
         String errorMessage;
@@ -81,6 +144,8 @@ class _LoginScreenState extends State<LoginScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('An unexpected error occurred: $e')),
           );
+          // Clear UserProvider on other errors too
+          Provider.of<UserProvider>(context, listen: false).clearUser();
         }
       } finally {
         if (mounted) {
@@ -97,38 +162,35 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = true;
     });
     try {
-      // Trigger the Google Sign In flow
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-      // Obtain the auth details from the request
-      final GoogleSignInAuthentication? googleAuth =
-          await googleUser?.authentication;
-
-      if (googleAuth == null) {
-        // User cancelled the sign-in
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-        }
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        if (mounted) setState(() => _isLoading = false);
         return;
       }
-
-      // Create a new credential
-      final credential = GoogleAuthProvider.credential(
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      final OAuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
+      final UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
 
-      // Sign in to Firebase with the credential
-      await FirebaseAuth.instance.signInWithCredential(credential);
-
-      // Navigate to MainAppShell on successful Google Sign-In
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MainAppShell()),
-        );
+      if (userCredential.user != null) {
+        // UserProvider will be updated in _fetchProfileAndNavigate
+        await _fetchProfileAndNavigate(userCredential.user!);
+      } else {
+        // Handle case where user is null after successful sign-in (should be rare)
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text(
+                    'Google Sign-In successful but no user data found. Please try again.')),
+          );
+          // Clear UserProvider if necessary
+          Provider.of<UserProvider>(context, listen: false).clearUser();
+        }
       }
     } on FirebaseAuthException catch (e) {
       String errorMessage = 'Google Sign-In failed: ${e.message}';
@@ -136,6 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(errorMessage)),
         );
+        Provider.of<UserProvider>(context, listen: false).clearUser();
       }
     } catch (e) {
       if (mounted) {
@@ -144,6 +207,7 @@ class _LoginScreenState extends State<LoginScreen> {
               content: Text(
                   'An unexpected error occurred during Google Sign-In: $e')),
         );
+        Provider.of<UserProvider>(context, listen: false).clearUser();
       }
     } finally {
       if (mounted) {
@@ -275,7 +339,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 24),
                     Center(
                       child: ElevatedButton(
-                        onPressed: _isLoading ? null : _login,
+                        onPressed: _isLoading
+                            ? null
+                            : _login, // Calls the updated _login
                         style: ButtonStyle(
                           backgroundColor:
                               WidgetStateProperty.resolveWith<Color>(
@@ -353,7 +419,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               height: 24,
                               width: 24,
                             ),
-                            onPressed: _isLoading ? null : _handleGoogleSignIn,
+                            onPressed: _isLoading
+                                ? null
+                                : _handleGoogleSignIn, // Calls the updated _handleGoogleSignIn
                             label: const Text('Continue with Google'),
                           ),
                         ],
