@@ -55,7 +55,7 @@ class _SearchPostOfficeScreenState extends State<SearchPostOfficeScreen> {
         foregroundColor: Colors.black,
         elevation: 0,
       ),
-      backgroundColor: Colors.green[50],
+      backgroundColor: const Color.fromARGB(255, 249, 253, 249),
       body: Column(
         children: [
           Padding(
