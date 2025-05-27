@@ -97,7 +97,11 @@ class _AdminParcelTrackingControlScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Parcel Tracking Control'),
+        backgroundColor: Colors.yellow[100], // Light yellow theme
+        title: const Text('Parcel Tracking Control',
+            style: TextStyle(color: Colors.black)),
+        iconTheme: const IconThemeData(color: Colors.black),
+        elevation: 1,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -222,11 +226,6 @@ class _AdminParcelTrackingControlScreenState
               ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showAddParcelDialog,
-        tooltip: 'Add New Parcel',
-        child: const Icon(Icons.add),
       ),
     );
   }
