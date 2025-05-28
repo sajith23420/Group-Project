@@ -25,38 +25,16 @@ class CustomerDashboardScreen extends StatefulWidget {
 class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String _greeting = '';
+  // String? _userName; // Will be replaced by UserProvider
   final PageController _newsPageController = PageController();
   int _currentNewsPage = 0;
   final int _newsImageCount = 3;
-
-  List<Map<String, dynamic>> _services = [];
-  bool _isLoadingServices = true;
-
-  static const Map<String, IconData> iconMap = {
-    'local_shipping': Icons.local_shipping,
-    'attach_money': Icons.attach_money,
-    'payment': Icons.payment,
-    'calendar_today': Icons.calendar_today,
-    'location_on': Icons.location_on,
-    'gavel': Icons.gavel,
-    'star': Icons.star,
-    'mail': Icons.mail,
-    'home': Icons.home,
-    'settings': Icons.settings,
-    'favorite': Icons.favorite,
-    'directions_bus': Icons.directions_bus,
-    'cake': Icons.cake,
-    'wifi': Icons.wifi,
-    'security': Icons.security,
-    'book': Icons.book,
-    'hotel': Icons.hotel,
-  };
 
   @override
   void initState() {
     super.initState();
     _setGreeting();
-    _fetchServices();
+    // _fetchUserName(); // No longer needed, UserProvider will supply user data
   }
 
   void _setGreeting() {
@@ -72,19 +50,11 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
     }
   }
 
-  Future<void> _fetchServices() async {
-    setState(() => _isLoadingServices = true);
-    final snapshot = await FirebaseFirestore.instance.collection('services').get();
-    final allDocs = snapshot.docs.map((doc) => doc.data()).toList();
-    // Add Postal Hotel Booking if not present
-    if (!allDocs.any((s) => s['title'] == 'Postal Hotel Booking')) {
-      allDocs.add({'title': 'Postal Hotel Booking', 'icon': 'hotel'});
-    }
-    setState(() {
-      _services = allDocs;
-      _isLoadingServices = false;
-    });
-  }
+  // void _fetchUserName() async { // No longer needed
+  //   setState(() {
+  //     _userName = 'User';
+  //   });
+  // }
 
   @override
   void dispose() {
@@ -97,6 +67,15 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
     // Access UserProvider
     final userProvider = Provider.of<UserProvider>(context);
     final UserModel? currentUser = userProvider.user;
+
+    final List<Map<String, dynamic>> services = [
+      {'title': 'Parcel Tracking', 'icon': Icons.local_shipping},
+      {'title': 'Money Order', 'icon': Icons.attach_money},
+      {'title': 'Bill Payments', 'icon': Icons.payment},
+      {'title': 'Search Nearby\nPost Office', 'icon': Icons.location_on},
+      {'title': 'Fines', 'icon': Icons.gavel},
+      {'title': 'Postal Hotel Booking', 'icon': Icons.hotel},
+    ];
 
     return Scaffold(
       key: _scaffoldKey,
@@ -364,28 +343,24 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            _isLoadingServices
-                ? const Center(child: CircularProgressIndicator())
-                : GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: _services.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 10.0,
-                      mainAxisSpacing: 10.0,
-                      childAspectRatio: 0.9,
-                    ),
-                    itemBuilder: (context, index) {
-                      final service = _services[index];
-                      final iconData = iconMap[service['icon']] ?? Icons.extension;
-                      return _buildServiceCard(
-                        context,
-                        service['title'] as String,
-                        iconData,
-                      );
-                    },
-                  ),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: services.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 10.0,
+                mainAxisSpacing: 10.0,
+                childAspectRatio: 0.9,
+              ),
+              itemBuilder: (context, index) {
+                return _buildServiceCard(
+                  context,
+                  services[index]['title'] as String,
+                  services[index]['icon'] as IconData,
+                );
+              },
+            ),
             const SizedBox(height: 24.0),
             const Text(
               'Latest News',
