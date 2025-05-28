@@ -50,31 +50,55 @@ class _ManageServicesScreenState extends State<ManageServicesScreen> {
 
   Future<void> _fetchServices() async {
     setState(() => _isLoading = true);
-    final snapshot = await FirebaseFirestore.instance.collection('services').get();
+    final snapshot =
+        await FirebaseFirestore.instance.collection('services').get();
     final allDocs = snapshot.docs.map((doc) => doc.data()).toList();
     // Filter out originals
-    _addedServices = allDocs.where((s) => !_originalServices.any((o) => o['title'] == s['title'])).toList();
+    _addedServices = allDocs
+        .where((s) => !_originalServices.any((o) => o['title'] == s['title']))
+        .toList();
     setState(() => _isLoading = false);
   }
 
   Future<void> _addService(String title, String iconName) async {
-    await FirebaseFirestore.instance.collection('services').add({'title': title, 'icon': iconName});
+    await FirebaseFirestore.instance
+        .collection('services')
+        .add({'title': title, 'icon': iconName});
     await _fetchServices();
   }
 
   Future<void> _deleteService(String title) async {
-    final query = await FirebaseFirestore.instance.collection('services').where('title', isEqualTo: title).get();
+    setState(() => _isLoading = true);
+    final query = await FirebaseFirestore.instance
+        .collection('services')
+        .where('title', isEqualTo: title)
+        .get();
     for (var doc in query.docs) {
       await doc.reference.delete();
     }
-    await _fetchServices();
+    // Remove from local list immediately for instant UI feedback
+    setState(() {
+      _addedServices.removeWhere((s) => s['title'] == title);
+      _isLoading = false;
+    });
+    // Optionally, you can call _fetchServices() here if you want to re-sync from Firestore
+    // await _fetchServices();
   }
 
   void _showAddServiceDialog() {
     String newServiceName = '';
     String? selectedIconName;
     final icons = [
-      'star', 'mail', 'home', 'settings', 'favorite', 'directions_bus', 'cake', 'wifi', 'security', 'book',
+      'star',
+      'mail',
+      'home',
+      'settings',
+      'favorite',
+      'directions_bus',
+      'cake',
+      'wifi',
+      'security',
+      'book',
     ];
     showDialog(
       context: context,
@@ -87,7 +111,8 @@ class _ManageServicesScreenState extends State<ManageServicesScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextField(
-                    decoration: const InputDecoration(labelText: 'Service Name'),
+                    decoration:
+                        const InputDecoration(labelText: 'Service Name'),
                     onChanged: (value) => newServiceName = value,
                   ),
                   const SizedBox(height: 12),
@@ -114,8 +139,10 @@ class _ManageServicesScreenState extends State<ManageServicesScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    if (newServiceName.trim().isNotEmpty && selectedIconName != null) {
-                      await _addService(newServiceName.trim(), selectedIconName!);
+                    if (newServiceName.trim().isNotEmpty &&
+                        selectedIconName != null) {
+                      await _addService(
+                          newServiceName.trim(), selectedIconName!);
                       Navigator.of(context).pop();
                     }
                   },
@@ -131,49 +158,109 @@ class _ManageServicesScreenState extends State<ManageServicesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final allServices = [
-      ..._originalServices,
-      ..._addedServices,
-    ];
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple[100],
-        title: const Text('Manage Services', style: TextStyle(color: Colors.black)),
+        title: const Text('Manage Services',
+            style: TextStyle(color: Colors.black)),
         iconTheme: const IconThemeData(color: Colors.black),
         elevation: 1,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddServiceDialog,
-        backgroundColor: Colors.purple[200],
-        child: const Icon(Icons.add, color: Colors.black),
+        backgroundColor: Colors.purple[400],
+        child: const Icon(Icons.add, color: Colors.white),
         tooltip: 'Add Service',
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: allServices.length,
-              itemBuilder: (context, index) {
-                final service = allServices[index];
-                final isOriginal = index < _originalServices.length;
-                final iconData = iconMap[service['icon']] ?? Icons.extension;
-                return Card(
-                  color: Colors.white,
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  child: ListTile(
-                    leading: Icon(iconData, color: Colors.purple[400]),
-                    title: Text(service['title'], style: const TextStyle(fontWeight: FontWeight.w500)),
-                    trailing: isOriginal
-                        ? const Icon(Icons.lock, color: Colors.grey, size: 20)
-                        : IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () async {
-                              await _deleteService(service['title']);
-                            },
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('All Services',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: GridView.builder(
+                      itemCount:
+                          _originalServices.length + _addedServices.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 18,
+                        mainAxisSpacing: 18,
+                        childAspectRatio: 1.2,
+                      ),
+                      itemBuilder: (context, index) {
+                        final bool isOriginal =
+                            index < _originalServices.length;
+                        final service = isOriginal
+                            ? _originalServices[index]
+                            : _addedServices[index - _originalServices.length];
+                        final iconData =
+                            iconMap[service['icon']] ?? Icons.extension;
+                        return Card(
+                          color: isOriginal ? Colors.purple[50] : Colors.white,
+                          elevation: 3,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
                           ),
+                          child: Stack(
+                            children: [
+                              Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(iconData,
+                                        size: 40, color: Colors.purple[400]),
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      service['title'],
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 15),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (isOriginal)
+                                const Positioned(
+                                  top: 8,
+                                  right: 8,
+                                  child: Icon(Icons.lock,
+                                      color: Colors.grey, size: 20),
+                                )
+                              else
+                                Positioned(
+                                  top: 8,
+                                  right: 8,
+                                  child: IconButton(
+                                    icon: const Icon(Icons.delete,
+                                        color: Colors.red, size: 22),
+                                    onPressed: () async {
+                                      await _deleteService(service['title']);
+                                    },
+                                  ),
+                                ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                );
-              },
+                  const SizedBox(height: 12),
+                  Center(
+                    child: Text(
+                      'Tap the + button to add a new service.',
+                      style: TextStyle(color: Colors.purple[300]),
+                    ),
+                  ),
+                ],
+              ),
             ),
     );
   }

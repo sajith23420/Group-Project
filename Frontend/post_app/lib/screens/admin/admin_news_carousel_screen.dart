@@ -97,9 +97,9 @@ class _AdminNewsCarouselScreenState extends State<AdminNewsCarouselScreen> {
                 builder: (context, snapshot) {
                   List<DocumentSnapshot> docs =
                       snapshot.hasData ? snapshot.data!.docs : [];
-                  // Always show 3 boxes, fill with images if available
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  // Show 3 boxes, each in its own row
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: List.generate(3, (index) {
                       String? imageUrl;
                       String? docId;
@@ -107,79 +107,76 @@ class _AdminNewsCarouselScreenState extends State<AdminNewsCarouselScreen> {
                         imageUrl = docs[index]['imageUrl'] as String?;
                         docId = docs[index].id;
                       }
-                      return Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                          child: GestureDetector(
-                            onTap: _isUploading
-                                ? null
-                                : () async {
-                                    if (imageUrl == null) {
-                                      await _pickAndUploadImageForIndex(
-                                          index, docs);
-                                    }
-                                  },
-                            child: Container(
-                              height: 180,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: Colors.pinkAccent,
-                                  width: 2,
-                                ),
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: GestureDetector(
+                          onTap: _isUploading
+                              ? null
+                              : () async {
+                                  if (imageUrl == null) {
+                                    await _pickAndUploadImageForIndex(
+                                        index, docs);
+                                  }
+                                },
+                          child: Container(
+                            height: 180,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: Colors.pinkAccent,
+                                width: 2,
                               ),
-                              child: imageUrl != null
-                                  ? Stack(
-                                      fit: StackFit.expand,
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(14),
-                                          child: Image.network(
-                                            imageUrl,
-                                            fit: BoxFit.cover,
-                                            errorBuilder:
-                                                (context, error, stackTrace) =>
-                                                    const Center(
-                                                        child: Icon(
-                                                            Icons.broken_image,
-                                                            size: 40)),
-                                          ),
-                                        ),
-                                        Positioned(
-                                          top: 8,
-                                          right: 8,
-                                          child: IconButton(
-                                            icon: const Icon(Icons.delete,
-                                                color: Colors.red),
-                                            onPressed: _isUploading
-                                                ? null
-                                                : () => _deleteImage(
-                                                    docId!, imageUrl!),
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                  : Center(
-                                      child: _isUploading
-                                          ? const CircularProgressIndicator()
-                                          : Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: const [
-                                                Icon(Icons.add_a_photo,
-                                                    size: 40,
-                                                    color: Colors.pinkAccent),
-                                                SizedBox(height: 8),
-                                                Text('Add Image',
-                                                    style: TextStyle(
-                                                        color:
-                                                            Colors.pinkAccent)),
-                                              ],
-                                            ),
-                                    ),
                             ),
+                            child: imageUrl != null
+                                ? Stack(
+                                    fit: StackFit.expand,
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(14),
+                                        child: Image.network(
+                                          imageUrl,
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  const Center(
+                                                      child: Icon(
+                                                          Icons.broken_image,
+                                                          size: 40)),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: 8,
+                                        right: 8,
+                                        child: IconButton(
+                                          icon: const Icon(Icons.delete,
+                                              color: Colors.red),
+                                          onPressed: _isUploading
+                                              ? null
+                                              : () => _deleteImage(
+                                                  docId!, imageUrl!),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : Center(
+                                    child: _isUploading
+                                        ? const CircularProgressIndicator()
+                                        : Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: const [
+                                              Icon(Icons.add_a_photo,
+                                                  size: 40,
+                                                  color: Colors.pinkAccent),
+                                              SizedBox(height: 8),
+                                              Text('Add Image',
+                                                  style: TextStyle(
+                                                      color:
+                                                          Colors.pinkAccent)),
+                                            ],
+                                          ),
+                                  ),
                           ),
                         ),
                       );
