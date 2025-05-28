@@ -168,14 +168,9 @@ class _ManageServicesScreenState extends State<ManageServicesScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddServiceDialog,
-<<<<<<< HEAD
-        backgroundColor: Colors.purple[200],
-=======
         backgroundColor: Colors.purple[400],
-        child: const Icon(Icons.add, color: Colors.white),
->>>>>>> sajith's-branch
         tooltip: 'Add Service',
-        child: const Icon(Icons.add, color: Colors.black),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
