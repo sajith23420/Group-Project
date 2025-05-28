@@ -1,5 +1,5 @@
 class User {
-  constructor(uid, email, displayName, phoneNumber, role, profilePictureUrl = null, paymentHistoryRefs = []) {
+  constructor(uid, email, displayName, phoneNumber, role, profilePictureUrl = null, paymentHistoryRefs = [], address = null) {
     this.uid = uid;
     this.email = email;
     this.displayName = displayName;
@@ -9,6 +9,7 @@ class User {
     this.createdAt = new Date().toISOString();
     this.updatedAt = new Date().toISOString();
     this.paymentHistoryRefs = paymentHistoryRefs;
+    this.address = address || null;
   }
 
   static fromFirestore(doc) {
@@ -20,7 +21,8 @@ class User {
       data.phoneNumber,
       data.role,
       data.profilePictureUrl,
-      data.paymentHistoryRefs
+      data.paymentHistoryRefs,
+      data.address
     );
   }
 
@@ -35,6 +37,7 @@ class User {
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       paymentHistoryRefs: this.paymentHistoryRefs,
+      address: this.address,
     };
   }
 }

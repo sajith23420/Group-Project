@@ -7,9 +7,18 @@ class PostalHotelBookingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Postal Hotel Booking'),
-        backgroundColor: Colors.blue, // Changed to blue
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(15),
+            bottomRight: Radius.circular(15),
+          ),
+          child: AppBar(
+            title: const Text('Postal Hotel Booking'),
+            backgroundColor: Colors.blue, // Changed to blue
+          ),
+        ),
       ),
       body: Center(
         child: Padding(
