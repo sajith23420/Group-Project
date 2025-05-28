@@ -133,8 +133,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     final user = Provider.of<UserProvider>(context).user;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Profile'),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(15),
+            bottomRight: Radius.circular(15),
+          ),
+          child: AppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: Colors.pinkAccent,
+            title: const Text('Edit Profile',
+                style: TextStyle(color: Colors.white)),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -179,7 +197,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         onTap: _isLoading ? null : _pickImage,
                         child: CircleAvatar(
                           radius: 20,
-                          backgroundColor: Theme.of(context).primaryColor,
+                          backgroundColor: Colors.pinkAccent,
                           child: _isLoading
                               ? const CircularProgressIndicator(
                                   color: Colors.white, strokeWidth: 2)
@@ -260,12 +278,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  backgroundColor: Colors.pinkAccent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  elevation: 0,
                 ),
                 onPressed: _isLoading ? null : _saveProfile,
                 child: _isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
                     : const Text('Save Changes',
-                        style: TextStyle(fontSize: 16)),
+                        style: TextStyle(fontSize: 16, color: Colors.white)),
               ),
             ],
           ),

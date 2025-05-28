@@ -6,8 +6,26 @@ class HelpSupportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Help & Support'),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(15),
+            bottomRight: Radius.circular(15),
+          ),
+          child: AppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: Colors.pinkAccent,
+            title: const Text('Help & Support',
+                style: TextStyle(color: Colors.white)),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -37,7 +55,7 @@ class HelpSupportScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             ListTile(
-              leading: Icon(Icons.phone, color: Theme.of(context).primaryColor),
+              leading: Icon(Icons.phone, color: Colors.pinkAccent),
               title: const Text('Phone'),
               subtitle: const Text('+94 11 232 8301'),
               onTap: () {
@@ -46,7 +64,7 @@ class HelpSupportScreen extends StatelessWidget {
             ),
             const Divider(),
             ListTile(
-              leading: Icon(Icons.email, color: Theme.of(context).primaryColor),
+              leading: Icon(Icons.email, color: Colors.pinkAccent),
               title: const Text('Email'),
               subtitle: const Text('info@slpost.lk'),
               onTap: () {
@@ -55,8 +73,7 @@ class HelpSupportScreen extends StatelessWidget {
             ),
             const Divider(),
             ListTile(
-              leading: Icon(Icons.location_on,
-                  color: Theme.of(context).primaryColor),
+              leading: Icon(Icons.location_on, color: Colors.pinkAccent),
               title: const Text('Address'),
               subtitle:
                   const Text('Postal Headquarters,\nColombo 00100,\nSri Lanka'),
@@ -83,7 +100,7 @@ class HelpSupportScreen extends StatelessWidget {
             const Text('If you need further assistance, please contact us:'),
             const SizedBox(height: 8.0),
             ListTile(
-              leading: const Icon(Icons.email),
+              leading: const Icon(Icons.email, color: Colors.pinkAccent),
               title: const Text('Email Support'),
               subtitle: const Text('support@slpost.lk'),
               onTap: () {
@@ -91,7 +108,7 @@ class HelpSupportScreen extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.phone),
+              leading: const Icon(Icons.phone, color: Colors.pinkAccent),
               title: const Text('Phone Support'),
               subtitle: const Text('+94 11 XXX XXXX'),
               onTap: () {
