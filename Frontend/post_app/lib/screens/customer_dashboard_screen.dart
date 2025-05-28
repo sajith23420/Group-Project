@@ -10,8 +10,7 @@ import 'package:provider/provider.dart'; // Import Provider
 import 'package:post_app/providers/user_provider.dart'; // Import UserProvider
 import 'package:post_app/models/user_model.dart'; // Import UserModel
 import 'package:cached_network_image/cached_network_image.dart'; // Import CachedNetworkImage
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import Cloud Firestore
-import 'package:post_app/screens/postal_hotel_booking_screen.dart'; // Import PostalHotelBookingScreen
+import 'package:post_app/screens/postal_holiday_screen.dart'; // Import PostalHolidayScreen
 // For logout
 
 class CustomerDashboardScreen extends StatefulWidget {
@@ -28,7 +27,6 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
   // String? _userName; // Will be replaced by UserProvider
   final PageController _newsPageController = PageController();
   int _currentNewsPage = 0;
-  final int _newsImageCount = 3;
 
   @override
   void initState() {
@@ -79,7 +77,7 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
       {'title': 'Bill Payments', 'icon': Icons.payment},
       {'title': 'Search Nearby\nPost Office', 'icon': Icons.location_on},
       {'title': 'Fines', 'icon': Icons.gavel},
-      {'title': 'Postal Hotel Booking', 'icon': Icons.hotel},
+      {'title': 'Postal Holiday', 'icon': Icons.hotel},
     ];
 
     return Scaffold(
@@ -502,9 +500,9 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
         screen = const BillPaymentsScreen();
         iconColor = Colors.orange; // Notifications
         break;
-      case 'Postal Hotel Booking':
-        screen = const PostalHotelBookingScreen();
-        iconColor = Colors.blue; // Changed to blue
+      case 'Postal Holiday':
+        screen = const PostalHolidayScreen();
+        iconColor = Colors.blue;
         break;
       case 'Search Nearby Post Office':
         screen = const SearchPostOfficeScreen();
@@ -555,13 +553,6 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
   }
 
   // Add this method to fetch news images from Firestore
-  Future<List<String>> _fetchNewsImages() async {
-    final snapshot = await FirebaseFirestore.instance
-        .collection('news_carousel')
-        .orderBy('timestamp', descending: true)
-        .get();
-    return snapshot.docs.map((doc) => doc['imageUrl'] as String).toList();
-  }
 
   String getFullImageUrl(String? url) {
     if (url == null || url.isEmpty) return '';
