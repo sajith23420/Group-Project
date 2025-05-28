@@ -127,7 +127,8 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                         currentUser!.profilePictureUrl!.isNotEmpty
                     ? ClipOval(
                         child: CachedNetworkImage(
-                          imageUrl: currentUser.profilePictureUrl!,
+                          imageUrl:
+                              getFullImageUrl(currentUser.profilePictureUrl),
                           placeholder: (context, url) =>
                               const CircularProgressIndicator(),
                           errorWidget: (context, url, error) => Text(
@@ -545,5 +546,12 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
         .orderBy('timestamp', descending: true)
         .get();
     return snapshot.docs.map((doc) => doc['imageUrl'] as String).toList();
+  }
+
+  String getFullImageUrl(String? url) {
+    if (url == null || url.isEmpty) return '';
+    if (url.startsWith('http')) return url;
+    // Replace with your actual backend base URL
+    return 'http://localhost:3000' + url;
   }
 }
