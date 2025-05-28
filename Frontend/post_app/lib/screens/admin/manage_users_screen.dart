@@ -32,13 +32,17 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Manage Users'),
-        backgroundColor: Colors.pinkAccent,
+        title:
+            const Text('Manage Users', style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.lightBlue[100], // Light blue theme
+        iconTheme: const IconThemeData(color: Colors.black),
+        elevation: 1,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Card(
-          elevation: 4,
+          color: Colors.white,
+          elevation: 2,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           child: Column(

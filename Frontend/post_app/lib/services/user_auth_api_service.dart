@@ -1,7 +1,9 @@
 // lib/services/user_auth_api_service.dart
 
 import 'dart:io'; // For File type
+import 'dart:typed_data';
 import 'package:dio/dio.dart'; // For FormData and MultipartFile
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:post_app/models/user_model.dart';
 import 'package:post_app/services/api_client.dart';
@@ -28,19 +30,36 @@ class UserAuthApiService {
   }
 
   Future<UploadProfilePictureResponse> uploadUserProfilePicture(
-      File imageFile) async {
-    String fileName = p.basename(imageFile.path);
-    FormData formData = FormData.fromMap({
-      "profilePicture":
-          await MultipartFile.fromFile(imageFile.path, filename: fileName),
-    });
-
-    return _apiClient.postMultipart<UploadProfilePictureResponse>(
-      '/auth/profile/upload-picture',
-      formData,
-      fromJson: (json) =>
-          UploadProfilePictureResponse.fromJson(json as Map<String, dynamic>),
-    );
+      dynamic imageInput) async {
+    if (kIsWeb) {
+      // imageInput is XFile on web
+      final xFile = imageInput;
+      final bytes = await xFile.readAsBytes();
+      String fileName = xFile.name;
+      FormData formData = FormData.fromMap({
+        "profilePicture": MultipartFile.fromBytes(bytes, filename: fileName),
+      });
+      return _apiClient.postMultipart<UploadProfilePictureResponse>(
+        '/auth/profile/upload-picture',
+        formData,
+        fromJson: (json) =>
+            UploadProfilePictureResponse.fromJson(json as Map<String, dynamic>),
+      );
+    } else {
+      // imageInput is File on mobile/desktop
+      final imageFile = imageInput as File;
+      String fileName = p.basename(imageFile.path);
+      FormData formData = FormData.fromMap({
+        "profilePicture":
+            await MultipartFile.fromFile(imageFile.path, filename: fileName),
+      });
+      return _apiClient.postMultipart<UploadProfilePictureResponse>(
+        '/auth/profile/upload-picture',
+        formData,
+        fromJson: (json) =>
+            UploadProfilePictureResponse.fromJson(json as Map<String, dynamic>),
+      );
+    }
   }
 
   Future<UserModel> adminUpdateUserRole(

@@ -9,8 +9,26 @@ class ChangePasswordScreen extends StatelessWidget {
     final formKey = GlobalKey<FormState>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Change Password'),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(15),
+            bottomRight: Radius.circular(15),
+          ),
+          child: AppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: Colors.pinkAccent,
+            title: const Text('Change Password',
+                style: TextStyle(color: Colors.white)),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -26,7 +44,6 @@ class ChangePasswordScreen extends StatelessWidget {
                   border: OutlineInputBorder(),
                 ),
                 obscureText: true,
-                // validator: (value) { ... } // Add validation later if needed
               ),
               const SizedBox(height: 16.0),
               TextFormField(
@@ -35,7 +52,6 @@ class ChangePasswordScreen extends StatelessWidget {
                   border: OutlineInputBorder(),
                 ),
                 obscureText: true,
-                // validator: (value) { ... } // Add validation later if needed
               ),
               const SizedBox(height: 16.0),
               TextFormField(
@@ -44,19 +60,24 @@ class ChangePasswordScreen extends StatelessWidget {
                   border: OutlineInputBorder(),
                 ),
                 obscureText: true,
-                // validator: (value) { ... } // Add validation later if needed
               ),
               const SizedBox(height: 24.0),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  backgroundColor: Colors.pinkAccent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  elevation: 0,
                 ),
                 onPressed: () {
                   // if (_formKey.currentState!.validate()) {
                   //   // Change password logic
                   // }
                 },
-                child: const Text('Change Password', style: TextStyle(fontSize: 16)),
+                child: const Text('Change Password',
+                    style: TextStyle(fontSize: 16, color: Colors.white)),
               ),
             ],
           ),

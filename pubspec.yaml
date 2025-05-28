@@ -77,8 +77,9 @@ flutter:
     - assets/special_icon.png
     - assets/google_logo.png 
     - assets/post.jpg
-    
-    # This line includes the Google logo file
+    - assets/news1.jpg
+    - assets/news2.png
+    - assets/news3.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
 

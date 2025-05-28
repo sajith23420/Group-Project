@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:post_app/screens/parcel_tracking_screen.dart';
 import 'package:post_app/screens/money_order_screen.dart';
 import 'package:post_app/screens/bill_payments_screen.dart';
-import 'package:post_app/screens/postal_holiday_screen.dart';
 import 'package:post_app/screens/search_post_office_screen.dart';
 import 'package:post_app/screens/fines_screen.dart';
 import 'package:post_app/screens/login_screen.dart';
@@ -12,6 +11,7 @@ import 'package:post_app/providers/user_provider.dart'; // Import UserProvider
 import 'package:post_app/models/user_model.dart'; // Import UserModel
 import 'package:cached_network_image/cached_network_image.dart'; // Import CachedNetworkImage
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Cloud Firestore
+import 'package:post_app/screens/postal_hotel_booking_screen.dart'; // Import PostalHotelBookingScreen
 // For logout
 
 class CustomerDashboardScreen extends StatefulWidget {
@@ -25,16 +25,38 @@ class CustomerDashboardScreen extends StatefulWidget {
 class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String _greeting = '';
-  // String? _userName; // Will be replaced by UserProvider
   final PageController _newsPageController = PageController();
   int _currentNewsPage = 0;
   final int _newsImageCount = 3;
+
+  List<Map<String, dynamic>> _services = [];
+  bool _isLoadingServices = true;
+
+  static const Map<String, IconData> iconMap = {
+    'local_shipping': Icons.local_shipping,
+    'attach_money': Icons.attach_money,
+    'payment': Icons.payment,
+    'calendar_today': Icons.calendar_today,
+    'location_on': Icons.location_on,
+    'gavel': Icons.gavel,
+    'star': Icons.star,
+    'mail': Icons.mail,
+    'home': Icons.home,
+    'settings': Icons.settings,
+    'favorite': Icons.favorite,
+    'directions_bus': Icons.directions_bus,
+    'cake': Icons.cake,
+    'wifi': Icons.wifi,
+    'security': Icons.security,
+    'book': Icons.book,
+    'hotel': Icons.hotel,
+  };
 
   @override
   void initState() {
     super.initState();
     _setGreeting();
-    // _fetchUserName(); // No longer needed, UserProvider will supply user data
+    _fetchServices();
   }
 
   void _setGreeting() {
@@ -50,11 +72,19 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
     }
   }
 
-  // void _fetchUserName() async { // No longer needed
-  //   setState(() {
-  //     _userName = 'User';
-  //   });
-  // }
+  Future<void> _fetchServices() async {
+    setState(() => _isLoadingServices = true);
+    final snapshot = await FirebaseFirestore.instance.collection('services').get();
+    final allDocs = snapshot.docs.map((doc) => doc.data()).toList();
+    // Add Postal Hotel Booking if not present
+    if (!allDocs.any((s) => s['title'] == 'Postal Hotel Booking')) {
+      allDocs.add({'title': 'Postal Hotel Booking', 'icon': 'hotel'});
+    }
+    setState(() {
+      _services = allDocs;
+      _isLoadingServices = false;
+    });
+  }
 
   @override
   void dispose() {
@@ -67,15 +97,6 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
     // Access UserProvider
     final userProvider = Provider.of<UserProvider>(context);
     final UserModel? currentUser = userProvider.user;
-
-    final List<Map<String, dynamic>> services = [
-      {'title': 'Parcel Tracking', 'icon': Icons.local_shipping},
-      {'title': 'Money Order', 'icon': Icons.attach_money},
-      {'title': 'Bill Payments', 'icon': Icons.payment},
-      {'title': 'Postal Holiday', 'icon': Icons.calendar_today},
-      {'title': 'Search Nearby\nPost Office', 'icon': Icons.location_on},
-      {'title': 'Fines', 'icon': Icons.gavel},
-    ];
 
     return Scaffold(
       key: _scaffoldKey,
@@ -127,7 +148,8 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                         currentUser!.profilePictureUrl!.isNotEmpty
                     ? ClipOval(
                         child: CachedNetworkImage(
-                          imageUrl: currentUser.profilePictureUrl!,
+                          imageUrl:
+                              getFullImageUrl(currentUser.profilePictureUrl),
                           placeholder: (context, url) =>
                               const CircularProgressIndicator(),
                           errorWidget: (context, url, error) => Text(
@@ -233,7 +255,7 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: Image.asset(
-                      "assets/post_off.png",
+                      "assets/post1.jpeg",
                       width: double.infinity,
                       height: 150,
                       fit: BoxFit.cover,
@@ -342,24 +364,28 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: services.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 10.0,
-                mainAxisSpacing: 10.0,
-                childAspectRatio: 0.9,
-              ),
-              itemBuilder: (context, index) {
-                return _buildServiceCard(
-                  context,
-                  services[index]['title'] as String,
-                  services[index]['icon'] as IconData,
-                );
-              },
-            ),
+            _isLoadingServices
+                ? const Center(child: CircularProgressIndicator())
+                : GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: _services.length,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 10.0,
+                      mainAxisSpacing: 10.0,
+                      childAspectRatio: 0.9,
+                    ),
+                    itemBuilder: (context, index) {
+                      final service = _services[index];
+                      final iconData = iconMap[service['icon']] ?? Icons.extension;
+                      return _buildServiceCard(
+                        context,
+                        service['title'] as String,
+                        iconData,
+                      );
+                    },
+                  ),
             const SizedBox(height: 24.0),
             const Text(
               'Latest News',
@@ -367,53 +393,60 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
             ),
             const SizedBox(height: 12.0),
             SizedBox(
-              height: 150,
-              child: FutureBuilder<List<String>>(
-                future: _fetchNewsImages(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  final images = snapshot.data ?? [];
-                  if (images.isEmpty) {
-                    return const Center(child: Text('No news images.'));
-                  }
-                  return PageView.builder(
-                    controller: _newsPageController,
-                    itemCount: images.length,
-                    onPageChanged: (int page) {
-                      setState(() {
-                        _currentNewsPage = page;
-                      });
-                    },
-                    itemBuilder: (context, index) {
-                      return Card(
-                        margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.network(
-                            images[index],
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(
-                              color: Colors.grey[300],
-                              child: const Icon(Icons.broken_image,
-                                  size: 48, color: Colors.grey),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  );
+              height: 180,
+              child: PageView(
+                controller: _newsPageController,
+                onPageChanged: (int page) {
+                  setState(() {
+                    _currentNewsPage = page;
+                  });
                 },
+                children: const [
+                  Card(
+                    margin: EdgeInsets.symmetric(horizontal: 4.0),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      child: Image(
+                        image: AssetImage('assets/news1.jpg'),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                      ),
+                    ),
+                  ),
+                  Card(
+                    margin: EdgeInsets.symmetric(horizontal: 4.0),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      child: Image(
+                        image: AssetImage('assets/news2.png'),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                      ),
+                    ),
+                  ),
+                  Card(
+                    margin: EdgeInsets.symmetric(horizontal: 4.0),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      child: Image(
+                        image: AssetImage('assets/news3.jpg'),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(_newsImageCount, (index) {
+              children: List.generate(3, (index) {
                 return Container(
                   width: 8.0,
                   height: 8.0,
@@ -422,8 +455,8 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: _currentNewsPage == index
-                        ? Colors.pinkAccent // Changed to pinkAccent
-                        : Colors.white, // Inactive dots are white
+                        ? Colors.pinkAccent
+                        : Colors.white,
                   ),
                 );
               }),
@@ -479,9 +512,9 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
         screen = const BillPaymentsScreen();
         iconColor = Colors.orange; // Notifications
         break;
-      case 'Postal Holiday':
-        screen = const PostalHolidayScreen();
-        iconColor = Colors.purple; // Profile
+      case 'Postal Hotel Booking':
+        screen = const PostalHotelBookingScreen();
+        iconColor = Colors.blue; // Changed to blue
         break;
       case 'Search Nearby Post Office':
         screen = const SearchPostOfficeScreen();
@@ -538,5 +571,12 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
         .orderBy('timestamp', descending: true)
         .get();
     return snapshot.docs.map((doc) => doc['imageUrl'] as String).toList();
+  }
+
+  String getFullImageUrl(String? url) {
+    if (url == null || url.isEmpty) return '';
+    if (url.startsWith('http')) return url;
+    // Replace with your actual backend base URL
+    return 'http://localhost:3000' + url;
   }
 }
