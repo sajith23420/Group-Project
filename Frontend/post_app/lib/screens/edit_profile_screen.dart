@@ -175,8 +175,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ? NetworkImage(
                                       user.profilePictureUrl!.startsWith('http')
                                           ? user.profilePictureUrl!
-                                          : 'http://localhost:3000' +
-                                              user.profilePictureUrl!)
+                                          : 'http://localhost:3000${user.profilePictureUrl!}')
                                   : null))
                           : (_pickedXFile != null
                               ? FileImage(File(_pickedXFile!.path))
@@ -185,8 +184,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ? NetworkImage(
                                       user.profilePictureUrl!.startsWith('http')
                                           ? user.profilePictureUrl!
-                                          : 'http://localhost:3000' +
-                                              user.profilePictureUrl!)
+                                          : 'http://localhost:3000${user.profilePictureUrl!}')
                                   : null)),
                       child: ((_pickedImageBytes == null &&
                                   _pickedXFile == null) &&
