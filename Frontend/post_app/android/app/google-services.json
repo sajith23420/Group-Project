@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "739705735447",
+    "firebase_url": "https://post-ee52c-default-rtdb.firebaseio.com",
+    "project_id": "post-ee52c",
+    "storage_bucket": "post-ee52c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:739705735447:android:113cf3de8cd0287ad18f52",
+        "android_client_info": {
+          "package_name": "com.example.post_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "739705735447-g1q7asv63do3f8brisk5l5d5uo9ol27n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVoYJzyp-LkNRGmnzZndAaeAH4LqxLN-Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "739705735447-g1q7asv63do3f8brisk5l5d5uo9ol27n.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "739705735447-s72mndk254c7buuv8o3e74689qib6pr7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.postApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
