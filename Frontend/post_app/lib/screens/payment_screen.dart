@@ -46,7 +46,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Payment'),
-        backgroundColor: Colors.pinkAccent,
+        backgroundColor: const Color.fromARGB(255, 106, 240, 135),
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -93,7 +93,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       valueStyle: const TextStyle(
                         fontSize: 18, 
                         fontWeight: FontWeight.bold,
-                        color: Colors.pinkAccent
+                        color: const Color.fromARGB(255, 106, 240, 135)
                       )
                     ),
                   ],
@@ -167,9 +167,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(color: Colors.pinkAccent),
+                              borderSide: const BorderSide(color: Color.fromARGB(255, 116, 237, 132)),
                             ),
-                            prefixIcon: const Icon(Icons.credit_card, color: Colors.pinkAccent),
+                            prefixIcon: const Icon(Icons.credit_card, color: Color.fromARGB(255, 116, 237, 132)),
                           ),
                           keyboardType: TextInputType.number,
                           validator: (value) {
@@ -192,9 +192,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(color: Colors.pinkAccent),
+                              borderSide: const BorderSide(color: Color.fromARGB(255, 116, 237, 132)),
                             ),
-                            prefixIcon: const Icon(Icons.person, color: Colors.pinkAccent),
+                            prefixIcon: const Icon(Icons.person, color: Color.fromARGB(255, 116, 237, 132)),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -220,7 +220,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: const BorderSide(color: Colors.pinkAccent),
+                                    borderSide: const BorderSide(color: Color.fromARGB(255, 116, 237, 132)),
                                   ),
                                 ),
                                 validator: (value) {
@@ -245,7 +245,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: const BorderSide(color: Colors.pinkAccent),
+                                    borderSide: const BorderSide(color: Color.fromARGB(255, 116, 237, 132)),
                                   ),
                                 ),
                                 keyboardType: TextInputType.number,
@@ -334,12 +334,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           value: 0,
                           groupValue: 0,
                           onChanged: (value) {},
-                          activeColor: Colors.pinkAccent,
+                          activeColor: Color.fromARGB(255, 116, 237, 132),
                         ),
                       ),
                       const Divider(),
                       const ListTile(
-                        leading: Icon(Icons.qr_code, size: 40, color: Colors.pinkAccent),
+                        leading: Icon(Icons.qr_code, size: 40, color: Color.fromARGB(255, 116, 237, 132)),
                         title: Text('Scan QR to Pay'),
                         subtitle: Text('Using any banking app'),
                       ),
@@ -375,7 +375,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     if (states.contains(WidgetState.hovered)) {
                       return Colors.yellow;
                     }
-                    return Colors.pinkAccent;
+                    return Color.fromARGB(255, 116, 237, 132);
                   },
                 ),
                 foregroundColor: WidgetStateProperty.all(Colors.white),
@@ -475,7 +475,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       return RadioListTile<int>(
         title: Row(
           children: [
-            Icon(icon, color: Colors.pinkAccent),
+            Icon(icon, color: Color.fromARGB(255, 116, 237, 132)),
             const SizedBox(width: 10),
             Text(_paymentMethods[index]),
           ],

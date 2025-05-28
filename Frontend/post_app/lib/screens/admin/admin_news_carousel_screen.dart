@@ -73,8 +73,11 @@ class _AdminNewsCarouselScreenState extends State<AdminNewsCarouselScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Manage News Carousel'),
-        backgroundColor: Colors.pinkAccent,
+        backgroundColor: Colors.red[100], // Light red theme
+        title:
+            const Text('News Carousel', style: TextStyle(color: Colors.black)),
+        iconTheme: const IconThemeData(color: Colors.black),
+        elevation: 1,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

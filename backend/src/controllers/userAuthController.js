@@ -51,52 +51,40 @@ const uploadUserProfilePicture = async (req, res, next) => {
     const localFilePath = path.join(userUploadDir, uniqueFileName);
     const publicUrl = `${UPLOAD_BASE_URL}/user_profile_pictures/${uid}/${uniqueFileName}`;
 
-    fs.writeFile(localFilePath, req.file.buffer, async (err) => {
-      if (err) {
-        console.error('Error saving file locally:', err);
-        return next(err);
+    try {
+      await fs.promises.writeFile(localFilePath, req.file.buffer);
+
+      const userRef = admin.database().ref(`users/${uid}`);
+      // Optionally, delete old profile picture if it exists and is a local file
+      const userSnapshot = await userRef.once('value');
+      const userData = userSnapshot.val();
+      if (userData && userData.profilePictureUrl && userData.profilePictureUrl.startsWith(UPLOAD_BASE_URL)) {
+        const oldFilePath = path.join(__dirname, '..', '..', userData.profilePictureUrl.replace(UPLOAD_BASE_URL, 'uploads'));
+        if (fs.existsSync(oldFilePath)) {
+          try {
+            fs.unlinkSync(oldFilePath);
+            console.log(`Deleted old profile picture: ${oldFilePath}`);
+          } catch (unlinkErr) {
+            console.error(`Error deleting old profile picture ${oldFilePath}:`, unlinkErr);
+          }
+        }
       }
 
-      try {
-        const userRef = admin.database().ref(`users/${uid}`);
-        // Optionally, delete old profile picture if it exists and is a local file
-        const userSnapshot = await userRef.once('value');
-        const userData = userSnapshot.val();
-        if (userData && userData.profilePictureUrl && userData.profilePictureUrl.startsWith(UPLOAD_BASE_URL)) {
-            const oldFilePath = path.join(__dirname, '..', '..', userData.profilePictureUrl.replace(UPLOAD_BASE_URL, 'uploads'));
-            if (fs.existsSync(oldFilePath)) {
-                try {
-                    fs.unlinkSync(oldFilePath);
-                    console.log(`Deleted old profile picture: ${oldFilePath}`);
-                } catch (unlinkErr) {
-                    console.error(`Error deleting old profile picture ${oldFilePath}:`, unlinkErr);
-                }
-            }
-        }
+      await userRef.update({
+        profilePictureUrl: publicUrl,
+        updatedAt: new Date().toISOString(),
+      });
 
-
-        await userRef.update({
-          profilePictureUrl: publicUrl,
-          updatedAt: new Date().toISOString(),
-        });
-
-        const updatedSnapshot = await userRef.once('value');
-        res.status(200).json({
-          message: 'Profile picture uploaded successfully.',
-          profilePictureUrl: publicUrl,
-          userProfile: updatedSnapshot.val(),
-        });
-      } catch (error) {
-        console.error('Error updating database with local file URL:', error);
-        // If DB update fails, try to delete the just-uploaded file
-        try {
-          fs.unlinkSync(localFilePath);
-        } catch (cleanupErr) {
-          console.error('Error cleaning up uploaded file after DB error:', cleanupErr);
-        }
-        return next(error);
-      }
-    });
+      const updatedSnapshot = await userRef.once('value');
+      res.status(200).json({
+        message: 'Profile picture uploaded successfully.',
+        profilePictureUrl: publicUrl,
+        userProfile: updatedSnapshot.val(),
+      });
+    } catch (err) {
+      console.error('Error saving file locally or updating DB:', err);
+      return next(err);
+    }
   } catch (error) {
     next(error);
   }
@@ -105,12 +93,28 @@ const uploadUserProfilePicture = async (req, res, next) => {
 const getUserProfile = async (req, res, next) => {
   try {
     if (!req.dbUser) {
-      // This case should ideally be caught by fetchUserProfileAndAttach sending a 404
-      // if the profile isn't found. If it reaches here, it implies req.dbUser was not set
-      // possibly due to an issue in fetchUserProfileAndAttach or the preceding auth middleware.
       return res.status(404).json({ message: 'User profile not available on request object.' });
     }
-    res.status(200).json(req.dbUser);
+
+    const { uid } = req.user;
+    const firebaseUser = await admin.auth().getUser(uid);
+    const photoURL = firebaseUser.photoURL;
+    const displayName = firebaseUser.displayName || req.dbUser.displayName || 'User';
+    const email = firebaseUser.email || req.dbUser.email || '';
+    const userRef = admin.database().ref(`users/${uid}`);
+    // Sync profilePictureUrl if needed
+    if (photoURL && req.dbUser.profilePictureUrl !== photoURL) {
+      await userRef.update({ profilePictureUrl: photoURL });
+      req.dbUser.profilePictureUrl = photoURL;
+    }
+    // Always return displayName, email, and profilePictureUrl
+    const userProfile = {
+      ...req.dbUser,
+      displayName,
+      email,
+      profilePictureUrl: req.dbUser.profilePictureUrl || photoURL || null,
+    };
+    res.status(200).json(userProfile);
   } catch (error) {
     next(error);
   }
@@ -118,24 +122,24 @@ const getUserProfile = async (req, res, next) => {
 
 const updateUserProfile = async (req, res, next) => {
   const { uid } = req.user;
-  const { displayName, phoneNumber } = req.validatedBody;
+  const { displayName, phoneNumber, email, address } = req.validatedBody;
 
   try {
     const userRef = admin.database().ref(`users/${uid}`);
     const snapshot = await userRef.once('value'); // First DB call
     if (!snapshot.exists()) {
-      // This should ideally not be hit if fetchUserProfileAndAttach worked,
-      // but good for robustness.
       return res.status(404).json({ message: 'User profile not found.' });
     }
 
     const updates = {};
     if (displayName !== undefined) updates.displayName = displayName;
     if (phoneNumber !== undefined) updates.phoneNumber = phoneNumber;
+    if (email !== undefined) updates.email = email;
+    if (address !== undefined) updates.address = address;
     updates.updatedAt = new Date().toISOString();
 
     await userRef.update(updates);
-    const updatedSnapshot = await userRef.once('value'); // Second DB call
+    const updatedSnapshot = await userRef.once('value');
     res.status(200).json(updatedSnapshot.val());
   } catch (error) {
     next(error);

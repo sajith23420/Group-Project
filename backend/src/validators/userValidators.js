@@ -10,6 +10,13 @@ const updateUserProfileSchema = Joi.object({
   phoneNumber: Joi.string().pattern(/^[0-9]{10,15}$/).optional().allow(null, '').messages({
     'string.pattern.base': 'Phone number must be between 10 to 15 digits',
   }),
+  email: Joi.string().email().optional().messages({
+    'string.email': 'Email must be a valid email address',
+  }),
+  address: Joi.string().min(3).max(200).optional().allow(null, '').messages({
+    'string.min': 'Address must be at least 3 characters long',
+    'string.max': 'Address cannot exceed 200 characters',
+  }),
 });
 
 const adminUpdateUserRoleSchema = Joi.object({
