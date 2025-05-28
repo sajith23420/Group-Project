@@ -68,6 +68,11 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
     final userProvider = Provider.of<UserProvider>(context);
     final UserModel? currentUser = userProvider.user;
 
+    // DEBUG: Print user info
+    print('DEBUG: currentUser.email = \\${currentUser?.email}');
+    print(
+        'DEBUG: currentUser.profilePictureUrl = \\${currentUser?.profilePictureUrl}');
+
     final List<Map<String, dynamic>> services = [
       {'title': 'Parcel Tracking', 'icon': Icons.local_shipping},
       {'title': 'Money Order', 'icon': Icons.attach_money},
@@ -123,30 +128,40 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                     Theme.of(context).platform == TargetPlatform.iOS
                         ? Colors.blue
                         : Colors.white,
-                child: currentUser?.profilePictureUrl != null &&
-                        currentUser!.profilePictureUrl!.isNotEmpty
+                child: (currentUser?.profilePictureUrl != null &&
+                        currentUser!.profilePictureUrl!.isNotEmpty)
                     ? ClipOval(
                         child: CachedNetworkImage(
-                          imageUrl:
-                              getFullImageUrl(currentUser.profilePictureUrl),
+                          imageUrl: currentUser.profilePictureUrl!
+                                  .startsWith('http')
+                              ? currentUser.profilePictureUrl!
+                              : getFullImageUrl(currentUser.profilePictureUrl),
                           placeholder: (context, url) =>
                               const CircularProgressIndicator(),
-                          errorWidget: (context, url, error) => Text(
-                              currentUser.displayName?.isNotEmpty == true
-                                  ? currentUser.displayName![0].toUpperCase()
-                                  : "U",
-                              style: const TextStyle(fontSize: 40.0)),
+                          errorWidget: (context, url, error) => Icon(
+                              Icons.account_circle,
+                              size: 70,
+                              color: Colors.grey[400]),
                           fit: BoxFit.cover,
-                          width:
-                              70, // Adjust size as needed for UserAccountsDrawerHeader
+                          width: 70,
                           height: 70,
                         ),
                       )
-                    : Text(
-                        currentUser?.displayName?.isNotEmpty == true
-                            ? currentUser!.displayName![0].toUpperCase()
-                            : "U",
-                        style: const TextStyle(fontSize: 40.0)),
+                    : (currentUser?.email != null &&
+                            currentUser!.email!.isNotEmpty
+                        ? ClipOval(
+                            child: Image.network(
+                              'https://ui-avatars.com/api/?name=${Uri.encodeComponent(currentUser.email!)}&background=F48FB1&color=fff&size=140',
+                              width: 70,
+                              height: 70,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : Icon(
+                            Icons.account_circle,
+                            size: 70,
+                            color: Colors.grey[400],
+                          )),
               ),
               decoration: BoxDecoration(color: Theme.of(context).primaryColor),
             ),
