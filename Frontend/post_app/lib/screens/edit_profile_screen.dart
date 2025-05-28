@@ -172,22 +172,37 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ? MemoryImage(_pickedImageBytes!)
                               : (user?.profilePictureUrl != null &&
                                       user!.profilePictureUrl!.isNotEmpty
-                                  ? NetworkImage(user.profilePictureUrl!)
-                                      as ImageProvider
+                                  ? NetworkImage(
+                                      user.profilePictureUrl!.startsWith('http')
+                                          ? user.profilePictureUrl!
+                                          : 'http://localhost:3000' +
+                                              user.profilePictureUrl!)
                                   : null))
                           : (_pickedXFile != null
                               ? FileImage(File(_pickedXFile!.path))
                               : (user?.profilePictureUrl != null &&
                                       user!.profilePictureUrl!.isNotEmpty
-                                  ? NetworkImage(user.profilePictureUrl!)
-                                      as ImageProvider
+                                  ? NetworkImage(
+                                      user.profilePictureUrl!.startsWith('http')
+                                          ? user.profilePictureUrl!
+                                          : 'http://localhost:3000' +
+                                              user.profilePictureUrl!)
                                   : null)),
                       child: ((_pickedImageBytes == null &&
                                   _pickedXFile == null) &&
                               (user?.profilePictureUrl == null ||
                                   user!.profilePictureUrl!.isEmpty))
-                          ? const Icon(Icons.person,
-                              size: 60, color: Colors.grey)
+                          ? (user?.email != null && user!.email!.isNotEmpty
+                              ? ClipOval(
+                                  child: Image.network(
+                                    'https://ui-avatars.com/api/?name=${Uri.encodeComponent(user.email!)}&background=F48FB1&color=fff&size=140',
+                                    width: 120,
+                                    height: 120,
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              : const Icon(Icons.person,
+                                  size: 60, color: Colors.grey))
                           : null,
                     ),
                     Positioned(
