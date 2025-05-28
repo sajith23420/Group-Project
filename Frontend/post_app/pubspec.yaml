@@ -80,6 +80,16 @@ flutter:
     - assets/news2.png
     - assets/news3.jpg
     - assets/post1.jpeg
+    - assets/Anuradhapura.png
+    - assets/Trinco 01.png
+    - assets/trinco2.png
+    - assets/nuwara_eliya.png
+    - assets/mannar.png
+    - assets/karainagar.png
+    - assets/chullipuram.png
+    - assets/sigiriya01.png
+    - assets/sigiriya02.png
+    - assets/mihinthalaya.png
 
     # This line includes the Google logo file
 
