@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:post_app/screens/parcel_tracking_screen.dart';
 import 'package:post_app/screens/money_order_screen.dart';
 import 'package:post_app/screens/bill_payments_screen.dart';
-import 'package:post_app/screens/postal_holiday_screen.dart';
 import 'package:post_app/screens/search_post_office_screen.dart';
 import 'package:post_app/screens/fines_screen.dart';
 import 'package:post_app/screens/login_screen.dart';
@@ -12,6 +11,7 @@ import 'package:post_app/providers/user_provider.dart'; // Import UserProvider
 import 'package:post_app/models/user_model.dart'; // Import UserModel
 import 'package:cached_network_image/cached_network_image.dart'; // Import CachedNetworkImage
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Cloud Firestore
+import 'package:post_app/screens/postal_hotel_booking_screen.dart'; // Import PostalHotelBookingScreen
 // For logout
 
 class CustomerDashboardScreen extends StatefulWidget {
@@ -72,9 +72,9 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
       {'title': 'Parcel Tracking', 'icon': Icons.local_shipping},
       {'title': 'Money Order', 'icon': Icons.attach_money},
       {'title': 'Bill Payments', 'icon': Icons.payment},
-      {'title': 'Postal Holiday', 'icon': Icons.calendar_today},
       {'title': 'Search Nearby\nPost Office', 'icon': Icons.location_on},
       {'title': 'Fines', 'icon': Icons.gavel},
+      {'title': 'Postal Hotel Booking', 'icon': Icons.hotel},
     ];
 
     return Scaffold(
@@ -233,7 +233,7 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: Image.asset(
-                      "assets/post_off.png",
+                      "assets/post1.jpeg",
                       width: double.infinity,
                       height: 150,
                       fit: BoxFit.cover,
@@ -367,53 +367,60 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
             ),
             const SizedBox(height: 12.0),
             SizedBox(
-              height: 150,
-              child: FutureBuilder<List<String>>(
-                future: _fetchNewsImages(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  final images = snapshot.data ?? [];
-                  if (images.isEmpty) {
-                    return const Center(child: Text('No news images.'));
-                  }
-                  return PageView.builder(
-                    controller: _newsPageController,
-                    itemCount: images.length,
-                    onPageChanged: (int page) {
-                      setState(() {
-                        _currentNewsPage = page;
-                      });
-                    },
-                    itemBuilder: (context, index) {
-                      return Card(
-                        margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.network(
-                            images[index],
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(
-                              color: Colors.grey[300],
-                              child: const Icon(Icons.broken_image,
-                                  size: 48, color: Colors.grey),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  );
+              height: 180,
+              child: PageView(
+                controller: _newsPageController,
+                onPageChanged: (int page) {
+                  setState(() {
+                    _currentNewsPage = page;
+                  });
                 },
+                children: const [
+                  Card(
+                    margin: EdgeInsets.symmetric(horizontal: 4.0),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      child: Image(
+                        image: AssetImage('assets/news1.jpg'),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                      ),
+                    ),
+                  ),
+                  Card(
+                    margin: EdgeInsets.symmetric(horizontal: 4.0),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      child: Image(
+                        image: AssetImage('assets/news2.png'),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                      ),
+                    ),
+                  ),
+                  Card(
+                    margin: EdgeInsets.symmetric(horizontal: 4.0),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      child: Image(
+                        image: AssetImage('assets/news3.jpg'),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(_newsImageCount, (index) {
+              children: List.generate(3, (index) {
                 return Container(
                   width: 8.0,
                   height: 8.0,
@@ -422,8 +429,8 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: _currentNewsPage == index
-                        ? Colors.pinkAccent // Changed to pinkAccent
-                        : Colors.white, // Inactive dots are white
+                        ? Colors.pinkAccent
+                        : Colors.white,
                   ),
                 );
               }),
@@ -479,9 +486,9 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
         screen = const BillPaymentsScreen();
         iconColor = Colors.orange; // Notifications
         break;
-      case 'Postal Holiday':
-        screen = const PostalHolidayScreen();
-        iconColor = Colors.purple; // Profile
+      case 'Postal Hotel Booking':
+        screen = const PostalHotelBookingScreen();
+        iconColor = Colors.blue; // Changed to blue
         break;
       case 'Search Nearby Post Office':
         screen = const SearchPostOfficeScreen();

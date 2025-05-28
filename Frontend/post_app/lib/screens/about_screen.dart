@@ -64,7 +64,7 @@ class AboutScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     const Text(
-                      'Key features include parcel tracking, money order services, bill payments, postal holiday information, searching for nearby post offices, fines information, and stamp collection details.',
+                      'Key features include parcel tracking, money order services, bill payments, postal hotel booking information, searching for nearby post offices, fines information, and stamp collection details.',
                       style: TextStyle(fontSize: 16),
                     ),
                     const SizedBox(height: 24),

@@ -23,8 +23,8 @@ class HelpSupportScreen extends StatelessWidget {
                 'You can track your parcel by entering the tracking number on the Parcel Tracking screen.'),
             _buildFAQItem('How can I pay bills?',
                 'Navigate to the Bill Payments screen and select the bill type.'),
-            _buildFAQItem('Where can I find postal holidays?',
-                'Check the Postal Holiday section on the customer dashboard.'),
+            _buildFAQItem('Where can I find postal hotel bookings?',
+                'Check the Postal Hotel Booking section on the customer dashboard.'),
             const SizedBox(height: 24.0),
             const Text(
               'Contact Details',

@@ -4,7 +4,7 @@ import 'package:post_app/services/mail_api_service.dart';
 import 'package:post_app/models/mail_model.dart'; // Assuming MailModel is used for parcels
 import 'package:post_app/services/token_provider.dart'; // Import TokenProvider
 import 'package:firebase_auth/firebase_auth.dart'; // Import Firebase Auth
- 
+
 class ParcelTrackingScreen extends StatefulWidget {
   const ParcelTrackingScreen({super.key});
 
@@ -71,7 +71,7 @@ class _ParcelTrackingScreenState extends State<ParcelTrackingScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Parcel Tracking'),
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: Colors.red, // Changed to red
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -84,7 +84,7 @@ class _ParcelTrackingScreenState extends State<ParcelTrackingScreen> {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.blueAccent,
+                color: Colors.red, // Changed to red
               ),
               textAlign: TextAlign.center,
             ),
@@ -96,14 +96,15 @@ class _ParcelTrackingScreenState extends State<ParcelTrackingScreen> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
-                suffixIcon: const Icon(Icons.search, color: Colors.blueAccent),
+                suffixIcon: const Icon(Icons.search,
+                    color: Colors.red), // Changed to red
               ),
             ),
             const SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: _trackParcel,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueAccent,
+                backgroundColor: Colors.red, // Changed to red
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
@@ -115,8 +116,7 @@ class _ParcelTrackingScreenState extends State<ParcelTrackingScreen> {
               ),
             ),
             const SizedBox(height: 20.0),
-            if (_isLoading)
-              const Center(child: CircularProgressIndicator()),
+            if (_isLoading) const Center(child: CircularProgressIndicator()),
             if (_error != null)
               Center(
                 child: Text(
@@ -144,7 +144,8 @@ class _ParcelTrackingScreenState extends State<ParcelTrackingScreen> {
                             ),
                           ),
                           const SizedBox(height: 8.0),
-                          Text('Status: ${parcel.status.toString().split('.').last}'),
+                          Text(
+                              'Status: ${parcel.status.toString().split('.').last}'),
                           Text('Sender: ${parcel.senderName}'),
                           Text('Receiver: ${parcel.receiverName}'),
                           Text('Address: ${parcel.receiverAddress}'),
