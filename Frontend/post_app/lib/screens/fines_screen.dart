@@ -55,7 +55,7 @@ class _FinesScreenState extends State<FinesScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Pay Traffic Fine'),
-        backgroundColor: Colors.pinkAccent,
+        backgroundColor: Colors.redAccent,
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -79,7 +79,7 @@ class _FinesScreenState extends State<FinesScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.pinkAccent),
+                      borderSide: const BorderSide(color: Colors.redAccent),
                     ),
                   ),
                   items: _typeofFines.map((type) {
@@ -128,7 +128,7 @@ class _FinesScreenState extends State<FinesScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.pinkAccent),
+                      borderSide: const BorderSide(color: Colors.redAccent),
                     ),
                   ),
                 ),
@@ -140,12 +140,12 @@ class _FinesScreenState extends State<FinesScreen> {
                 backgroundColor: WidgetStateProperty.resolveWith<Color>(
                   (Set<WidgetState> states) {
                     if (states.contains(WidgetState.hovered)) {
-                      return Colors.yellow;
+                      return Colors.red.shade300;
                     }
-                    return Colors.grey.shade300;
+                    return Colors.redAccent;
                   },
                 ),
-                foregroundColor: WidgetStateProperty.all(Colors.black),
+                foregroundColor: WidgetStateProperty.all(Colors.white),
                 shape: WidgetStateProperty.all(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),

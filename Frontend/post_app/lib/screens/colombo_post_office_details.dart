@@ -58,7 +58,7 @@ class ColomboPostOfficeDetails extends StatelessWidget {
          backgroundColor: Colors.green[100],
         foregroundColor: const Color.fromARGB(255, 9, 5, 5),
       ),
-      backgroundColor: Colors.green[50],
+      backgroundColor: const Color.fromARGB(255, 245, 246, 245),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView.builder(
