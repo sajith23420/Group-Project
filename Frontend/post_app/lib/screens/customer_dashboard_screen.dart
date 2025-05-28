@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async'; // For PageController and Timer if needed for auto-scroll
 
 // Import service screens
 import 'package:post_app/screens/parcel_tracking_screen.dart';
@@ -8,14 +7,14 @@ import 'package:post_app/screens/bill_payments_screen.dart';
 import 'package:post_app/screens/postal_holiday_screen.dart';
 import 'package:post_app/screens/search_post_office_screen.dart';
 import 'package:post_app/screens/fines_screen.dart';
-import 'package:post_app/screens/stamp_collection_screen.dart';
 import 'package:post_app/screens/login_screen.dart'; // For logout
 
 class CustomerDashboardScreen extends StatefulWidget {
   const CustomerDashboardScreen({super.key});
 
   @override
-  State<CustomerDashboardScreen> createState() => _CustomerDashboardScreenState();
+  State<CustomerDashboardScreen> createState() =>
+      _CustomerDashboardScreenState();
 }
 
 class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
@@ -36,11 +35,14 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
     final hour = DateTime.now().hour;
     if (hour < 12) {
       _greeting = 'Good Morning';
-    } else if (hour == 12) { // 12:00 PM to 12:59 PM
+    } else if (hour == 12) {
+      // 12:00 PM to 12:59 PM
       _greeting = 'Good Afternoon';
-    } else if (hour < 18) { // 1:00 PM (13:00) to 5:59 PM (17:59)
+    } else if (hour < 18) {
+      // 1:00 PM (13:00) to 5:59 PM (17:59)
       _greeting = 'Good Evening';
-    } else { // 6:00 PM (18:00) onwards
+    } else {
+      // 6:00 PM (18:00) onwards
       _greeting = 'Good Night';
     }
   }
@@ -60,7 +62,7 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
       {'title': 'Postal Holiday', 'icon': Icons.calendar_today},
       {'title': 'Search Nearby\nPost Office', 'icon': Icons.location_on},
       {'title': 'Fines', 'icon': Icons.gavel},
-      {'title': 'Stamp Collection', 'icon': Icons.collections_bookmark},
+      // Removed 'Stamp Collection' from services list
     ];
 
     return Scaffold(
@@ -85,7 +87,10 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
               accountName: const Text("User Name"), // Placeholder
               accountEmail: const Text("user.email@example.com"), // Placeholder
               currentAccountPicture: CircleAvatar(
-                backgroundColor: Theme.of(context).platform == TargetPlatform.iOS ? Colors.blue : Colors.white,
+                backgroundColor:
+                    Theme.of(context).platform == TargetPlatform.iOS
+                        ? Colors.blue
+                        : Colors.white,
                 child: const Text(
                   "U", // Placeholder
                   style: TextStyle(fontSize: 40.0),
@@ -155,12 +160,15 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                 child: Text(
                   '$_greeting, User Name!\n(Header Image Placeholder)',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.blueGrey[800]),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.blueGrey[800]),
                 ),
               ),
             ),
             const SizedBox(height: 24.0),
-            
+
             // Services Grid
             GridView.builder(
               shrinkWrap: true,
@@ -169,11 +177,12 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
                 crossAxisSpacing: 10.0, // Restored spacing
-                mainAxisSpacing: 10.0,  // Restored spacing
+                mainAxisSpacing: 10.0, // Restored spacing
                 childAspectRatio: 0.9,
               ),
               itemBuilder: (context, index) {
-                return _buildServiceCard( // Renamed from _buildServiceGridItem in previous correct version
+                return _buildServiceCard(
+                  // Renamed from _buildServiceGridItem in previous correct version
                   context,
                   services[index]['title'] as String,
                   services[index]['icon'] as IconData,
@@ -201,16 +210,21 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                 itemBuilder: (context, index) {
                   return Card(
                     margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        color: Colors.primaries[index % Colors.primaries.length].withOpacity(0.7),
+                        color: Colors.primaries[index % Colors.primaries.length]
+                            .withOpacity(0.7),
                       ),
                       child: Center(
                         child: Text(
                           'News Image ${index + 1}',
-                          style: const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              fontSize: 20,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -225,7 +239,8 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                 return Container(
                   width: 8.0,
                   height: 8.0,
-                  margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+                  margin: const EdgeInsets.symmetric(
+                      vertical: 10.0, horizontal: 2.0),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: _currentNewsPage == index
@@ -266,9 +281,6 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
       case 'Fines':
         screen = const FinesScreen();
         break;
-      case 'Stamp Collection':
-        screen = const StampCollectionScreen();
-        break;
     }
 
     return Card(
@@ -288,14 +300,19 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(icon, size: 36, color: Theme.of(context).primaryColor), // size from previous good version
+            Icon(icon,
+                size: 36,
+                color: Theme.of(context)
+                    .primaryColor), // size from previous good version
             const SizedBox(height: 8),
-            Padding( // Padding from previous good version
+            Padding(
+              // Padding from previous good version
               padding: const EdgeInsets.symmetric(horizontal: 4.0),
               child: Text(
                 title,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 11), // font size from previous good version
+                style: const TextStyle(
+                    fontSize: 11), // font size from previous good version
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),

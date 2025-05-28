@@ -129,9 +129,9 @@
     },
     {
       "name": "file_selector_macos",
-      "rootUri": "file:///C:/Users/Sajitha/AppData/Local/Pub/Cache/hosted/pub.dev/file_selector_macos-0.9.4+2",
+      "rootUri": "file:///C:/Users/Sajitha/AppData/Local/Pub/Cache/hosted/pub.dev/file_selector_macos-0.9.4+3",
       "packageUri": "lib/",
-      "languageVersion": "3.3"
+      "languageVersion": "3.6"
     },
     {
       "name": "file_selector_platform_interface",
@@ -644,7 +644,7 @@
       "languageVersion": "3.6"
     }
   ],
-  "generated": "2025-05-26T11:40:05.916033Z",
+  "generated": "2025-05-28T18:29:55.270496Z",
   "generator": "pub",
   "generatorVersion": "3.7.2",
   "flutterRoot": "file:///C:/src/flutter",
