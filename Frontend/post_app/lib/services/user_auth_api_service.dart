@@ -1,7 +1,6 @@
 // lib/services/user_auth_api_service.dart
 
 import 'dart:io'; // For File type
-import 'dart:typed_data';
 import 'package:dio/dio.dart'; // For FormData and MultipartFile
 import 'package:flutter/foundation.dart' show kIsWeb;
 

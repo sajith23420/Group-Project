@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PostalHotelBookingScreen extends StatelessWidget {
-  const PostalHotelBookingScreen({Key? key}) : super(key: key);
+  const PostalHotelBookingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
