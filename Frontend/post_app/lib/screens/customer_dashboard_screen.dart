@@ -577,6 +577,6 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
     if (url == null || url.isEmpty) return '';
     if (url.startsWith('http')) return url;
     // Replace with your actual backend base URL
-    return 'http://localhost:3000' + url;
+    return 'http://localhost:3000$url';
   }
 }

@@ -93,7 +93,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       valueStyle: const TextStyle(
                         fontSize: 18, 
                         fontWeight: FontWeight.bold,
-                        color: const Color.fromARGB(255, 106, 240, 135)
+                        color: Color.fromARGB(255, 106, 240, 135)
                       )
                     ),
                   ],
