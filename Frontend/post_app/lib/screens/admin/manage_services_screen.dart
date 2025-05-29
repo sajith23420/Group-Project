@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ManageServicesScreen extends StatefulWidget {
@@ -18,9 +17,6 @@ class _ManageServicesScreenState extends State<ManageServicesScreen> {
     {'title': 'Search Nearby Post Office', 'icon': 'location_on'},
     {'title': 'Fines', 'icon': 'gavel'},
   ];
-
-  List<Map<String, dynamic>> _addedServices = [];
-  bool _isLoading = false;
 
   // Icon mapping
   static const Map<String, IconData> iconMap = {
@@ -42,48 +38,7 @@ class _ManageServicesScreenState extends State<ManageServicesScreen> {
     'book': Icons.book,
   };
 
-  @override
-  void initState() {
-    super.initState();
-    _fetchServices();
-  }
-
-  Future<void> _fetchServices() async {
-    setState(() => _isLoading = true);
-    final snapshot =
-        await FirebaseFirestore.instance.collection('services').get();
-    final allDocs = snapshot.docs.map((doc) => doc.data()).toList();
-    // Filter out originals
-    _addedServices = allDocs
-        .where((s) => !_originalServices.any((o) => o['title'] == s['title']))
-        .toList();
-    setState(() => _isLoading = false);
-  }
-
-  Future<void> _addService(String title, String iconName) async {
-    await FirebaseFirestore.instance
-        .collection('services')
-        .add({'title': title, 'icon': iconName});
-    await _fetchServices();
-  }
-
-  Future<void> _deleteService(String title) async {
-    setState(() => _isLoading = true);
-    final query = await FirebaseFirestore.instance
-        .collection('services')
-        .where('title', isEqualTo: title)
-        .get();
-    for (var doc in query.docs) {
-      await doc.reference.delete();
-    }
-    // Remove from local list immediately for instant UI feedback
-    setState(() {
-      _addedServices.removeWhere((s) => s['title'] == title);
-      _isLoading = false;
-    });
-    // Optionally, you can call _fetchServices() here if you want to re-sync from Firestore
-    // await _fetchServices();
-  }
+  final List<Map<String, dynamic>> _addedServices = [];
 
   void _showAddServiceDialog() {
     String newServiceName = '';
@@ -106,7 +61,10 @@ class _ManageServicesScreenState extends State<ManageServicesScreen> {
         return StatefulBuilder(
           builder: (context, setStateDialog) {
             return AlertDialog(
-              title: const Text('Add New Service'),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+              title: const Text('Add New Service',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -115,7 +73,7 @@ class _ManageServicesScreenState extends State<ManageServicesScreen> {
                         const InputDecoration(labelText: 'Service Name'),
                     onChanged: (value) => newServiceName = value,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 14),
                   Wrap(
                     spacing: 8,
                     children: icons.map((iconName) {
@@ -138,11 +96,18 @@ class _ManageServicesScreenState extends State<ManageServicesScreen> {
                   child: const Text('Cancel'),
                 ),
                 ElevatedButton(
-                  onPressed: () async {
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal[400],
+                  ),
+                  onPressed: () {
                     if (newServiceName.trim().isNotEmpty &&
                         selectedIconName != null) {
-                      await _addService(
-                          newServiceName.trim(), selectedIconName!);
+                      setState(() {
+                        _addedServices.add({
+                          'title': newServiceName.trim(),
+                          'icon': selectedIconName,
+                        });
+                      });
                       Navigator.of(context).pop();
                     }
                   },
@@ -156,99 +121,130 @@ class _ManageServicesScreenState extends State<ManageServicesScreen> {
     );
   }
 
+  void _deleteService(int index, bool isOriginal) {
+    if (!isOriginal) {
+      setState(() {
+        _addedServices.removeAt(index - _originalServices.length);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final allServices = [..._originalServices, ..._addedServices];
     return Scaffold(
+      backgroundColor: Colors.blue[50],
       appBar: AppBar(
-        backgroundColor: Colors.purple[100],
+        backgroundColor: Colors.blue[100],
         title: const Text('Manage Services',
-            style: TextStyle(color: Colors.black)),
+            style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 24)),
         iconTheme: const IconThemeData(color: Colors.black),
-        elevation: 1,
+        elevation: 2,
+        centerTitle: true,
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: _showAddServiceDialog,
-        backgroundColor: Colors.purple[400],
-        tooltip: 'Add Service',
-        child: const Icon(Icons.add, color: Colors.white),
+        backgroundColor: Colors.blue[400],
+        icon: const Icon(Icons.add, color: Colors.white),
+        label: const Text('Add New Service',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('All Services',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: GridView.builder(
-                      itemCount: _addedServices.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 18,
-                        mainAxisSpacing: 18,
-                        childAspectRatio: 1.2,
-                      ),
-                      itemBuilder: (context, index) {
-                        final service = _addedServices[index];
-                        final iconData =
-                            iconMap[service['icon']] ?? Icons.extension;
-                        return Card(
-                          color: Colors.white,
-                          elevation: 3,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          child: Stack(
+      body: Padding(
+        padding: const EdgeInsets.all(18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('All Services',
+                style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue)),
+            const SizedBox(height: 18),
+            Expanded(
+              child: GridView.builder(
+                itemCount: allServices.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 20,
+                  mainAxisSpacing: 20,
+                  childAspectRatio: 1.1,
+                ),
+                itemBuilder: (context, index) {
+                  final service = allServices[index];
+                  final iconData = iconMap[service['icon']] ?? Icons.extension;
+                  final isOriginal = index < _originalServices.length;
+                  return Card(
+                    color: Colors.blue[50],
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: Stack(
+                      children: [
+                        Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(iconData,
-                                        size: 40, color: Colors.purple[400]),
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      service['title'],
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 15),
+                              Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.blue[100],
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.blue.withOpacity(0.13),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 4),
                                     ),
                                   ],
                                 ),
+                                padding: const EdgeInsets.all(16),
+                                child: Icon(iconData,
+                                    size: 38, color: Colors.blue[700]),
                               ),
-                              Positioned(
-                                top: 8,
-                                right: 8,
-                                child: IconButton(
-                                  icon: const Icon(Icons.delete,
-                                      color: Colors.red, size: 22),
-                                  onPressed: () async {
-                                    await _deleteService(service['title']);
-                                  },
+                              const SizedBox(height: 16),
+                              Text(
+                                service['title'],
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 16,
+                                  color: Colors.black87,
                                 ),
                               ),
                             ],
                           ),
-                        );
-                      },
+                        ),
+                        if (!isOriginal)
+                          Positioned(
+                            top: 6,
+                            right: 6,
+                            child: IconButton(
+                              icon: const Icon(Icons.delete,
+                                  color: Colors.red, size: 22),
+                              tooltip: 'Delete Service',
+                              onPressed: () =>
+                                  _deleteService(index, isOriginal),
+                            ),
+                          ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  Center(
-                    child: Text(
-                      'Tap the + button to add a new service.',
-                      style: TextStyle(color: Colors.purple[300]),
-                    ),
-                  ),
-                ],
+                  );
+                },
               ),
             ),
+            const SizedBox(height: 18),
+            Center(
+              child: Text(
+                'You can add or delete your own services. Default services cannot be deleted.',
+                style: TextStyle(color: Colors.blue[300], fontSize: 15),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
