@@ -227,6 +227,13 @@ class _AdminParcelTrackingControlScreenState
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.pinkAccent,
+        foregroundColor: Colors.white,
+        onPressed: _showAddParcelDialog,
+        tooltip: 'Add Parcel',
+        child: const Icon(Icons.add),
+      ),
     );
   }
 
