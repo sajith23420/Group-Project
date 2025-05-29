@@ -4,11 +4,12 @@ import 'package:post_app/providers/user_provider.dart'; // Import UserProvider
 import 'package:post_app/models/user_model.dart'; // Import UserModel
 import 'package:post_app/screens/login_screen.dart'; // Import LoginScreen
 import 'package:cached_network_image/cached_network_image.dart'; // Import CachedNetworkImage
+import 'package:fl_chart/fl_chart.dart';
 
 // Import admin action screens
 import 'package:post_app/screens/admin/manage_users_screen.dart';
 import 'package:post_app/screens/admin/manage_services_screen.dart';
-import 'package:post_app/screens/admin/system_settings_screen.dart';
+// import 'package:post_app/screens/admin/system_settings_screen.dart';
 import 'package:post_app/screens/admin/admin_news_carousel_screen.dart';
 import 'package:post_app/screens/admin/admin_parcel_tracking_control_screen.dart'; // Import the new screen
 
@@ -27,6 +28,30 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   Color _currentThemeColor = Colors.indigo;
   Color _currentHeaderBg = Colors.indigo.shade50;
   Color _currentHeaderIcon = Colors.indigo;
+
+  // Admin actions for dashboard
+  final List<Map<String, dynamic>> adminActions = [
+    {
+      'title': 'Manage Users',
+      'icon': Icons.people_outline,
+      'color': Colors.blue
+    },
+    {
+      'title': 'Manage Services',
+      'icon': Icons.settings_applications_outlined,
+      'color': Colors.orange
+    },
+    {
+      'title': 'Manage News Carousel',
+      'icon': Icons.newspaper,
+      'color': Colors.pinkAccent
+    },
+    {
+      'title': 'Parcel Tracking Control',
+      'icon': Icons.local_shipping_outlined,
+      'color': Colors.amber
+    },
+  ];
 
   // Helper to update theme color based on action
   void _setThemeForAction(String title) {
@@ -68,32 +93,23 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final userProvider = Provider.of<UserProvider>(context);
     final UserModel? currentUser = userProvider.user;
 
-    final List<Map<String, dynamic>> adminActions = [
-      {
-        'title': 'Manage Users',
-        'icon': Icons.people_outline,
-        'color': Colors.blue
-      },
-      {
-        'title': 'Manage Services',
-        'icon': Icons.settings_applications_outlined,
-        'color': Colors.orange
-      },
-      {
-        'title': 'System Settings',
-        'icon': Icons.settings_outlined,
-        'color': Colors.teal
-      },
-      {
-        'title': 'Manage News Carousel',
-        'icon': Icons.newspaper,
-        'color': Colors.pinkAccent
-      },
-      {
-        'title': 'Parcel Tracking Control',
-        'icon': Icons.local_shipping_outlined,
-        'color': Colors.amber
-      },
+    // Sample data for the chart (replace with real data as needed)
+    final List<BarChartGroupData> barGroups = [
+      BarChartGroupData(
+          x: 0, barRods: [BarChartRodData(toY: 12, color: Colors.indigo)]),
+      BarChartGroupData(
+          x: 1, barRods: [BarChartRodData(toY: 8, color: Colors.deepPurple)]),
+      BarChartGroupData(
+          x: 2, barRods: [BarChartRodData(toY: 5, color: Colors.pink)]),
+      BarChartGroupData(
+          x: 3, barRods: [BarChartRodData(toY: 15, color: Colors.amber[800])]),
+    ];
+
+    final List<String> statusLabels = [
+      'Delivered',
+      'In Transit',
+      'Pending',
+      'Returned',
     ];
 
     String greeting = _getGreeting();
@@ -268,6 +284,71 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 );
               },
             ),
+            const SizedBox(height: 20),
+            // --- Beautiful Chart Section ---
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Parcels by Status",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      height: 220,
+                      child: BarChart(
+                        BarChartData(
+                          alignment: BarChartAlignment.spaceAround,
+                          maxY: 20,
+                          barTouchData: BarTouchData(enabled: true),
+                          titlesData: FlTitlesData(
+                            leftTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                  showTitles: true, reservedSize: 28),
+                            ),
+                            bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                getTitlesWidget:
+                                    (double value, TitleMeta meta) {
+                                  final idx = value.toInt();
+                                  return Padding(
+                                    padding: const EdgeInsets.only(top: 8.0),
+                                    child: Text(
+                                      idx >= 0 && idx < statusLabels.length
+                                          ? statusLabels[idx]
+                                          : '',
+                                      style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            rightTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: false)),
+                            topTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: false)),
+                          ),
+                          borderData: FlBorderData(show: false),
+                          gridData:
+                              FlGridData(show: true, horizontalInterval: 5),
+                          barGroups: barGroups,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -305,9 +386,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         cardColor = Colors.deepPurple.shade50;
         break;
       case 'System Settings':
-        screenToNavigate = const SystemSettingsScreen();
-        iconColor = Colors.teal;
-        cardColor = Colors.teal.shade50;
+        // screenToNavigate = const SystemSettingsScreen();
+        // iconColor = Colors.teal;
+        // cardColor = Colors.teal.shade50;
         break;
       case 'Manage News Carousel':
         screenToNavigate = const AdminNewsCarouselScreen();

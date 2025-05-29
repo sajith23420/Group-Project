@@ -78,9 +78,7 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
       {'title': 'Search Nearby\nPost Office', 'icon': Icons.location_on},
       {'title': 'Fines', 'icon': Icons.gavel},
       {'title': 'Postal Holiday', 'icon': Icons.hotel},
-    ];
-
-    ///
+    ];//
 
     return Scaffold(
       key: _scaffoldKey,
@@ -560,6 +558,6 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
     if (url == null || url.isEmpty) return '';
     if (url.startsWith('http')) return url;
     // Replace with your actual backend base URL
-    return 'http://localhost:3000' + url;
+    return 'http://localhost:3000$url';
   }
 }

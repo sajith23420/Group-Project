@@ -17,41 +17,6 @@ class _AdminNewsCarouselScreenState extends State<AdminNewsCarouselScreen> {
   final ImagePicker _picker = ImagePicker();
   bool _isUploading = false;
 
-  Future<void> _pickAndUploadImage() async {
-    final XFile? pickedFile =
-        await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile == null) return;
-    setState(() {
-      _isUploading = true;
-    });
-    try {
-      final fileName = DateTime.now().millisecondsSinceEpoch.toString();
-      final ref = FirebaseStorage.instance.ref().child('news_images/$fileName');
-      String url;
-      if (kIsWeb) {
-        // For web, upload as bytes
-        final bytes = await pickedFile.readAsBytes();
-        await ref.putData(bytes);
-      } else {
-        // For mobile/desktop, upload as file
-        final file = File(pickedFile.path);
-        await ref.putFile(file);
-      }
-      url = await ref.getDownloadURL();
-      await FirebaseFirestore.instance
-          .collection('news_carousel')
-          .add({'imageUrl': url, 'timestamp': FieldValue.serverTimestamp()});
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Image uploaded successfully!')));
-    } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Upload failed: $e')));
-    } finally {
-      setState(() {
-        _isUploading = false;
-      });
-    }
-  }
 
   Future<void> _deleteImage(String docId, String imageUrl) async {
     try {
