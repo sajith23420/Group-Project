@@ -185,8 +185,7 @@ class _ManageServicesScreenState extends State<ManageServicesScreen> {
                   const SizedBox(height: 16),
                   Expanded(
                     child: GridView.builder(
-                      itemCount:
-                          _originalServices.length + _addedServices.length,
+                      itemCount: _addedServices.length,
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
@@ -195,15 +194,11 @@ class _ManageServicesScreenState extends State<ManageServicesScreen> {
                         childAspectRatio: 1.2,
                       ),
                       itemBuilder: (context, index) {
-                        final bool isOriginal =
-                            index < _originalServices.length;
-                        final service = isOriginal
-                            ? _originalServices[index]
-                            : _addedServices[index - _originalServices.length];
+                        final service = _addedServices[index];
                         final iconData =
                             iconMap[service['icon']] ?? Icons.extension;
                         return Card(
-                          color: isOriginal ? Colors.purple[50] : Colors.white,
+                          color: Colors.white,
                           elevation: 3,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18),
@@ -227,25 +222,17 @@ class _ManageServicesScreenState extends State<ManageServicesScreen> {
                                   ],
                                 ),
                               ),
-                              if (isOriginal)
-                                const Positioned(
-                                  top: 8,
-                                  right: 8,
-                                  child: Icon(Icons.lock,
-                                      color: Colors.grey, size: 20),
-                                )
-                              else
-                                Positioned(
-                                  top: 8,
-                                  right: 8,
-                                  child: IconButton(
-                                    icon: const Icon(Icons.delete,
-                                        color: Colors.red, size: 22),
-                                    onPressed: () async {
-                                      await _deleteService(service['title']);
-                                    },
-                                  ),
+                              Positioned(
+                                top: 8,
+                                right: 8,
+                                child: IconButton(
+                                  icon: const Icon(Icons.delete,
+                                      color: Colors.red, size: 22),
+                                  onPressed: () async {
+                                    await _deleteService(service['title']);
+                                  },
                                 ),
+                              ),
                             ],
                           ),
                         );
