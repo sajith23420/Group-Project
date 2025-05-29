@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
-
-// Import service screens
 import 'package:post_app/screens/parcel_tracking_screen.dart';
 import 'package:post_app/screens/money_order_screen.dart';
 import 'package:post_app/screens/bill_payments_screen.dart';
-import 'package:post_app/screens/postal_holiday_screen.dart';
 import 'package:post_app/screens/search_post_office_screen.dart';
 import 'package:post_app/screens/fines_screen.dart';
-import 'package:post_app/screens/login_screen.dart'; // For logout
+import 'package:post_app/screens/login_screen.dart';
+import 'package:post_app/screens/feedbacks_page.dart';
+import 'package:provider/provider.dart'; // Import Provider
+import 'package:post_app/providers/user_provider.dart'; // Import UserProvider
+import 'package:post_app/models/user_model.dart'; // Import UserModel
+import 'package:cached_network_image/cached_network_image.dart'; // Import CachedNetworkImage
+import 'package:post_app/screens/postal_holiday_screen.dart'; // Import PostalHolidayScreen
+// For logout
 
 class CustomerDashboardScreen extends StatefulWidget {
   const CustomerDashboardScreen({super.key});
@@ -20,15 +24,15 @@ class CustomerDashboardScreen extends StatefulWidget {
 class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String _greeting = '';
+  // String? _userName; // Will be replaced by UserProvider
   final PageController _newsPageController = PageController();
   int _currentNewsPage = 0;
-  final int _newsImageCount = 3; // Number of images in the carousel
 
   @override
   void initState() {
     super.initState();
     _setGreeting();
-    // Optional: Auto-scroll for news carousel can be enabled here
+    // _fetchUserName(); // No longer needed, UserProvider will supply user data
   }
 
   void _setGreeting() {
@@ -36,16 +40,19 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
     if (hour < 12) {
       _greeting = 'Good Morning';
     } else if (hour == 12) {
-      // 12:00 PM to 12:59 PM
       _greeting = 'Good Afternoon';
     } else if (hour < 18) {
-      // 1:00 PM (13:00) to 5:59 PM (17:59)
       _greeting = 'Good Evening';
     } else {
-      // 6:00 PM (18:00) onwards
-      _greeting = 'Good Night';
+      _greeting = 'Good Evening';
     }
   }
+
+  // void _fetchUserName() async { // No longer needed
+  //   setState(() {
+  //     _userName = 'User';
+  //   });
+  // }
 
   @override
   void dispose() {
@@ -55,85 +62,152 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Access UserProvider
+    final userProvider = Provider.of<UserProvider>(context);
+    final UserModel? currentUser = userProvider.user;
+
+    // DEBUG: Print user info
+    print('DEBUG: currentUser.email = \\${currentUser?.email}');
+    print(
+        'DEBUG: currentUser.profilePictureUrl = \\${currentUser?.profilePictureUrl}');
+
     final List<Map<String, dynamic>> services = [
       {'title': 'Parcel Tracking', 'icon': Icons.local_shipping},
       {'title': 'Money Order', 'icon': Icons.attach_money},
       {'title': 'Bill Payments', 'icon': Icons.payment},
-      {'title': 'Postal Holiday', 'icon': Icons.calendar_today},
       {'title': 'Search Nearby\nPost Office', 'icon': Icons.location_on},
       {'title': 'Fines', 'icon': Icons.gavel},
-      // Removed 'Stamp Collection' from services list
+      {'title': 'Postal Holiday', 'icon': Icons.hotel},
     ];
+
+    ///
 
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(
-        title: const Text('SL Post'),
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            onPressed: () {
-              _scaffoldKey.currentState?.openEndDrawer();
-            },
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(15),
+            bottomRight: Radius.circular(15),
           ),
-        ],
+          child: AppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: Colors.pinkAccent,
+            title: Row(
+              children: [
+                Image.asset("assets/post_icon.png", height: 40),
+                const SizedBox(width: 10),
+              ],
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(
+                  Icons.account_circle,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  _scaffoldKey.currentState?.openEndDrawer();
+                },
+              ),
+            ],
+          ),
+        ),
       ),
       endDrawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
             UserAccountsDrawerHeader(
-              accountName: const Text("User Name"), // Placeholder
-              accountEmail: const Text("user.email@example.com"), // Placeholder
+              accountName: Text(currentUser?.displayName ??
+                  "User Name"), // Use displayName from provider
+              accountEmail: Text(currentUser?.email ??
+                  "user.email@example.com"), // Use email from provider
               currentAccountPicture: CircleAvatar(
                 backgroundColor:
                     Theme.of(context).platform == TargetPlatform.iOS
                         ? Colors.blue
                         : Colors.white,
-                child: const Text(
-                  "U", // Placeholder
-                  style: TextStyle(fontSize: 40.0),
-                ),
+                child: (currentUser?.profilePictureUrl != null &&
+                        currentUser!.profilePictureUrl!.isNotEmpty)
+                    ? ClipOval(
+                        child: CachedNetworkImage(
+                          imageUrl: currentUser.profilePictureUrl!
+                                  .startsWith('http')
+                              ? currentUser.profilePictureUrl!
+                              : getFullImageUrl(currentUser.profilePictureUrl),
+                          placeholder: (context, url) =>
+                              const CircularProgressIndicator(),
+                          errorWidget: (context, url, error) => Icon(
+                              Icons.account_circle,
+                              size: 70,
+                              color: Colors.grey[400]),
+                          fit: BoxFit.cover,
+                          width: 70,
+                          height: 70,
+                        ),
+                      )
+                    : (currentUser?.email != null &&
+                            currentUser!.email!.isNotEmpty
+                        ? ClipOval(
+                            child: Image.network(
+                              'https://ui-avatars.com/api/?name=${Uri.encodeComponent(currentUser.email!)}&background=F48FB1&color=fff&size=140',
+                              width: 70,
+                              height: 70,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : Icon(
+                            Icons.account_circle,
+                            size: 70,
+                            color: Colors.grey[400],
+                          )),
               ),
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
-              ),
+              decoration: BoxDecoration(color: Theme.of(context).primaryColor),
             ),
             ListTile(
               leading: const Icon(Icons.edit_outlined),
               title: const Text('Edit Profile'),
               onTap: () {
-                Navigator.pop(context); // Close the drawer
-                // TODO: Navigate to Edit Profile Screen
+                Navigator.pop(context); // Close drawer
+                // Navigate to EditProfileScreen - Assuming MyProfileScreen handles this or direct navigation
+                Navigator.pushNamed(context,
+                    '/my_profile'); // Or directly to edit if MyProfileScreen is not the hub
               },
             ),
             ListTile(
               leading: const Icon(Icons.payment_outlined),
               title: const Text('Add Payment Card'),
               onTap: () {
-                Navigator.pop(context); // Close the drawer
-                // TODO: Navigate to Add Payment Card Screen
+                Navigator.pop(context);
+                // TODO: Navigate to Add Payment Card screen
               },
             ),
             ListTile(
               leading: const Icon(Icons.settings_outlined),
               title: const Text('Settings'),
               onTap: () {
-                Navigator.pop(context); // Close the drawer
-                // TODO: Navigate to Settings Screen
+                Navigator.pop(context);
+                // TODO: Navigate to a general settings screen if different from NotificationSettingsScreen
               },
             ),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.logout_outlined),
               title: const Text('Log Out'),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
+              onTap: () async {
+                // Make onPressed async
+                Navigator.pop(context); // Close drawer
+                // Clear UserProvider
+                Provider.of<UserProvider>(context, listen: false).clearUser();
+
+                // TODO: Implement actual Firebase logout logic if not handled by clearing provider and navigating
+                // await FirebaseAuth.instance.signOut(); // Example if using Firebase Auth directly for signout
+
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => const LoginScreen()),
-                  (Route<dynamic> route) => false, // Remove all routes
+                  (Route<dynamic> route) => false,
                 );
               },
             ),
@@ -145,44 +219,157 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            // Header Image and Greeting
+            const SizedBox(height: 16),
+            const Text(
+              "Dashboard",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'SansSerif',
+                color: Color.fromARGB(255, 0, 0, 0), // Set to #FFD500
+              ),
+            ),
+            const SizedBox(height: 16),
             Container(
               height: 150,
               decoration: BoxDecoration(
                 color: Colors.blueGrey[100],
-                borderRadius: BorderRadius.circular(12),
-                // image: DecorationImage(
-                //   image: AssetImage('assets/your_header_image.png'),
-                //   fit: BoxFit.cover,
-                // ),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              child: Center(
-                child: Text(
-                  '$_greeting, User Name!\n(Header Image Placeholder)',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.blueGrey[800]),
-                ),
+              child: Stack(
+                children: [
+                  // Background image
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.asset(
+                      "assets/post1.jpeg",
+                      width: double.infinity,
+                      height: 150,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        width: double.infinity,
+                        height: 150,
+                        color: Colors.grey[300],
+                        child: const Icon(Icons.broken_image,
+                            size: 48, color: Colors.grey),
+                      ),
+                    ),
+                  ),
+                  // Overlay for gradient effect (optional, for text readability)
+                  Container(
+                    width: double.infinity,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomLeft,
+                        end: Alignment.topRight,
+                        colors: [
+                          Colors.black.withOpacity(0.35),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Greeting and name (bottom left)
+                  Positioned(
+                    left: 16,
+                    bottom: 24,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _greeting,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            shadows: [
+                              Shadow(
+                                blurRadius: 4,
+                                color: Colors.black45,
+                                offset: Offset(1, 1),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          currentUser?.displayName ??
+                              "User", // Use displayName from provider
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            shadows: [
+                              Shadow(
+                                blurRadius: 4,
+                                color: Colors.black45,
+                                offset: Offset(1, 1),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Weather icon and temperature (top right)
+                  Positioned(
+                    top: 12,
+                    right: 18,
+                    child: Row(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.8),
+                            shape: BoxShape.circle,
+                          ),
+                          padding: const EdgeInsets.all(4),
+                          child: const Icon(Icons.cloud,
+                              color: Colors.grey, size: 22),
+                        ),
+                        const SizedBox(width: 6),
+                        const Text(
+                          "32°C",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            shadows: [
+                              Shadow(
+                                blurRadius: 4,
+                                color: Colors.black45,
+                                offset: Offset(1, 1),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 24.0),
-
-            // Services Grid
+            const SizedBox(height: 16),
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: services.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
-                crossAxisSpacing: 10.0, // Restored spacing
-                mainAxisSpacing: 10.0, // Restored spacing
+                crossAxisSpacing: 10.0,
+                mainAxisSpacing: 10.0,
                 childAspectRatio: 0.9,
               ),
               itemBuilder: (context, index) {
                 return _buildServiceCard(
-                  // Renamed from _buildServiceGridItem in previous correct version
                   context,
                   services[index]['title'] as String,
                   services[index]['icon'] as IconData,
@@ -190,52 +377,66 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
               },
             ),
             const SizedBox(height: 24.0),
-
-            // Latest News Carousel
             const Text(
               'Latest News',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12.0),
             SizedBox(
-              height: 150,
-              child: PageView.builder(
+              height: 180,
+              child: PageView(
                 controller: _newsPageController,
-                itemCount: _newsImageCount,
                 onPageChanged: (int page) {
                   setState(() {
                     _currentNewsPage = page;
                   });
                 },
-                itemBuilder: (context, index) {
-                  return Card(
-                    margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                children: const [
+                  Card(
+                    margin: EdgeInsets.symmetric(horizontal: 4.0),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.primaries[index % Colors.primaries.length]
-                            .withOpacity(0.7),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'News Image ${index + 1}',
-                          style: const TextStyle(
-                              fontSize: 20,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
-                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      child: Image(
+                        image: AssetImage('assets/news1.jpg'),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
                       ),
                     ),
-                  );
-                },
+                  ),
+                  Card(
+                    margin: EdgeInsets.symmetric(horizontal: 4.0),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      child: Image(
+                        image: AssetImage('assets/news2.png'),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                      ),
+                    ),
+                  ),
+                  Card(
+                    margin: EdgeInsets.symmetric(horizontal: 4.0),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      child: Image(
+                        image: AssetImage('assets/news3.jpg'),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            // Dot indicators for news carousel
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(_newsImageCount, (index) {
+              children: List.generate(3, (index) {
                 return Container(
                   width: 8.0,
                   height: 8.0,
@@ -244,11 +445,38 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: _currentNewsPage == index
-                        ? Theme.of(context).primaryColor
-                        : Colors.grey,
+                        ? Colors.pinkAccent
+                        : Colors.white,
                   ),
                 );
               }),
+            ),
+            // Feedback button moved to the bottom
+            const SizedBox(height: 24),
+            Center(
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.feedback,
+                    color: Colors.white), // Icon color white
+                label: const Text('Give Feedback',
+                    style: TextStyle(color: Colors.white)), // Text color white
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      Colors.pinkAccent, // Button background pinkAccent
+                  side: const BorderSide(color: Colors.pinkAccent),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  elevation: 0,
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => FeedbacksPage()),
+                  );
+                },
+              ),
             ),
           ],
         ),
@@ -256,36 +484,44 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
     );
   }
 
-  // This was named _buildServiceGridItem in the version that had the carousel
-  // The provided file calls it _buildServiceCard, which is fine.
   Widget _buildServiceCard(BuildContext context, String title, IconData icon) {
     Widget? screen;
     String normalizedTitle = title.replaceAll('\n', ' ');
 
+    Color iconColor;
     switch (normalizedTitle) {
       case 'Parcel Tracking':
         screen = const ParcelTrackingScreen();
+        iconColor = Colors.blue; // Home
         break;
       case 'Money Order':
         screen = const MoneyOrderScreen();
+        iconColor = Colors.green; // About
         break;
       case 'Bill Payments':
         screen = const BillPaymentsScreen();
+        iconColor = Colors.orange; // Notifications
         break;
       case 'Postal Holiday':
         screen = const PostalHolidayScreen();
+        iconColor = Colors.blue;
         break;
       case 'Search Nearby Post Office':
         screen = const SearchPostOfficeScreen();
+        iconColor = Colors.teal; // Custom
         break;
       case 'Fines':
         screen = const FinesScreen();
+        iconColor = Colors.red; // Custom
         break;
+      // Removed: case 'Stamp Collection': ...
+      default:
+        iconColor = Theme.of(context).primaryColor;
     }
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      elevation: 3, // Kept elevation from user's version
+      elevation: 3,
       child: InkWell(
         onTap: () {
           if (screen != null) {
@@ -300,19 +536,14 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(icon,
-                size: 36,
-                color: Theme.of(context)
-                    .primaryColor), // size from previous good version
+            Icon(icon, size: 36, color: iconColor),
             const SizedBox(height: 8),
             Padding(
-              // Padding from previous good version
               padding: const EdgeInsets.symmetric(horizontal: 4.0),
               child: Text(
                 title,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                    fontSize: 11), // font size from previous good version
+                style: const TextStyle(fontSize: 11),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
