@@ -40,8 +40,9 @@ class ResortApiService {
       'offset': offset,
     };
     if (location != null) queryParams['location'] = location;
-    if (amenities != null && amenities.isNotEmpty)
+    if (amenities != null && amenities.isNotEmpty) {
       queryParams['amenities'] = amenities.join(',');
+    }
     if (minPrice != null) queryParams['minPrice'] = minPrice;
     if (maxPrice != null) queryParams['maxPrice'] = maxPrice;
 

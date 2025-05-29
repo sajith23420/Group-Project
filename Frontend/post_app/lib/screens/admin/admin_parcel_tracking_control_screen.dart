@@ -238,12 +238,12 @@ class _AdminParcelTrackingControlScreenState
   }
 
   void _showAddParcelDialog() {
-    final _userIdController = TextEditingController();
-    final _senderNameController = TextEditingController();
-    final _receiverNameController = TextEditingController();
-    final _receiverAddressController = TextEditingController();
-    final _weightController = TextEditingController();
-    final _receiverEmailController =
+    final userIdController = TextEditingController();
+    final senderNameController = TextEditingController();
+    final receiverNameController = TextEditingController();
+    final receiverAddressController = TextEditingController();
+    final weightController = TextEditingController();
+    final receiverEmailController =
         TextEditingController(); // Add email controller
 
     showDialog(
@@ -255,30 +255,30 @@ class _AdminParcelTrackingControlScreenState
             child: ListBody(
               children: <Widget>[
                 TextField(
-                  controller: _senderNameController,
+                  controller: senderNameController,
                   decoration: const InputDecoration(hintText: 'Sender Name'),
                 ),
                 TextField(
-                  controller: _userIdController,
+                  controller: userIdController,
                   decoration: const InputDecoration(hintText: 'Receiver NIC'),
                 ),
                 TextField(
-                  controller: _receiverNameController,
+                  controller: receiverNameController,
                   decoration: const InputDecoration(hintText: 'Receiver Name'),
                 ),
                 TextField(
-                  controller: _receiverAddressController,
+                  controller: receiverAddressController,
                   decoration:
                       const InputDecoration(hintText: 'Receiver Address'),
                 ),
                 TextField(
-                  controller: _weightController,
+                  controller: weightController,
                   decoration: const InputDecoration(hintText: 'Weight (kg)'),
                   keyboardType: TextInputType.number,
                 ),
                 TextField(
                   // Add email text field
-                  controller: _receiverEmailController,
+                  controller: receiverEmailController,
                   decoration: const InputDecoration(hintText: 'Receiver Email'),
                   keyboardType: TextInputType.emailAddress,
                 ),
@@ -296,12 +296,12 @@ class _AdminParcelTrackingControlScreenState
               child: const Text('Add'),
               onPressed: () {
                 _addParcel(
-                  _userIdController.text,
-                  _senderNameController.text,
-                  _receiverNameController.text,
-                  _receiverAddressController.text,
-                  double.tryParse(_weightController.text) ?? 0.0,
-                  _receiverEmailController.text, // Pass email
+                  userIdController.text,
+                  senderNameController.text,
+                  receiverNameController.text,
+                  receiverAddressController.text,
+                  double.tryParse(weightController.text) ?? 0.0,
+                  receiverEmailController.text, // Pass email
                 );
                 Navigator.of(context).pop();
               },
@@ -428,7 +428,7 @@ class _AdminParcelTrackingControlScreenState
       await _mailApiService.deleteParcel(mailId);
       await _fetchAllParcels(); // Refresh the list after deletion
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Parcel ${mailId} deleted successfully.')),
+        SnackBar(content: Text('Parcel $mailId deleted successfully.')),
       );
     } catch (e) {
       // Display the specific error message
