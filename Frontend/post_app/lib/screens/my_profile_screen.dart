@@ -19,8 +19,26 @@ class MyProfileScreen extends StatelessWidget {
     final UserModel? currentUser = userProvider.user;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Profile'),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(15),
+            bottomRight: Radius.circular(15),
+          ),
+          child: AppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: Colors.pinkAccent,
+            title:
+                const Text('My Profile', style: TextStyle(color: Colors.white)),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -30,33 +48,31 @@ class MyProfileScreen extends StatelessWidget {
             const SizedBox(height: 20),
             CircleAvatar(
               radius: 50,
+              backgroundColor: Colors.grey[300],
               child: currentUser?.profilePictureUrl != null &&
                       currentUser!.profilePictureUrl!.isNotEmpty
                   ? ClipOval(
-                      // Clip to make the image circular
                       child: CachedNetworkImage(
                         imageUrl: currentUser.profilePictureUrl!,
                         placeholder: (context, url) =>
                             const CircularProgressIndicator(),
                         errorWidget: (context, url, error) =>
                             const Icon(Icons.person, size: 50),
-                        fit: BoxFit.cover, // Ensure the image covers the circle
-                        width: 100, // Diameter of the circle
-                        height: 100, // Diameter of the circle
+                        fit: BoxFit.cover,
+                        width: 100,
+                        height: 100,
                       ),
                     )
-                  : const Icon(Icons.person, size: 50),
+                  : const Icon(Icons.person, size: 50, color: Colors.grey),
             ),
             const SizedBox(height: 16),
             Text(
-              currentUser?.displayName ??
-                  'User Name', // Display name from provider
+              currentUser?.displayName ?? 'User Name',
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
-              currentUser?.email ??
-                  'user.email@example.com', // Display email from provider
+              currentUser?.email ?? 'user.email@example.com',
               style: TextStyle(fontSize: 16, color: Colors.grey[600]),
             ),
             const SizedBox(height: 30),
@@ -98,14 +114,6 @@ class MyProfileScreen extends StatelessWidget {
             ),
             _buildProfileOption(
               context,
-              icon: Icons.privacy_tip_outlined,
-              title: 'Privacy Policy',
-              onTap: () {
-                // TODO: Show Privacy Policy
-              },
-            ),
-            _buildProfileOption(
-              context,
               icon: Icons.help_outline,
               title: 'Help & Support',
               onTap: () {
@@ -122,6 +130,10 @@ class MyProfileScreen extends StatelessWidget {
                 backgroundColor: Colors.redAccent,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                elevation: 0,
               ),
               onPressed: () async {
                 // Make onPressed async
@@ -162,4 +174,4 @@ class MyProfileScreen extends StatelessWidget {
       ),
     );
   }
-}
+} //kaweesha

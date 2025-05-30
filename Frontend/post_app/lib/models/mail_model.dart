@@ -64,6 +64,7 @@ class CreateMailRequest {
   final String receiverName;
   final String receiverAddress;
   final double weight;
+  final String receiverEmail;
 
   CreateMailRequest({
     required this.userId,
@@ -71,6 +72,7 @@ class CreateMailRequest {
     required this.receiverName,
     required this.receiverAddress,
     required this.weight,
+    required this.receiverEmail,
   });
 
   Map<String, dynamic> toJson() {
@@ -110,5 +112,28 @@ class CreateMailResponse {
       message: json['message'] as String,
       mail: MailModel.fromJson(json['mail'] as Map<String, dynamic>),
     );
+  }
+}
+
+class SendTrackingEmailRequest {
+  final String recipientEmail;
+  final String trackingNumber;
+  final String receiverName;
+  final String senderName;
+
+  SendTrackingEmailRequest({
+    required this.recipientEmail,
+    required this.trackingNumber,
+    required this.receiverName,
+    required this.senderName,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'recipientEmail': recipientEmail,
+      'trackingNumber': trackingNumber,
+      'receiverName': receiverName,
+      'senderName': senderName,
+    };
   }
 }

@@ -13,6 +13,7 @@ class UserModel {
   final DateTime createdAt;
   final DateTime updatedAt;
   final PaymentHistoryRefs? paymentHistoryRefs;
+  final String? address;
 
   UserModel({
     required this.uid,
@@ -24,6 +25,7 @@ class UserModel {
     required this.createdAt,
     required this.updatedAt,
     this.paymentHistoryRefs,
+    this.address,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -40,6 +42,7 @@ class UserModel {
           ? null
           : PaymentHistoryRefs.fromJson(
               json['paymentHistoryRefs'] as Map<String, dynamic>),
+      address: json['address'] as String?,
     );
   }
 
@@ -54,6 +57,7 @@ class UserModel {
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
       'paymentHistoryRefs': paymentHistoryRefs?.toJson(),
+      'address': address,
     };
   }
 
@@ -67,6 +71,7 @@ class UserModel {
     DateTime? createdAt,
     DateTime? updatedAt,
     PaymentHistoryRefs? paymentHistoryRefs,
+    String? address,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
@@ -78,6 +83,7 @@ class UserModel {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       paymentHistoryRefs: paymentHistoryRefs ?? this.paymentHistoryRefs,
+      address: address ?? this.address,
     );
   }
 }
@@ -87,13 +93,18 @@ class UserModel {
 class UpdateUserProfileRequest {
   final String? displayName;
   final String? phoneNumber;
+  final String? email;
+  final String? address;
 
-  UpdateUserProfileRequest({this.displayName, this.phoneNumber});
+  UpdateUserProfileRequest(
+      {this.displayName, this.phoneNumber, this.email, this.address});
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
     if (displayName != null) data['displayName'] = displayName;
     if (phoneNumber != null) data['phoneNumber'] = phoneNumber;
+    if (email != null) data['email'] = email;
+    if (address != null) data['address'] = address;
     return data;
   }
 }

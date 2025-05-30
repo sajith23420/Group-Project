@@ -19,6 +19,7 @@ import 'package:post_app/providers/user_provider.dart'; // Your UserProvider
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+  //
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -79,9 +80,11 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       if (mounted) {
-        String errorMessage = 'Failed to fetch user profile. Please check your network connection and try again.';
+        String errorMessage =
+            'Failed to fetch user profile. Please check your network connection and try again.';
         if (e.toString().contains('Network error')) {
-          errorMessage = 'Network error: Unable to connect to the server. Please check your internet connection.';
+          errorMessage =
+              'Network error: Unable to connect to the server. Please check your internet connection.';
         }
 
         ScaffoldMessenger.of(context).showSnackBar(

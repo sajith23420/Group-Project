@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 //import 'package:path/path.dart';
 //import 'package:post_app/screens/customer_dashboard_screen.dart';
-import 'package:post_app/screens/main_app_shell.dart';
+//import 'package:post_app/screens/main_app_shell.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -39,46 +39,58 @@ class NotificationsScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (Context) {
-                return MainAppShell();
-              }));
-            },
-            icon: Icon(Icons.arrow_back, color: Colors.white)),
-        actions: [
-          SizedBox(
-            width: 56, // Adjust width
-            height: 56, // Adjust height
-            child: IconButton(
-              icon: Icon(Icons.delete,
-                  color: const Color.fromARGB(255, 255, 255, 255),
-                  size: 32), // Adjust icon size
-              tooltip: 'Clear All Notifications',
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(15),
+            bottomRight: Radius.circular(15),
+          ),
+          child: AppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: Colors.pinkAccent,
+            title: const Text(
+              'Notifications',
+              style: TextStyle(color: Colors.white),
+            ),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
               onPressed: () {
-                // Clear notifications logic
+                Navigator.pop(context);
               },
             ),
-          )
-        ],
-        backgroundColor: Colors.pinkAccent,
-        title: const Text(
-          'Notifications',
-          style: TextStyle(color: Colors.white),
+            actions: [
+              SizedBox(
+                width: 56,
+                height: 56,
+                child: IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.white, size: 32),
+                  tooltip: 'Clear All Notifications',
+                  onPressed: () {
+                    // Clear notifications logic
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
               // Render each notification as a Card
               ...notifications.map((notification) => Card(
-                    margin: const EdgeInsets.symmetric(vertical: 4.0),
-                    elevation: 2.0,
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 6.0, horizontal: 2.0),
+                    elevation: 3.0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
                     child: Material(
                       child: InkWell(
+                        borderRadius: BorderRadius.circular(10.0),
                         splashColor: const Color.fromARGB(174, 255, 64, 128),
                         onTap: () {
                           //can add on tap function
@@ -89,7 +101,7 @@ class NotificationsScreen extends StatelessWidget {
                                 Theme.of(context).primaryColor.withOpacity(0.1),
                             child: Icon(
                               notification['icon'] as IconData,
-                              color: Theme.of(context).primaryColor,
+                              color: Colors.pinkAccent,
                             ),
                           ),
                           title: Text(
@@ -112,24 +124,23 @@ class NotificationsScreen extends StatelessWidget {
                       ),
                     ),
                   )),
-              SizedBox(
-                height: 20,
-              ),
-
+              const SizedBox(height: 24),
               SizedBox(
                 width: 200,
                 height: 48,
                 child: ElevatedButton.icon(
-                  icon: Icon(
-                    Icons.done_all,
-                    color: const Color.fromARGB(255, 230, 211, 211),
-                  ),
-                  label: Text(
+                  icon: const Icon(Icons.done_all, color: Colors.white),
+                  label: const Text(
                     "Mark All as Read",
                     style: TextStyle(color: Colors.white),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.pinkAccent,
+                    side: const BorderSide(color: Colors.pinkAccent),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    elevation: 0,
                   ),
                   onPressed: () {
                     // Clear notifications logic

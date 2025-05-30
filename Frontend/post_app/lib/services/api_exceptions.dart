@@ -18,27 +18,26 @@ class ApiException implements Exception {
 }
 
 class NetworkException extends ApiException {
-  NetworkException({String message = "Network error occurred. Please check your connection."})
-      : super(message: message);
+  NetworkException({super.message = "Network error occurred. Please check your connection."});
 }
 
 class AuthenticationException extends ApiException {
-  AuthenticationException({String message = "Authentication failed. Please log in again."})
-      : super(message: message, statusCode: 401);
+  AuthenticationException({super.message = "Authentication failed. Please log in again."})
+      : super(statusCode: 401);
 }
 
 class AuthorizationException extends ApiException {
-  AuthorizationException({String message = "You are not authorized to perform this action."})
-      : super(message: message, statusCode: 403);
+  AuthorizationException({super.message = "You are not authorized to perform this action."})
+      : super(statusCode: 403);
 }
 
 class ValidationException extends ApiException {
   final List<ValidationErrorDetail> details;
 
   ValidationException({
-    String message = "Input validation failed.",
+    super.message = "Input validation failed.",
     required this.details,
-  }) : super(message: message, statusCode: 400, errorData: details.map((d) => d.toJson()).toList());
+  }) : super(statusCode: 400, errorData: details.map((d) => d.toJson()).toList());
 
   @override
   String toString() {
@@ -75,11 +74,11 @@ class ValidationErrorDetail {
 }
 
 class NotFoundException extends ApiException {
-  NotFoundException({String message = "The requested resource was not found."})
-      : super(message: message, statusCode: 404);
+  NotFoundException({super.message = "The requested resource was not found."})
+      : super(statusCode: 404);
 }
 
 class ServerException extends ApiException {
-  ServerException({String message = "An unexpected server error occurred."})
-      : super(message: message, statusCode: 500);
+  ServerException({super.message = "An unexpected server error occurred."})
+      : super(statusCode: 500);
 }

@@ -33,9 +33,9 @@ const fetchUserProfileAndAttach = async (req, res, next) => {
   try {
     const userRef = admin.database().ref(`users/${req.user.uid}`);
     const snapshot = await userRef.once('value');
-    const rawUserProfile = snapshot.val();
+    const userProfile = snapshot.val();
 
-    if (!rawUserProfile) {
+    if (!userProfile) {
       // User profile not found in database, create a basic user
       try {
         const { uid, email, displayName, picture } = req.user; // Extract info from decoded token
@@ -48,7 +48,7 @@ const fetchUserProfileAndAttach = async (req, res, next) => {
           picture || null //profilePictureUrl, take it from picture of firebase auth
         );
 
-        // const userRef = admin.database().ref(`users/${uid}`); // Already have userRef
+        const userRef = admin.database().ref(`users/${uid}`);
         await userRef.set(newUserProfile.toFirestore());
 
         req.dbUser = newUserProfile; // Attach the newly created user to the request
@@ -59,31 +59,8 @@ const fetchUserProfileAndAttach = async (req, res, next) => {
         return res.status(500).send({ error: 'Internal server error creating user profile.' });
       }
     } else {
-      // User profile exists in DB, process it
-      let processedUserProfile = null;
-      if (Array.isArray(rawUserProfile)) {
-        if (rawUserProfile.length > 0 && typeof rawUserProfile[0] === 'object' && rawUserProfile[0] !== null) {
-          console.warn(`User profile for UID ${req.user.uid} from DB was an array, taking first element.`);
-          processedUserProfile = rawUserProfile[0];
-        } else {
-          console.warn(`User profile for UID ${req.user.uid} from DB was an array but not in expected [object] format: ${JSON.stringify(rawUserProfile)}. Treating as malformed.`);
-          // processedUserProfile remains null
-        }
-      } else if (typeof rawUserProfile === 'object' && rawUserProfile !== null) {
-        processedUserProfile = rawUserProfile; // It's already a good object
-      } else {
-        console.warn(`User profile for UID ${req.user.uid} from DB was of unexpected type: ${typeof rawUserProfile}. Treating as malformed.`);
-        // processedUserProfile remains null
-      }
-
-      if (processedUserProfile) {
-        req.dbUser = processedUserProfile; // Attach the existing (and processed) user to the request
-        next();
-      } else {
-        // Malformed existing profile.
-        console.error(`Malformed user profile in DB for UID ${req.user.uid}. Data: ${JSON.stringify(rawUserProfile)}`);
-        return res.status(500).send({ error: 'User profile data in DB is malformed.' });
-      }
+      req.dbUser = userProfile; // Attach the existing user to the request
+      next();
     }
   } catch (error) {
     console.error('Error fetching user profile from database:', error);
