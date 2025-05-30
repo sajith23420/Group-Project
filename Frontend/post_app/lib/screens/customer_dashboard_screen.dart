@@ -10,6 +10,8 @@ import 'package:provider/provider.dart'; // Import Provider
 import 'package:post_app/providers/user_provider.dart'; // Import UserProvider
 import 'package:post_app/models/user_model.dart'; // Import UserModel
 import 'package:cached_network_image/cached_network_image.dart'; // Import CachedNetworkImage
+import 'package:post_app/screens/payment_method_screen.dart';
+import 'package:post_app/screens/postal_holiday_screen.dart';
 // For logout
 
 class CustomerDashboardScreen extends StatefulWidget {
