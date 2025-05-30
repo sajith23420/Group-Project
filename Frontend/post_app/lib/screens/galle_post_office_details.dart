@@ -73,6 +73,21 @@ class GallePostOfficeDetails extends StatelessWidget {
                       '- ${office['services'].join('\n- ')}',
                       style: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 16, 21, 16)),
                     ),
+                    const SizedBox(height: 18),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.asset(
+                        'assets/galle_map.png',
+                        height: 180,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          height: 180,
+                          color: Colors.grey[300],
+                          child: const Center(child: Text('Map not available')),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
