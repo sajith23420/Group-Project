@@ -188,19 +188,6 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.credit_card),
-              title: const Text('Payment Method'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const PaymentMethodScreen(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
               leading: const Icon(Icons.settings_outlined),
               title: const Text('Settings'),
               onTap: () {
