@@ -59,8 +59,8 @@ class KandyPostOfficeDetails extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Kandy Post Offices'),
-        backgroundColor: Colors.deepPurple[100],
-        foregroundColor: const Color.fromARGB(255, 9, 5, 5),
+        backgroundColor: Colors.orange[100],
+        foregroundColor: Colors.black,
       ),
       backgroundColor: const Color.fromARGB(255, 245, 246, 245),
       body: Padding(
@@ -73,8 +73,8 @@ class KandyPostOfficeDetails extends StatelessWidget {
                 borderRadius: BorderRadius.circular(15),
                 child: FlutterMap(
                   options: MapOptions(
-                    initialCenter: LatLng(7.2906, 80.6337),
-                    initialZoom: 14,
+                    initialCenter: LatLng(7.2906, 80.6337), // Kandy
+                    initialZoom: 13.5,
                   ),
                   children: [
                     TileLayer(
@@ -89,7 +89,7 @@ class KandyPostOfficeDetails extends StatelessWidget {
                           height: 40.0,
                           point: LatLng(7.2906, 80.6337),
                           child: const Icon(Icons.location_on,
-                              color: Colors.deepPurple, size: 40),
+                              color: Colors.orange, size: 40),
                         ),
                       ],
                     ),
@@ -118,7 +118,7 @@ class KandyPostOfficeDetails extends StatelessWidget {
                             style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 44, 20, 80),
+                              color: Color.fromARGB(255, 80, 44, 20),
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -148,7 +148,7 @@ class KandyPostOfficeDetails extends StatelessWidget {
                             style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.deepPurple),
+                                color: Colors.orange),
                           ),
                           Text(
                             '- ${office['services'].join('\n- ')}',
