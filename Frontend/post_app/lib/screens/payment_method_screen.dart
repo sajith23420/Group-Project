@@ -130,7 +130,8 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                         ],
                       ),
                       trailing: IconButton(
-                        icon: const Icon(Icons.delete_outline, color: Colors.pinkAccent),
+                        icon: const Icon(Icons.delete_outline,
+                            color: Colors.pinkAccent),
                         onPressed: () {
                           setState(() {
                             _cards.removeAt(index);
