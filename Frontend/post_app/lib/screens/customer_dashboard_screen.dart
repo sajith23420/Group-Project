@@ -78,7 +78,7 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
       {'title': 'Search Nearby\nPost Office', 'icon': Icons.location_on},
       {'title': 'Fines', 'icon': Icons.gavel},
       {'title': 'Postal Holiday', 'icon': Icons.hotel},
-    ];///
+    ];//
 
     return Scaffold(
       key: _scaffoldKey,
