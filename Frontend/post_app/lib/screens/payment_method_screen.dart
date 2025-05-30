@@ -58,7 +58,8 @@ class PaymentMethodScreen extends StatelessWidget {
                       border: Border.all(color: Colors.grey.shade200, width: 1),
                     ),
                     child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 12),
                       leading: CircleAvatar(
                         backgroundColor: Colors.pinkAccent.withOpacity(0.08),
                         radius: 26,
@@ -67,29 +68,39 @@ class PaymentMethodScreen extends StatelessWidget {
                                 card['logo']!,
                                 width: 32,
                                 height: 32,
-                                errorBuilder: (c, e, s) => const Icon(Icons.credit_card, color: Colors.pinkAccent, size: 28),
+                                errorBuilder: (c, e, s) => const Icon(
+                                    Icons.credit_card,
+                                    color: Colors.pinkAccent,
+                                    size: 28),
                               )
-                            : const Icon(Icons.credit_card, color: Colors.pinkAccent, size: 28),
+                            : const Icon(Icons.credit_card,
+                                color: Colors.pinkAccent, size: 28),
                       ),
                       title: Text(
                         card['type'] ?? '',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black87),
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.black87),
                       ),
                       subtitle: Row(
                         children: [
                           Text(
                             card['number'] ?? '',
-                            style: const TextStyle(fontSize: 15, color: Colors.black54),
+                            style: const TextStyle(
+                                fontSize: 15, color: Colors.black54),
                           ),
                           const SizedBox(width: 16),
                           Text(
                             'Exp: ${card['expiry']}',
-                            style: const TextStyle(fontSize: 13, color: Colors.black38),
+                            style: const TextStyle(
+                                fontSize: 13, color: Colors.black38),
                           ),
                         ],
                       ),
                       trailing: IconButton(
-                        icon: const Icon(Icons.delete_outline, color: Colors.pinkAccent),
+                        icon: const Icon(Icons.delete_outline,
+                            color: Colors.pinkAccent),
                         onPressed: () {
                           // TODO: Implement delete functionality
                         },
@@ -103,11 +114,14 @@ class PaymentMethodScreen extends StatelessWidget {
             Center(
               child: OutlinedButton.icon(
                 icon: const Icon(Icons.add, color: Colors.pinkAccent),
-                label: const Text('Add New Card', style: TextStyle(color: Colors.pinkAccent, fontSize: 16)),
+                label: const Text('Add New Card',
+                    style: TextStyle(color: Colors.pinkAccent, fontSize: 16)),
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: Colors.pinkAccent, width: 1.5),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                  padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 14),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 36, vertical: 14),
                   backgroundColor: Colors.white,
                 ),
                 onPressed: () {
@@ -177,24 +191,32 @@ class _AddCardDialogState extends State<_AddCardDialog> {
                   controller: _holderController,
                   decoration: InputDecoration(
                     labelText: 'Cardholder Name',
-                    prefixIcon: const Icon(Icons.person, color: Colors.pinkAccent),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    prefixIcon:
+                        const Icon(Icons.person, color: Colors.pinkAccent),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10)),
                   ),
-                  validator: (value) => value == null || value.isEmpty ? 'Enter cardholder name' : null,
+                  validator: (value) => value == null || value.isEmpty
+                      ? 'Enter cardholder name'
+                      : null,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _cardNumberController,
                   decoration: InputDecoration(
                     labelText: 'Card Number',
-                    prefixIcon: const Icon(Icons.credit_card, color: Colors.pinkAccent),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    prefixIcon:
+                        const Icon(Icons.credit_card, color: Colors.pinkAccent),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10)),
                   ),
                   keyboardType: TextInputType.number,
                   maxLength: 16,
                   validator: (value) {
-                    if (value == null || value.isEmpty) return 'Enter card number';
-                    if (value.length != 16) return 'Card number must be 16 digits';
+                    if (value == null || value.isEmpty)
+                      return 'Enter card number';
+                    if (value.length != 16)
+                      return 'Card number must be 16 digits';
                     return null;
                   },
                 ),
@@ -206,12 +228,15 @@ class _AddCardDialogState extends State<_AddCardDialog> {
                         controller: _expiryController,
                         decoration: InputDecoration(
                           labelText: 'Expiry (MM/YY)',
-                          prefixIcon: const Icon(Icons.date_range, color: Colors.pinkAccent),
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                          prefixIcon: const Icon(Icons.date_range,
+                              color: Colors.pinkAccent),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10)),
                         ),
                         keyboardType: TextInputType.datetime,
                         validator: (value) {
-                          if (value == null || value.isEmpty) return 'Enter expiry';
+                          if (value == null || value.isEmpty)
+                            return 'Enter expiry';
                           final regex = RegExp(r'^(0[1-9]|1[0-2])\/\d{2}$');
                           if (!regex.hasMatch(value)) return 'Invalid format';
                           return null;
@@ -224,13 +249,16 @@ class _AddCardDialogState extends State<_AddCardDialog> {
                         controller: _cvvController,
                         decoration: InputDecoration(
                           labelText: 'CVV',
-                          prefixIcon: const Icon(Icons.lock, color: Colors.pinkAccent),
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                          prefixIcon:
+                              const Icon(Icons.lock, color: Colors.pinkAccent),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10)),
                         ),
                         keyboardType: TextInputType.number,
                         maxLength: 3,
                         validator: (value) {
-                          if (value == null || value.isEmpty) return 'Enter CVV';
+                          if (value == null || value.isEmpty)
+                            return 'Enter CVV';
                           if (value.length != 3) return 'CVV must be 3 digits';
                           return null;
                         },
@@ -253,7 +281,8 @@ class _AddCardDialogState extends State<_AddCardDialog> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 22, vertical: 10),
                       ),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
@@ -261,7 +290,8 @@ class _AddCardDialogState extends State<_AddCardDialog> {
                           Navigator.of(context).pop();
                         }
                       },
-                      child: const Text('Add Card', style: TextStyle(fontSize: 15)),
+                      child: const Text('Add Card',
+                          style: TextStyle(fontSize: 15)),
                     ),
                   ],
                 ),
