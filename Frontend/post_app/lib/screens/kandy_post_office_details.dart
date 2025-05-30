@@ -3,115 +3,116 @@ import 'package:flutter/material.dart';
 class KandyPostOfficeDetails extends StatelessWidget {
   const KandyPostOfficeDetails({super.key});
 
-  final Map<String, dynamic> kandyPostOffice = const {
-    'name': 'Kandy General Post Office',
-    'address': 'No. 1, Post Office Lane, Kandy 20000',
-    'phone': '+94 81 2 222222',
-    'hours': '8:00 AM - 6:00 PM',
-    'services': [
-      'Postal services',
-      'Parcel services',
-      'Money orders',
-      'Registered mail',
-      'Express mail',
-      'Philately',
-    ],
-  };
+  final List<Map<String, dynamic>> postOffices = const [
+    {
+      'name': 'Kandy General Post Office',
+      'address': 'No. 1, Post Office Lane, Kandy 20000',
+      'phone': '+94 81 2 222222',
+      'hours': '8:00 AM - 6:00 PM',
+      'services': [
+        'Postal services',
+        'Parcel services',
+        'Money orders',
+        'Registered mail',
+        'Express mail',
+        'Philately',
+      ],
+    },
+    {
+      'name': 'Kandy City Centre Post Office',
+      'address': 'KCC, Dalada Veediya, Kandy 20000',
+      'phone': '+94 81 2 333444',
+      'hours': '8:30 AM - 5:00 PM',
+      'services': [
+        'Postal services',
+        'Parcel services',
+        'Money orders',
+      ],
+    },
+    {
+      'name': 'Peradeniya Post Office',
+      'address': 'Peradeniya Road, Kandy 20400',
+      'phone': '+94 81 2 555666',
+      'hours': '8:00 AM - 4:30 PM',
+      'services': [
+        'Postal services',
+        'Registered mail',
+        'Express mail',
+      ],
+    },
+    {
+      'name': 'Katugastota Post Office',
+      'address': 'Katugastota, Kandy 20800',
+      'phone': '+94 81 2 777888',
+      'hours': '8:00 AM - 5:00 PM',
+      'services': [
+        'Postal services',
+        'Parcel services',
+      ],
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Kandy Post Office'),
+        title: const Text('Kandy Post Offices'),
         backgroundColor: Colors.deepPurple[100],
-        foregroundColor: Colors.black,
+        foregroundColor: const Color.fromARGB(255, 9, 5, 5),
       ),
-      backgroundColor: const Color(0xFFF7F6FB),
+      backgroundColor: const Color.fromARGB(255, 245, 246, 245),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Card(
-          elevation: 6,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-          child: Padding(
-            padding: const EdgeInsets.all(22.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
+        padding: const EdgeInsets.all(16.0),
+        child: ListView.builder(
+          itemCount: postOffices.length,
+          itemBuilder: (context, index) {
+            final office = postOffices[index];
+            return Card(
+              elevation: 5,
+              margin: const EdgeInsets.only(bottom: 20),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.local_post_office, color: Colors.deepPurple, size: 32),
-                    const SizedBox(width: 12),
                     Text(
-                      kandyPostOffice['name'],
+                      office['name'],
                       style: const TextStyle(
-                        fontSize: 22,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Color.fromARGB(255, 44, 20, 80),
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 18),
-                Row(
-                  children: [
-                    const Icon(Icons.location_on, color: Colors.deepPurple),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        kandyPostOffice['address'],
-                        style: const TextStyle(fontSize: 16, color: Color(0xFF3A3A3A)),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    const Icon(Icons.phone, color: Colors.deepPurple),
-                    const SizedBox(width: 8),
+                    const SizedBox(height: 12),
                     Text(
-                      kandyPostOffice['phone'],
-                      style: const TextStyle(fontSize: 16, color: Color(0xFF3A3A3A)),
+                      'Address: \\${office['address']}',
+                      style: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 38, 41, 38)),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    const Icon(Icons.access_time, color: Colors.deepPurple),
-                    const SizedBox(width: 8),
+                    const SizedBox(height: 8),
                     Text(
-                      kandyPostOffice['hours'],
-                      style: const TextStyle(fontSize: 16, color: Color(0xFF3A3A3A)),
+                      'Phone: \\${office['phone']}',
+                      style: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 25, 27, 25)),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Hours: \\${office['hours']}',
+                      style: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 20, 23, 20)),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Services:',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                    ),
+                    Text(
+                      '- \\${office['services'].join('\\n- ')}',
+                      style: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 16, 21, 16)),
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Services:',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.deepPurple),
-                ),
-                const SizedBox(height: 8),
-                ...List.generate(
-                  kandyPostOffice['services'].length,
-                  (i) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 2.0),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.check_circle, color: Colors.deepPurple, size: 18),
-                        const SizedBox(width: 8),
-                        Text(
-                          kandyPostOffice['services'][i],
-                          style: const TextStyle(fontSize: 16, color: Color(0xFF2D2D2D)),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
