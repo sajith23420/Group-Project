@@ -55,7 +55,8 @@ class MatharaPostOfficeDetails extends StatelessWidget {
                   ),
                   children: [
                     TileLayer(
-                      urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      urlTemplate:
+                          'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                       subdomains: const ['a', 'b', 'c'],
                     ),
                     MarkerLayer(
@@ -64,7 +65,8 @@ class MatharaPostOfficeDetails extends StatelessWidget {
                           width: 40.0,
                           height: 40.0,
                           point: LatLng(5.9485, 80.5353),
-                          child: const Icon(Icons.location_on, color: Colors.blue, size: 40),
+                          child: const Icon(Icons.location_on,
+                              color: Colors.blue, size: 40),
                         ),
                       ],
                     ),
@@ -81,7 +83,8 @@ class MatharaPostOfficeDetails extends StatelessWidget {
                   return Card(
                     elevation: 5,
                     margin: const EdgeInsets.only(bottom: 20),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
@@ -98,26 +101,37 @@ class MatharaPostOfficeDetails extends StatelessWidget {
                           const SizedBox(height: 12),
                           Text(
                             'Address: ${office['address']}',
-                            style: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 38, 41, 38)),
+                            style: const TextStyle(
+                                fontSize: 16,
+                                color: Color.fromARGB(255, 38, 41, 38)),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             'Phone: ${office['phone']}',
-                            style: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 25, 27, 25)),
+                            style: const TextStyle(
+                                fontSize: 16,
+                                color: Color.fromARGB(255, 25, 27, 25)),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             'Hours: ${office['hours']}',
-                            style: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 20, 23, 20)),
+                            style: const TextStyle(
+                                fontSize: 16,
+                                color: Color.fromARGB(255, 20, 23, 20)),
                           ),
                           const SizedBox(height: 16),
                           const Text(
                             'Services:',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue),
                           ),
                           Text(
                             '- ${office['services'].join('\n- ')}',
-                            style: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 16, 21, 16)),
+                            style: const TextStyle(
+                                fontSize: 16,
+                                color: Color.fromARGB(255, 16, 21, 16)),
                           ),
                         ],
                       ),

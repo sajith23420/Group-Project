@@ -3,6 +3,7 @@ import 'colombo_post_office_details.dart'; // Make sure this path is correct
 import 'kandy_post_office_details.dart'; // Make sure this path is correct
 import 'jaffna_post_office_details.dart';
 import 'anuradhapura_post_office_details.dart';
+import 'mathara_post_office_details.dart';
 
 class SearchPostOfficeScreen extends StatefulWidget {
   const SearchPostOfficeScreen({super.key});
@@ -169,6 +170,14 @@ class _SearchPostOfficeScreenState extends State<SearchPostOfficeScreen> {
                           MaterialPageRoute(
                               builder: (context) =>
                                   const AnuradhapuraPostOfficeDetails()),
+                        );
+                      } else if (displayedPostOffices[index] ==
+                          'Matara Post Office') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const MatharaPostOfficeDetails()),
                         );
                       } else {
                         showDialog(
