@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:post_app/screens/parcel_tracking_screen.dart';
 import 'package:post_app/screens/money_order_screen.dart';
 import 'package:post_app/screens/bill_payments_screen.dart';
-import 'package:post_app/screens/postal_holiday_screen.dart';
 import 'package:post_app/screens/search_post_office_screen.dart';
 import 'package:post_app/screens/fines_screen.dart';
 import 'package:post_app/screens/login_screen.dart';
@@ -11,6 +10,7 @@ import 'package:provider/provider.dart'; // Import Provider
 import 'package:post_app/providers/user_provider.dart'; // Import UserProvider
 import 'package:post_app/models/user_model.dart'; // Import UserModel
 import 'package:cached_network_image/cached_network_image.dart'; // Import CachedNetworkImage
+import 'package:post_app/screens/postal_holiday_screen.dart'; // Import PostalHolidayScreen
 // For logout
 
 class CustomerDashboardScreen extends StatefulWidget {
@@ -27,7 +27,6 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
   // String? _userName; // Will be replaced by UserProvider
   final PageController _newsPageController = PageController();
   int _currentNewsPage = 0;
-  final int _newsImageCount = 3;
 
   @override
   void initState() {
@@ -67,14 +66,19 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
     final userProvider = Provider.of<UserProvider>(context);
     final UserModel? currentUser = userProvider.user;
 
+    // DEBUG: Print user info
+    print('DEBUG: currentUser.email = \\${currentUser?.email}');
+    print(
+        'DEBUG: currentUser.profilePictureUrl = \\${currentUser?.profilePictureUrl}');
+
     final List<Map<String, dynamic>> services = [
       {'title': 'Parcel Tracking', 'icon': Icons.local_shipping},
       {'title': 'Money Order', 'icon': Icons.attach_money},
       {'title': 'Bill Payments', 'icon': Icons.payment},
-      {'title': 'Postal Holiday', 'icon': Icons.calendar_today},
       {'title': 'Search Nearby\nPost Office', 'icon': Icons.location_on},
       {'title': 'Fines', 'icon': Icons.gavel},
-    ];
+      {'title': 'Postal Holiday', 'icon': Icons.hotel},
+    ];///
 
     return Scaffold(
       key: _scaffoldKey,
@@ -122,29 +126,40 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                     Theme.of(context).platform == TargetPlatform.iOS
                         ? Colors.blue
                         : Colors.white,
-                child: currentUser?.profilePictureUrl != null &&
-                        currentUser!.profilePictureUrl!.isNotEmpty
+                child: (currentUser?.profilePictureUrl != null &&
+                        currentUser!.profilePictureUrl!.isNotEmpty)
                     ? ClipOval(
                         child: CachedNetworkImage(
-                          imageUrl: currentUser.profilePictureUrl!,
+                          imageUrl: currentUser.profilePictureUrl!
+                                  .startsWith('http')
+                              ? currentUser.profilePictureUrl!
+                              : getFullImageUrl(currentUser.profilePictureUrl),
                           placeholder: (context, url) =>
                               const CircularProgressIndicator(),
-                          errorWidget: (context, url, error) => Text(
-                              currentUser.displayName?.isNotEmpty == true
-                                  ? currentUser.displayName![0].toUpperCase()
-                                  : "U",
-                              style: const TextStyle(fontSize: 40.0)),
+                          errorWidget: (context, url, error) => Icon(
+                              Icons.account_circle,
+                              size: 70,
+                              color: Colors.grey[400]),
                           fit: BoxFit.cover,
-                          width:
-                              70, // Adjust size as needed for UserAccountsDrawerHeader
+                          width: 70,
                           height: 70,
                         ),
                       )
-                    : Text(
-                        currentUser?.displayName?.isNotEmpty == true
-                            ? currentUser!.displayName![0].toUpperCase()
-                            : "U",
-                        style: const TextStyle(fontSize: 40.0)),
+                    : (currentUser?.email != null &&
+                            currentUser!.email!.isNotEmpty
+                        ? ClipOval(
+                            child: Image.network(
+                              'https://ui-avatars.com/api/?name=${Uri.encodeComponent(currentUser.email!)}&background=F48FB1&color=fff&size=140',
+                              width: 70,
+                              height: 70,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : Icon(
+                            Icons.account_circle,
+                            size: 70,
+                            color: Colors.grey[400],
+                          )),
               ),
               decoration: BoxDecoration(color: Theme.of(context).primaryColor),
             ),
@@ -232,7 +247,7 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: Image.asset(
-                      "assets/post_off.png",
+                      "assets/post1.jpeg",
                       width: double.infinity,
                       height: 150,
                       fit: BoxFit.cover,
@@ -366,43 +381,60 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
             ),
             const SizedBox(height: 12.0),
             SizedBox(
-              height: 150,
-              child: PageView.builder(
+              height: 180,
+              child: PageView(
                 controller: _newsPageController,
-                itemCount: _newsImageCount,
                 onPageChanged: (int page) {
                   setState(() {
                     _currentNewsPage = page;
                   });
                 },
-                itemBuilder: (context, index) {
-                  return Card(
-                    margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                children: const [
+                  Card(
+                    margin: EdgeInsets.symmetric(horizontal: 4.0),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.primaries[index % Colors.primaries.length]
-                            .withOpacity(0.7),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'News Image ${index + 1}',
-                          style: const TextStyle(
-                              fontSize: 20,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
-                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      child: Image(
+                        image: AssetImage('assets/news1.jpg'),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
                       ),
                     ),
-                  );
-                },
+                  ),
+                  Card(
+                    margin: EdgeInsets.symmetric(horizontal: 4.0),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      child: Image(
+                        image: AssetImage('assets/news2.png'),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                      ),
+                    ),
+                  ),
+                  Card(
+                    margin: EdgeInsets.symmetric(horizontal: 4.0),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      child: Image(
+                        image: AssetImage('assets/news3.jpg'),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(_newsImageCount, (index) {
+              children: List.generate(3, (index) {
                 return Container(
                   width: 8.0,
                   height: 8.0,
@@ -411,8 +443,8 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: _currentNewsPage == index
-                        ? Colors.pinkAccent // Changed to pinkAccent
-                        : Colors.white, // Inactive dots are white
+                        ? Colors.pinkAccent
+                        : Colors.white,
                   ),
                 );
               }),
@@ -470,7 +502,7 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
         break;
       case 'Postal Holiday':
         screen = const PostalHolidayScreen();
-        iconColor = Colors.purple; // Profile
+        iconColor = Colors.blue;
         break;
       case 'Search Nearby Post Office':
         screen = const SearchPostOfficeScreen();
@@ -518,5 +550,14 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
         ),
       ),
     );
+  }
+
+  // Add this method to fetch news images from Firestore
+
+  String getFullImageUrl(String? url) {
+    if (url == null || url.isEmpty) return '';
+    if (url.startsWith('http')) return url;
+    // Replace with your actual backend base URL
+    return 'http://localhost:3000$url';
   }
 }

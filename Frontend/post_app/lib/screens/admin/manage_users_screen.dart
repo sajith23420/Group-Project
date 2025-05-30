@@ -1,36 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:post_app/models/user_model.dart';
+import 'package:post_app/models/enums.dart';
+import 'package:post_app/services/api_client.dart';
+import 'package:post_app/services/token_provider.dart';
+import 'package:post_app/services/user_auth_api_service.dart';
 
-// Mock user data model
-class User {
-  final String name;
-  final String email;
-  final String role;
-
-  const User({required this.name, required this.email, required this.role});
-}
-
-class ManageUsersScreen extends StatelessWidget {
+class ManageUsersScreen extends StatefulWidget {
   const ManageUsersScreen({super.key});
 
-  // Mock list of users
-  final List<User> users = const [
-    User(name: "Alice Smith", email: "alice@example.com", role: "User"),
-    User(name: "Bob Johnson", email: "bob@example.com", role: "Moderator"),
-    User(name: "Charlie Lee", email: "charlie@example.com", role: "User"),
-    User(name: "Diana Prince", email: "diana@example.com", role: "Admin"),
-  ];
+  @override
+  State<ManageUsersScreen> createState() => _ManageUsersScreenState();
+}
+
+class _ManageUsersScreenState extends State<ManageUsersScreen> {
+  late final UserAuthApiService _userAuthApiService;
+  late final ApiClient _apiClient;
+  late final TokenProvider _tokenProvider;
+  late Future<List<UserModel>> _usersFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _tokenProvider = TokenProvider(FirebaseAuth.instance);
+    _apiClient = ApiClient(_tokenProvider);
+    _userAuthApiService = UserAuthApiService(_apiClient);
+    _usersFuture = _userAuthApiService.adminGetAllUsers();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Manage Users'),
-        backgroundColor: Colors.pinkAccent,
+        title:
+            const Text('Manage Users', style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.lightBlue[100], // Light blue theme
+        iconTheme: const IconThemeData(color: Colors.black),
+        elevation: 1,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Card(
-          elevation: 4,
+          color: Colors.white,
+          elevation: 2,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           child: Column(
@@ -45,33 +57,52 @@ class ManageUsersScreen extends StatelessWidget {
               ),
               const Divider(height: 1),
               Expanded(
-                child: ListView.separated(
-                  itemCount: users.length,
-                  separatorBuilder: (context, index) =>
-                      const Divider(height: 1),
-                  itemBuilder: (context, index) {
-                    final user = users[index];
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.pinkAccent,
-                        child: Text(user.name[0],
-                            style: const TextStyle(color: Colors.white)),
-                      ),
-                      title: Text(user.name),
-                      subtitle: Text(user.email),
-                      trailing: Chip(
-                        label: Text(user.role),
-                        backgroundColor: user.role == "Admin"
-                            ? Colors.yellow
-                            : Colors.grey.shade200,
-                        labelStyle: TextStyle(
-                          color: user.role == "Admin"
-                              ? Colors.black
-                              : Colors.pinkAccent,
-                        ),
-                      ),
-                      // Optionally, add actions like delete, promote, etc.
-                      // onTap: () {},
+                child: FutureBuilder<List<UserModel>>(
+                  future: _usersFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: \\${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(child: Text('No users found.'));
+                    }
+                    final users = snapshot.data!;
+                    return ListView.separated(
+                      itemCount: users.length,
+                      separatorBuilder: (context, index) =>
+                          const Divider(height: 1),
+                      itemBuilder: (context, index) {
+                        final user = users[index];
+                        return ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.pinkAccent,
+                            child: Text(
+                              (user.displayName?.isNotEmpty == true
+                                      ? user.displayName![0]
+                                      : user.email?.isNotEmpty == true
+                                          ? user.email![0]
+                                          : '?')
+                                  .toUpperCase(),
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          title:
+                              Text(user.displayName ?? user.email ?? 'No Name'),
+                          subtitle: Text(user.email ?? 'No Email'),
+                          trailing: Chip(
+                            label: Text(user.role.name),
+                            backgroundColor: user.role == UserRole.admin
+                                ? Colors.yellow
+                                : Colors.grey.shade200,
+                            labelStyle: TextStyle(
+                              color: user.role == UserRole.admin
+                                  ? Colors.black
+                                  : Colors.pinkAccent,
+                            ),
+                          ),
+                        );
+                      },
                     );
                   },
                 ),

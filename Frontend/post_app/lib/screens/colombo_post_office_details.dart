@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+=======
+>>>>>>> sajith's-branch
 
 class ColomboPostOfficeDetails extends StatelessWidget {
   const ColomboPostOfficeDetails({super.key});
@@ -63,6 +66,7 @@ class ColomboPostOfficeDetails extends StatelessWidget {
       backgroundColor: const Color.fromARGB(255, 245, 246, 245),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
+<<<<<<< HEAD
         child: Column(
           children: [
             SizedBox(
@@ -88,10 +92,57 @@ class ColomboPostOfficeDetails extends StatelessWidget {
                           child: const Icon(Icons.location_on, color: Colors.green, size: 40),
                         ),
                       ],
+=======
+        child: ListView.builder(
+          itemCount: postOffices.length,
+          itemBuilder: (context, index) {
+            final office = postOffices[index];
+            return Card(
+              elevation: 5,
+              margin: const EdgeInsets.only(bottom: 20),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      office['name'],
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: const Color.fromARGB(255, 14, 15, 14),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Address: ${office['address']}',
+                      style: TextStyle(fontSize: 16, color: const Color.fromARGB(255, 38, 41, 38)),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Phone: ${office['phone']}',
+                      style: TextStyle(fontSize: 16, color: const Color.fromARGB(255, 25, 27, 25)),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Hours: ${office['hours']}',
+                      style: TextStyle(fontSize: 16, color: const Color.fromARGB(255, 20, 23, 20)),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Services:',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green),
+                    ),
+                    Text(
+                      '- ${office['services'].join('\n- ')}',
+                      style: const TextStyle(fontSize: 16, color: Color.fromARGB(255, 16, 21, 16)),
+>>>>>>> sajith's-branch
                     ),
                   ],
                 ),
               ),
+<<<<<<< HEAD
             ),
             const SizedBox(height: 16),
             Expanded(
@@ -148,6 +199,10 @@ class ColomboPostOfficeDetails extends StatelessWidget {
               ),
             ),
           ],
+=======
+            );
+          },
+>>>>>>> sajith's-branch
         ),
       ),
     );
