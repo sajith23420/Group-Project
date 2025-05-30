@@ -1,35 +1,66 @@
 import 'package:flutter/material.dart';
 
-class PaymentMethodScreen extends StatelessWidget {
+class PaymentMethodScreen extends StatefulWidget {
   const PaymentMethodScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    // Example card data (replace with real data in production)
-    final List<Map<String, String>> cards = [
-      {
-        'type': 'Visa',
-        'number': '**** 1234',
-        'expiry': '12/27',
-        'color': '0xFFe3e3e3',
-        'logo': 'assets/images/visa.png',
-      },
-      {
-        'type': 'Mastercard',
-        'number': '**** 5678',
-        'expiry': '09/26',
-        'color': '0xFFe3e3e3',
-        'logo': 'assets/images/mastercard.png',
-      },
-    ];
+  State<PaymentMethodScreen> createState() => _PaymentMethodScreenState();
+}
 
+class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
+  final List<Map<String, String>> _cards = [
+    {
+      'type': 'Visa',
+      'number': '**** 1234',
+      'expiry': '12/27',
+      'color': '0xFFe3e3e3',
+      'logo': 'assets/images/visa.png',
+    },
+    {
+      'type': 'Mastercard',
+      'number': '**** 5678',
+      'expiry': '09/26',
+      'color': '0xFFe3e3e3',
+      'logo': 'assets/images/mastercard.png',
+    },
+  ];
+
+  void _addCard(Map<String, String> card) {
+    setState(() {
+      _cards.add(card);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Payment Methods'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.pinkAccent,
-        elevation: 0,
-        centerTitle: true,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(15),
+            bottomRight: Radius.circular(15),
+          ),
+          child: AppBar(
+            automaticallyImplyLeading: true,
+            backgroundColor: Colors.pinkAccent,
+            elevation: 0,
+            title: Row(
+              children: [
+                Image.asset("assets/post_icon.png", height: 40),
+                const SizedBox(width: 10),
+                const Text(
+                  'Payment Methods',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
       backgroundColor: const Color(0xFFF6F6F6),
       body: Padding(
@@ -40,10 +71,10 @@ class PaymentMethodScreen extends StatelessWidget {
             const SizedBox(height: 10),
             Expanded(
               child: ListView.separated(
-                itemCount: cards.length,
+                itemCount: _cards.length,
                 separatorBuilder: (context, i) => const SizedBox(height: 18),
                 itemBuilder: (context, index) {
-                  final card = cards[index];
+                  final card = _cards[index];
                   return Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(18),
@@ -99,10 +130,11 @@ class PaymentMethodScreen extends StatelessWidget {
                         ],
                       ),
                       trailing: IconButton(
-                        icon: const Icon(Icons.delete_outline,
-                            color: Colors.pinkAccent),
+                        icon: const Icon(Icons.delete_outline, color: Colors.pinkAccent),
                         onPressed: () {
-                          // TODO: Implement delete functionality
+                          setState(() {
+                            _cards.removeAt(index);
+                          });
                         },
                       ),
                     ),
@@ -127,7 +159,7 @@ class PaymentMethodScreen extends StatelessWidget {
                 onPressed: () {
                   showDialog(
                     context: context,
-                    builder: (context) => _AddCardDialog(),
+                    builder: (context) => _AddCardDialog(onAdd: _addCard),
                   );
                 },
               ),
@@ -141,6 +173,8 @@ class PaymentMethodScreen extends StatelessWidget {
 }
 
 class _AddCardDialog extends StatefulWidget {
+  final void Function(Map<String, String>) onAdd;
+  const _AddCardDialog({required this.onAdd});
   @override
   State<_AddCardDialog> createState() => _AddCardDialogState();
 }
@@ -286,7 +320,16 @@ class _AddCardDialogState extends State<_AddCardDialog> {
                       ),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          // TODO: Save card details
+                          final cardNumber = _cardNumberController.text;
+                          final last4 =
+                              cardNumber.substring(cardNumber.length - 4);
+                          widget.onAdd({
+                            'type': 'Card',
+                            'number': '**** $last4',
+                            'expiry': _expiryController.text,
+                            'color': '0xFFe3e3e3',
+                            'logo': '',
+                          });
                           Navigator.of(context).pop();
                         }
                       },
