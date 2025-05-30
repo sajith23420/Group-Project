@@ -11,6 +11,7 @@ import 'package:provider/provider.dart'; // Import Provider
 import 'package:post_app/providers/user_provider.dart'; // Import UserProvider
 import 'package:post_app/models/user_model.dart'; // Import UserModel
 import 'package:cached_network_image/cached_network_image.dart'; // Import CachedNetworkImage
+import 'package:post_app/screens/payment_method_screen.dart'; // Import PaymentMethodScreen
 // For logout
 
 class CustomerDashboardScreen extends StatefulWidget {
@@ -163,7 +164,25 @@ class _CustomerDashboardScreenState extends State<CustomerDashboardScreen> {
               title: const Text('Add Payment Card'),
               onTap: () {
                 Navigator.pop(context);
-                // TODO: Navigate to Add Payment Card screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PaymentMethodScreen(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.credit_card),
+              title: const Text('Payment Method'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PaymentMethodScreen(),
+                  ),
+                );
               },
             ),
             ListTile(
