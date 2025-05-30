@@ -3,6 +3,14 @@ import 'colombo_post_office_details.dart'; // Make sure this path is correct
 import 'kandy_post_office_details.dart'; // Make sure this path is correct
 import 'jaffna_post_office_details.dart';
 import 'anuradhapura_post_office_details.dart';
+import 'galle_post_office_details.dart';
+import 'kurunegala_post_office_details.dart';
+import 'matara_post_office_details.dart';
+import 'badulla_post_office_details.dart';
+import 'ratnapura_post_office_details.dart';
+import 'negombo_post_office_details.dart';
+import 'kalutara_post_office_details.dart';
+import 'hambantota_post_office_details.dart';
 
 class SearchPostOfficeScreen extends StatefulWidget {
   const SearchPostOfficeScreen({super.key});
@@ -155,6 +163,14 @@ class _SearchPostOfficeScreenState extends State<SearchPostOfficeScreen> {
                                   const KandyPostOfficeDetails()),
                         );
                       } else if (displayedPostOffices[index] ==
+                          'Galle Post Office') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const GallePostOfficeDetails()),
+                        );
+                      } else if (displayedPostOffices[index] ==
                           'Jaffna Post Office') {
                         Navigator.push(
                           context,
@@ -169,6 +185,62 @@ class _SearchPostOfficeScreenState extends State<SearchPostOfficeScreen> {
                           MaterialPageRoute(
                               builder: (context) =>
                                   const AnuradhapuraPostOfficeDetails()),
+                        );
+                      } else if (displayedPostOffices[index] ==
+                          'Kurunegala Post Office') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const KurunegalaPostOfficeDetails()),
+                        );
+                      } else if (displayedPostOffices[index] ==
+                          'Matara Post Office') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const MataraPostOfficeDetails()),
+                        );
+                      } else if (displayedPostOffices[index] ==
+                          'Badulla Post Office') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const BadullaPostOfficeDetails()),
+                        );
+                      } else if (displayedPostOffices[index] ==
+                          'Ratnapura Post Office') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const RatnapuraPostOfficeDetails()),
+                        );
+                      } else if (displayedPostOffices[index] ==
+                          'Negombo Post Office') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const NegomboPostOfficeDetails()),
+                        );
+                      } else if (displayedPostOffices[index] ==
+                          'Kalutara Post Office') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const KalutaraPostOfficeDetails()),
+                        );
+                      } else if (displayedPostOffices[index] ==
+                          'Hambantota Post Office') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const HambantotaPostOfficeDetails()),
                         );
                       } else {
                         showDialog(
