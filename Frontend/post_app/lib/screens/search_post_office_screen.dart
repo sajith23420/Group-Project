@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'colombo_post_office_details.dart'; // Make sure this path is correct
+import 'kandy_post_office_details.dart'; // Make sure this path is correct
 
 class SearchPostOfficeScreen extends StatefulWidget {
   const SearchPostOfficeScreen({super.key});
@@ -142,6 +143,14 @@ class _SearchPostOfficeScreenState extends State<SearchPostOfficeScreen> {
                           MaterialPageRoute(
                               builder: (context) =>
                                   const ColomboPostOfficeDetails()),
+                        );
+                      } else if (displayedPostOffices[index] ==
+                          'Kandy General Post Office') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const KandyPostOfficeDetails()),
                         );
                       } else {
                         showDialog(
