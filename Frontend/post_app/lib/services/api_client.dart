@@ -9,13 +9,13 @@ class ApiClient {
   late final Dio _dio;
   final TokenProvider _tokenProvider;
   static const String _baseUrl =
-      "http://localhost:3000/api"; // Replace with your actual base URL
+      "http://localhost:3000/api"; // Changed back to localhost for web browser access
 
   ApiClient(this._tokenProvider) {
     final options = BaseOptions(
       baseUrl: _baseUrl,
-      connectTimeout: const Duration(seconds: 10), // 10 seconds
-      receiveTimeout: const Duration(seconds: 10), // 10 seconds
+      connectTimeout: const Duration(seconds: 30), // Increased to 30 seconds
+      receiveTimeout: const Duration(seconds: 30), // Increased to 30 seconds
     );
     _dio = Dio(options);
 
